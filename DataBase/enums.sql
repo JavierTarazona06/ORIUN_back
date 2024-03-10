@@ -18,3 +18,7 @@ DROP TYPE IF EXISTS study_level_en;
 CREATE TYPE study_level_en AS ENUM ('Pregrado', 'Postgrado');
 DROP TYPE IF EXISTS language_en;
 CREATE TYPE language_en AS ENUM ('Inglés', 'Español', 'Francés', 'Portugés', 'Alemán', 'Italiano', 'Koreano', 'Ruso', 'Mandarín', 'Otro');
+DROP TYPE IF EXISTS semester_en;
+CREATE TYPE semester_en AS ENUM ('1', '2');
+DROP TYPE IF EXISTS admission_en;
+CREATE TYPE admission_en AS ENUM ('Regular', 'PAES', 'PEAMA');
