@@ -5,6 +5,8 @@ BEGIN;
 
 ALTER TABLE IF EXISTS public.student DROP CONSTRAINT IF EXISTS student_fkey;
 
+ALTER TABLE IF EXISTS public.student DROP CONSTRAINT IF EXISTS contact_fkey;
+
 ALTER TABLE IF EXISTS public.employee DROP CONSTRAINT IF EXISTS employee_fkey;
 
 ALTER TABLE IF EXISTS public.call DROP CONSTRAINT IF EXISTS university_fkey;
@@ -16,8 +18,6 @@ ALTER TABLE IF EXISTS public.application DROP CONSTRAINT IF EXISTS student_id;
 ALTER TABLE IF EXISTS public.application DROP CONSTRAINT IF EXISTS call_id;
 
 ALTER TABLE IF EXISTS public.international_application DROP CONSTRAINT IF EXISTS application_fkey;
-
-ALTER TABLE IF EXISTS public.contact_person DROP CONSTRAINT IF EXISTS student_id;
 
 ALTER TABLE IF EXISTS public.national_application DROP CONSTRAINT IF EXISTS application_fkey;
 
@@ -67,6 +67,7 @@ CREATE TABLE IF NOT EXISTS public.student
     admision admission_en NOT NULL,
     study_level study_level_en NOT NULL,
     num_semesters smallint NOT NULL,
+    contact_id integer,
     PRIMARY KEY ("ID")
 );
 
@@ -169,12 +170,12 @@ DROP TABLE IF EXISTS public.contact_person CASCADE;
 
 CREATE TABLE IF NOT EXISTS public.contact_person
 (
-    student_id integer NOT NULL,
+    "ID" integer NOT NULL,
     name text NOT NULL,
     relationship text NOT NULL,
     cellphone text NOT NULL,
     email text NOT NULL,
-    PRIMARY KEY (student_id)
+    PRIMARY KEY ("ID")
 );
 
 DROP TABLE IF EXISTS public.national_application CASCADE;
@@ -214,6 +215,14 @@ ALTER TABLE IF EXISTS public.student
     NOT VALID;
 CREATE INDEX IF NOT EXISTS "fki_ID_student"
     ON public.student("ID");
+
+
+ALTER TABLE IF EXISTS public.student
+    ADD CONSTRAINT contact_fkey FOREIGN KEY (contact_id)
+    REFERENCES public.contact_person ("ID") MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+    NOT VALID;
 
 
 ALTER TABLE IF EXISTS public.employee
@@ -263,14 +272,6 @@ ALTER TABLE IF EXISTS public.application
 ALTER TABLE IF EXISTS public.international_application
     ADD CONSTRAINT application_fkey FOREIGN KEY (application_id)
     REFERENCES public.application ("ID") MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE NO ACTION
-    NOT VALID;
-
-
-ALTER TABLE IF EXISTS public.contact_person
-    ADD CONSTRAINT student_id FOREIGN KEY (student_id)
-    REFERENCES public.student ("ID") MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION
     NOT VALID;
