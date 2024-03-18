@@ -30,6 +30,7 @@ DROP TABLE IF EXISTS public.person CASCADE;
 CREATE TABLE IF NOT EXISTS public.person
 (
     "ID" integer NOT NULL,
+    password bytea NOT NULL,
     type_document doc_en NOT NULL,
     name character varying NOT NULL,
     lastname character varying NOT NULL,
@@ -119,9 +120,11 @@ CREATE TABLE IF NOT EXISTS public.application
     call_id integer NOT NULL,
     student_id integer NOT NULL,
     doc_id_student text NOT NULL,
-    approved boolean NOT NULL,
+    approved boolean,
+    comment_approved text,
     is_extension boolean NOT NULL,
     approve_documents boolean,
+    comment_docs text,
     destination_faculty text NOT NULL,
     destination_program text NOT NULL,
     dest_contact_email text NOT NULL,
@@ -204,6 +207,7 @@ CREATE TABLE IF NOT EXISTS public.active_mobility
     cancelation_letter text,
     academic_transcript text,
     outbreaks text[],
+    cancelled boolean NOT NULL DEFAULT false,
     PRIMARY KEY (application_id)
 );
 
