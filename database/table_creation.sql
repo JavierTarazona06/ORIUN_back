@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS public.student
     is_enrolled boolean NOT NULL,
     date_banned_mobility date NOT NULL DEFAULT '2000-01-01',
     is_banned_behave_un boolean NOT NULL,
-    admision admission_en NOT NULL,
+    admission admission_en NOT NULL,
     study_level study_level_en NOT NULL,
     num_semesters smallint NOT NULL,
     contact_id integer,

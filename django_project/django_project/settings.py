@@ -36,8 +36,10 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'rest_framework',
     'django.contrib.postgres',
+    'person.apps.PersonConfig',
     'student.apps.StudentConfig',
     'call.apps.CallConfig',
+    'application.apps.ApplicationConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
