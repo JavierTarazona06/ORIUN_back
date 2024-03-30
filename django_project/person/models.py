@@ -49,7 +49,6 @@ class Person(models.Model):
     phone = models.TextField()
     email = models.EmailField(max_length=100)
     address = models.CharField(max_length=100)
-    age = models.SmallIntegerField()
     ethnicity = models.CharField(
         max_length=2,
         choices=Ethnicity.choices,
