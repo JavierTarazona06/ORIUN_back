@@ -3,6 +3,17 @@ from person.models import Person
 from django.utils.translation import gettext_lazy as _
 
 
+class ContactPerson(models.Model):
+    name = models.CharField(max_length=20)
+    last_name = models.CharField(max_length=20)
+    email = models.EmailField()
+    relationship = models.CharField(max_length=50)
+    cellphone = models.IntegerField()
+
+    def __str__(self):
+        return f'Contact {self.name}, {self.last_name}'
+
+
 class Student(Person):
 
     # TODO: add the other enums for Student
@@ -18,11 +29,11 @@ class Student(Person):
     class StudyLevel(models.TextChoices):
         PREGRADO = 'PRE', _('Pregrado')
 
-    PAPA = models.SmallIntegerField()
-    PAPI = models.SmallIntegerField()
-    PA = models.SmallIntegerField()
+    PAPA = models.FloatField()
+    PAPI = models.FloatField()
+    PA = models.FloatField()
     PBM = models.SmallIntegerField()
-    advance = models.SmallIntegerField()
+    advance = models.FloatField()
     faculty = models.CharField(
         max_length=10,
         choices=Faculty.choices,
@@ -46,7 +57,7 @@ class Student(Person):
         choices=StudyLevel.choices
     )
     num_semesters = models.SmallIntegerField()
-    contact_id = models.IntegerField()
+    contact_id = models.ForeignKey(ContactPerson, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
-        return f'Student: {self.name} with ID {self.ID}.'
+        return f'Student: {self.name} with ID {self.id}.'
