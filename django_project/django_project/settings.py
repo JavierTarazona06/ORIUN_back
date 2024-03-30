@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'student.apps.StudentConfig',
     'call.apps.CallConfig',
     'application.apps.ApplicationConfig',
+    "employee.apps.EmployeeConfig",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
