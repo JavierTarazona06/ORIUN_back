@@ -12,7 +12,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         csv_folder = options['path']
-
+        # Fill the model University from  university_data.csv
         university_csv_path = f"{csv_folder}/university_data.csv"
         university_df = pd.read_csv(university_csv_path, delimiter=';')
         for index, row in university_df.iterrows():
