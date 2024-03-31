@@ -54,7 +54,10 @@ class Call(models.Model):
         choices=StudyLevel.choices
     )
     year = models.SmallIntegerField()
-    semester = models.CharField(choices=Semester.choices)
+    semester = models.CharField(
+        max_length=10,
+        choices=Semester.choices
+    )
     description = models.TextField()
     available_slots = models.SmallIntegerField()
     note = models.TextField(blank=True, null=True)
