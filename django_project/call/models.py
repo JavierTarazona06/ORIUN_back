@@ -47,9 +47,10 @@ class University(models.Model):
 
 
 class Call(models.Model):
-    # TODO: add the other enums for Call
+
     class Format(models.TextChoices):
         PRESENCIAL = "P", _("Presencial")
+        VIRTUAL = 'V', _('Virtual')
 
     class StudyLevel(models.TextChoices):
         PREGRADO = 'PRE', _('Pregrado')
