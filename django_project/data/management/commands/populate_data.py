@@ -1,10 +1,12 @@
 from django.core.management.base import BaseCommand
+from person.models import Person
 from call.models import Call, University
+from student.models import ContactPerson, Student
 import pandas as pd
 
 
 class Command(BaseCommand):
-    help = 'Populate University and Call models from CSV'
+    help = 'Populate University,Call models from CSV'
 
     def add_arguments(self, parser):
         parser.add_argument('--path', type=str, default='/Users/knsmolina.28/Desktop/data',
@@ -31,6 +33,7 @@ class Command(BaseCommand):
             )
             universities[university.id] = university
         print(universities)
+
 #Populating data to call table
         call_csv_path = f"{csv_folder}/call_data.csv"
         call_df = pd.read_csv(call_csv_path, delimiter=';')
