@@ -27,4 +27,4 @@ class Application(models.Model):
     training_session = ArrayField(models.DateTimeField())
 
     def __str__(self):
-        return f"Application for {self.student_id.id} at {self.call_id}."
+        return f"Application: student {self.student_id.id} at call {self.call_id}."

@@ -85,4 +85,4 @@ class Call(models.Model):
     note = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f'University ID: {self.university_id.name}, Semester: {self.semester}'
+        return f'Call: university {self.university_id.name} during semester {self.semester} on year {self.year}'
