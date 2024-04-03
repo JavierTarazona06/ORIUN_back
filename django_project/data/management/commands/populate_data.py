@@ -12,29 +12,31 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         csv_folder = options['path']
-        # Fill the model University from  university_data.csv
+
+#Populate data  to university table
         university_csv_path = f"{csv_folder}/university_data.csv"
         university_df = pd.read_csv(university_csv_path, delimiter=';')
+        universities = {}
         for index, row in university_df.iterrows():
-            region = row['region']
-            language = row['language'].split(',') if row['language'] else []
+            language = [lang.strip() for lang in row['language'].strip('[]').split(',')] if row['language'] else []
             university = University.objects.create(
                 name=row['name'],
                 webpage=row['webpage'],
-                region=region,
+                region=row['region'],
                 country=row['country'],
                 city=row['city'],
                 language=language,
                 academic_offer=row['academic_offer'],
                 exchange_info=row['exchange_info']
             )
-
-        # Fill the model Call from  call_data.csv
+            universities[university.id] = university
+        print(universities)
+#Populating data to call table
         call_csv_path = f"{csv_folder}/call_data.csv"
         call_df = pd.read_csv(call_csv_path, delimiter=';')
         for index, row in call_df.iterrows():
-            university_name = row['university_name']
-            university = University.objects.get(name=university_name)
+            university_id = row['university_id']
+            university = universities[university_id]
             call = Call.objects.create(
                 university_id=university,
                 active=row['active'],

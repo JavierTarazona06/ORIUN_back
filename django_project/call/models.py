@@ -29,16 +29,15 @@ class University(models.Model):
         RUSSIAN = "ru", _("Ruso")
         HINDI = "hi", _("Hindi")
 
-
-    name = models.TextField()
+    id = models.BigAutoField(primary_key = True, auto_created = True)
+    name = models.TextField(max_length=255)
     webpage = models.TextField()
     region = models.CharField(
-        max_length=2,
         choices=Region.choices
     )
     country = models.TextField()
     city = models.TextField()
-    language = ArrayField(models.CharField(max_length=2, choices=Language.choices))
+    language = ArrayField(models.CharField(max_length=3, choices=Language.choices))
     academic_offer = models.TextField()
     exchange_info = models.TextField()
 
