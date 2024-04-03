@@ -1,8 +1,7 @@
-# my_api/urls.py
-
 from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('view/', views.offer_list, name='student-view'),
+    path('view/', views.OfferList.as_view(), name='student-view'),
+    path('offers/<int:pk>/', views.OfferDetails.as_view(), name='offer_detail'),
 ]

@@ -43,7 +43,6 @@ class Student(Person):
         choices=Major.choices
     )
     calls_done = models.ManyToManyField('call.Call')
-    # TODO: check how to add this: current_applications
     is_enrolled = models.BooleanField()
     date_banned_mobility = models.DateField(default='2000-01-01')
     is_banned_behave_un = models.BooleanField()

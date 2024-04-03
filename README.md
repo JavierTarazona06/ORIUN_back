@@ -34,3 +34,15 @@ Esta plataforma web centralizada ha sido diseñada para la gestión eficiente de
 - **PAES/PEAMA de Presentados y Aceptados:** Analiza la participación y aceptación de estudiantes según si provienen del Programa de Acompañamiento y Acceso Efectivo a la Educación Superior (PAES) o del Programa Especial de Admisión y Movilidad Académica (PEAMA).
 
 Para cualquier consulta o solicitud de soporte, no dudes en contactar al equipo de desarrollo.
+
+# TODO:
+
+- **Check all fields in the models:** 
+  - Make sure which values can be null.
+  - Some values should be float instead of int.
+  - Improve fields if you feel the need.
+
+- Add `__str__` to models
+- Documentation: for each models and their fields
+- CSV with the initial information for the tables
+- Add enums
