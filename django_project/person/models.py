@@ -54,7 +54,7 @@ class Person(models.Model):
     birth_place = models.TextField()
     country = models.CharField(max_length=100)
     city = models.CharField(max_length=100)
-    phone = models.TextField()
+    phone = models.CharField(max_length=20)
     address = models.CharField(max_length=100)
     ethnicity = models.CharField(
         max_length=2,

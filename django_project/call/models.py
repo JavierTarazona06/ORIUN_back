@@ -11,17 +11,17 @@ class University(models.Model):
     class Language(models.TextChoices):
         ENGLISH = "en", _("Inglés")
 
-    name = models.TextField()
-    webpage = models.TextField()
+    name = models.CharField(max_length=50)
+    webpage = models.CharField(max_length=255)
     region = models.CharField(
         max_length=2,
         choices=Region.choices
     )
-    country = models.TextField()
-    city = models.TextField()
+    country = models.CharField(max_length=50)
+    city = models.CharField(max_length=50)
     language = ArrayField(models.CharField(max_length=2, choices=Language.choices))
-    academic_offer = models.TextField()
-    exchange_info = models.TextField()
+    academic_offer = models.CharField(max_length=255)
+    exchange_info = models.CharField(max_length=255)
 
     def __str__(self):
         return f'University: {self.name}'
@@ -43,8 +43,8 @@ class Call(models.Model):
     active = models.BooleanField()
     begin_date = models.DateField()
     deadline = models.DateField()
-    min_advance = models.SmallIntegerField()
-    min_papa = models.SmallIntegerField()
+    min_advance = models.FloatField()
+    min_papa = models.FloatField()
     format = models.CharField(
         max_length=1,
         choices=Format.choices
