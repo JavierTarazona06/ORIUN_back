@@ -8,7 +8,7 @@ class Person(models.Model):
 
     class TypeDocument(models.TextChoices):
         CEDULA_CIUDADANIA = 'CC', _('Cédula de ciudadanía')
-        CEDULA_EXTRANJERIA = 'CE', _('Cédula de extranjera')
+        CEDULA_EXTRANJERIA = 'CE', _('Cédula de extranjería')
         PASAPORTE = 'PA', _('Pasaporte')
 
     class Sex(models.TextChoices):

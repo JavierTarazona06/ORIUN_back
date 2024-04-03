@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'person.apps.PersonConfig',
     'student.apps.StudentConfig',
     'call.apps.CallConfig',
+    'data.apps.DataConfig',
     'application.apps.ApplicationConfig',
     "employee.apps.EmployeeConfig",
     "signin.apps.SignInConfig",
@@ -47,7 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
+    'django.contrib.staticfiles'
 ]
 
 MIDDLEWARE = [

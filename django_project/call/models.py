@@ -4,12 +4,31 @@ from django.utils.translation import gettext_lazy as _
 
 
 class University(models.Model):
-    # TODO: add the other enums for University
+
     class Region(models.TextChoices):
         NORTE_AMERICA = "NA", _("Norte América")
+        CENTRO_AMERICA = "CA", _("Centro América")
+        SUR_AMERICA = "SA", _("Sur América")
+        EUROPA = "EU", _("Europa")
+        ASIA = "AS", _("Asia")
+        AFRICA = "AF", _("África")
+        OCEANIA = "OC", _("Oceanía")
+        ANTARTIDA = "AN", _("Antártida")
 
     class Language(models.TextChoices):
         ENGLISH = "en", _("Inglés")
+        SPANISH = "es", _("Español")
+        FRENCH = "fr", _("Francés")
+        GERMAN = "de", _("Alemán")
+        ITALIAN = "it", _("Italiano")
+        PORTUGUESE = "pt", _("Portugués")
+        CHINESE = "zh", _("Chino")
+        JAPANESE = "ja", _("Japonés")
+        KOREAN = "ko", _("Coreano")
+        ARABIC = "ar", _("Árabe")
+        RUSSIAN = "ru", _("Ruso")
+        HINDI = "hi", _("Hindi")
+
 
     name = models.CharField(max_length=50)
     webpage = models.CharField(max_length=255)
@@ -28,12 +47,15 @@ class University(models.Model):
 
 
 class Call(models.Model):
-    # TODO: add the other enums for Call
+
     class Format(models.TextChoices):
         PRESENCIAL = "P", _("Presencial")
+        VIRTUAL = 'V', _('Virtual')
 
     class StudyLevel(models.TextChoices):
-        PREGRADO = "P", _("Pregrado")
+        PREGRADO = 'PRE', _('Pregrado')
+        POSGRADO = 'POS', _('Posgrado')
+        DOCTORADO = 'DOC', _('Doctorado')
 
     class Semester(models.IntegerChoices):
         FIRST = 1
@@ -50,11 +72,14 @@ class Call(models.Model):
         choices=Format.choices
     )
     study_level = models.CharField(
-        max_length=1,
+        max_length=10,
         choices=StudyLevel.choices
     )
     year = models.SmallIntegerField()
-    semester = models.CharField(choices=Semester.choices)
+    semester = models.CharField(
+        max_length=10,
+        choices=Semester.choices
+    )
     description = models.TextField()
     available_slots = models.SmallIntegerField()
     note = models.TextField(blank=True, null=True)
