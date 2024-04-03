@@ -164,3 +164,7 @@ test.py
 
 
 **/.DS_Store
+
+database/
+README.md
+.gitignore
