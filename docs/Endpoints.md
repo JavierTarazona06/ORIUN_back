@@ -56,7 +56,6 @@ recognize the current user.
 **Inputs:** Optional 
 | Parameter Name   | Type   | Description                                          |
 |------------------|--------|------------------------------------------------------|
-| `id`             | String | Unique identifier for the call.                      |
 | `country`        | String | Country where the call is offered.                   |
 | `language`       | String | Language requirement for the call.                   |
 | `name_university`| String | Name of the university offering the call.            |
@@ -82,8 +81,7 @@ recognize the current user.
 **Inputs:** Optional
 
 | Parameter Name   | Type   | Description                                          |
-|------------------|--------|------------------------------------------------------|
-| `id`             | String | Unique identifier for the call.                      |
+|------------------|--------|------------------------------------------------------| |
 | `country`        | String | Country where the call is offered.                   |
 | `language`       | String | Language requirement for the call.                   |
 | `name_university`| String | Name of the university offering the call.            |
@@ -100,36 +98,33 @@ recognize the current user.
 # 5.  Get details of open call
 <span style="color: red; font-weight: bold;"> STATUS: NOT FINISHED </span>
 
-**URL:** `/calls/open/<id>/`. 
+**URL:** `/calls/open/<id>/`.  The `id` is the identification of the selected call.
 
 **Method:** `GET`
 
 **Description:**  Used to view all the details of the selected open calls for proposals.
 
-**Inputs:**
-| Name                | Type   | Description                                              |
-|---------------------|--------|----------------------------------------------------------|
-| `id`                | String | Unique identifier for the call.                          |
+**Inputs:** None
 
 **Outputs:**
-| Field Name        | Type          | Description                                  |
-|-------------------|---------------|----------------------------------------------|
-|`university_name`  | Integer       | Name of the university offering the call.    |
-| `begin_date`      |  Date         | Start date of the call.                      |
-| `deadline`        | Date          | Deadline for application submission.         |
-| `min_advance`     | Integer       | Minimum advance required for application.    |
-| `min_papa`        | Integer       | Minimum Papa score required for application. |
-| `format`          | String        | Format of the call.(Virtual,Presencial)      |
-| `year`            | Integer       | Year of the call.                            |
-| `semester`        | Integer       | Semester of the call.                        |
-| `description`     | Text          | Description of the call. May be null.        |
-| `available_slots` | Integer       | Number of available slots for the call.      |
-| `note`            | Text          | Additional notes about the call.             |
+| Field Name        | Type          | Description                                           |
+|-------------------|---------------|-------------------------------------------------------|
+|`university_name`  | Integer       | Name of the university offering the call.             |
+| `begin_date`      |  Date         | Start date of the call.                               |
+| `deadline`        | Date          | Deadline for application submission.                  |
+| `min_advance`     | Integer       | Minimum advance required for application.             |
+| `min_papa`        | Integer       | Minimum Papa score required for application.          |
+| `format`          | String        | Format of the call.(virtual,presencial or mixed)      |
+| `year`            | Integer       | Year of the call.                                     |
+| `semester`        | Integer       | Semester of the call.                                 |
+| `description`     | Text          | Description of the call. May be null.                 |
+| `available_slots` | Integer       | Number of available slots for the call.               |
+| `note`            | Text          | Additional notes about the call.                      |
 
 # 6.  Get details of close call
 <span style="color: red; font-weight: bold;"> STATUS: NOT FINISHED </span>
 
-**URL:** `/calls/closed/<id>/`. 
+**URL:** `/calls/closed/<id>/`. The `id` is the identification of the selected call.
 
 **Method:** `GET`
 
@@ -141,19 +136,19 @@ recognize the current user.
 | `id`                | String | Unique identifier for the call.                          |
 
 **Outputs:**
-| Field Name            | Type          | Description                                 |
-|----------------------|---------------|----------------------------------------------|
-|`university_name`     | Integer       | Name of the university offering the call.    |
-| `begin_date`         |  Date         | Start date of the call.                      |
-| `deadline`           | Date          | Deadline for application submission.         |
-| `min_advance`        | Integer       | Minimum advance required for application.    |
-| `min_papa`           | Integer       | Minimum Papa score required for application. |
-| `format`             | String        | Format of the call (virtual or presencial).  |
-| `year`               | Integer       | Year of the call.                            |
-| `semester`           | Integer       | Semester of the call.                        |
-| `description`        | Text          | Description of the call.                     |
-| `available_slots`    | Integer       | Number of available slots for the call.      |
-| `note`               | Text          | Additional notes about the call.             |
-| `highest_PAPA_winner`| Decimal       | Highest PAPA score among winners of the call.|
-| `minium_PAPA_winner` | Decimal       | Minimum PAPA score among winners of the call.|
-| `selected`           | Integer       | Number of winners.                           |
+| Field Name            | Type          | Description                                      |
+|----------------------|---------------|---------------------------------------------------|
+|`university_name`     | Integer       | Name of the university offering the call.         |
+| `begin_date`         |  Date         | Start date of the call.                           |
+| `deadline`           | Date          | Deadline for application submission.              |
+| `min_advance`        | Integer       | Minimum advance required for application.         |
+| `min_papa`           | Integer       | Minimum Papa score required for application.      |
+| `format`             | String        | Format of the call(virtual,presencial or mixed).  |
+| `year`               | Integer       | Year of the call.                                 |
+| `semester`           | Integer       | Semester of the call.                             |
+| `description`        | Text          | Description of the call.                          |
+| `available_slots`    | Integer       | Number of available slots for the call.           |
+| `note`               | Text          | Additional notes about the call.                  |
+| `highest_PAPA_winner`| Decimal       | Highest PAPA score among winners of the call.     |
+| `minium_PAPA_winner` | Decimal       | Minimum PAPA score among winners of the call.     |
+| `selected`           | Integer       | Number of winners.                                |
