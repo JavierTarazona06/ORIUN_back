@@ -44,45 +44,108 @@ recognize the current user.
 | `access`    | String | new JWT token for authentication. |
 
 
-## 3. Endpoint calls
+## 3. Endpoint filter and display open calls
 <span style="color: red; font-weight: bold;"> STATUS: NOT FINISHED </span>
 
-**URL:** `calls/{type}/`. The `type` can be `inactive` or `active`, depending on whether the user wants
-to get inactive calls or active calls.
+**URL:** `/calls/open/`. 
 
 **Method:** `GET`
 
-**Description:** Used to get all the inactive or active calls.
-
-**Inputs:** These inputs are not mandatory, since they are only filters. That means that you can send
-no filter, one filter, some of them or all of them. **COMPLETE**
-
-| Name      | Type   | Description                               |
-|-----------|--------|-------------------------------------------|
-| `country` | String | Country where the call will be developed. |
-
-**Outputs:**
-
-| Name         | Type   | Description                               |
-|--------------|--------|-------------------------------------------|
-| `university` | String | Name of the university offering the call. |
-
-
-## 4. Endpoint specific call
-<span style="color: red; font-weight: bold;"> STATUS: NOT FINISHED </span>
-
-**URL:** `calls/{type}/{id}/`. The `type` can be `inactive` or `active`, depending on whether the user 
-wants to get inactive calls or active calls; and the `id` is the identification of the selected call.
-
-**Method:** `GET`
-
-**Description:** Used to info about a specific active or inactive call.
+**Description:**  Used to filter and display open calls based on several criteria, such as ID, region, country, language requirement, application deadline and university name.
 
 **Inputs:** None
 
 **Outputs:**
+| Name                | Type   | Description                                              |
+|---------------------|--------|----------------------------------------------------------|
+| `id`                | String | Unique identifier for the call.                          |
+| `name_university`   | String | Name of the university offering the call.                |
+| `region`            | String | Geographic region where the call is offered.             |
+| `country`           | String | Country where the call is offered.                       |
+| `language`          | String | Language requirement for the call.                       |
+| `deadline`          | Date   | Deadline for application submission for the call.        |
 
-| Name         | Type   | Description                               |
-|--------------|--------|-------------------------------------------|
-| `university` | String | Name of the university offering the call. |
+## 4. Endpoint filter and display closed calls
+<span style="color: red; font-weight: bold;"> STATUS: NOT FINISHED </span>
+
+**URL:** `/calls/closed/`. 
+
+**Method:** `GET`
+
+**Description:**  Used to filter and display close calls based on several criteria, such as ID, region, country, language requirement, application deadline, university name and average of selected participant.
+
+**Inputs:** None
+
+**Outputs:**
+| Field Name                        | Data Type    | Description                                                |
+|-----------------------------------|--------------|------------------------------------------------------------|
+| `id`                              | Integer      | Unique identifier for the call.                            |
+| `name_university`                 | String       | Name of the university offering the call.                  |
+| `region`                          | String       | Geographic region where the call is offered.               |
+| `country`                         | String       | Country where the call is offered.                         |
+| `language`                        | String       | Language requirement for the call.                         |
+| `deadline`                        | Date         | Deadline for application submission for the call.          |
+| `average_participants`            | Decimal      | Average number of selected participants (only for closed calls). |
+
+# 5.  Get details of open call
+<span style="color: red; font-weight: bold;"> STATUS: NOT FINISHED </span>
+
+**URL:** `/calls/open/<id>`. 
+
+**Method:** `GET`
+
+**Description:**  Used to view all the details of the selected open calls for proposals.
+
+**Inputs:**
+| Name                | Type   | Description                                              |
+|---------------------|--------|----------------------------------------------------------|
+| `id`                | String | Unique identifier for the call.                          |
+
+**Outputs:**
+| Field Name        | Type          | Description                                  |
+|-------------------|---------------|----------------------------------------------|
+|`university_name`  | Integer       | Name of the university offering the call.    |
+| `active`          | Boolean       | Indicates if the call is active or inactive. |
+| `begin_date`      |  Date         | Start date of the call.                      |
+| `deadline`        | Date          | Deadline for application submission.         |
+| `min_advance`     | Integer       | Minimum advance required for application.    |
+| `min_papa`        | Integer       | Minimum Papa score required for application. |
+| `format`          | String        | Format of the call.                          |
+| `study_level`     | String        | Level of study.                              |
+| `year`            | Integer       | Year of the call.                            |
+| `semester`        | Integer       | Semester of the call.                        |
+| `description`     | Text          | Description of the call.                     |
+| `available_slots` | Integer       | Number of available slots for the call.      |
+| `note`            | Text          | Additional notes about the call.             |
+
+# 6.  Get details of close call
+<span style="color: red; font-weight: bold;"> STATUS: NOT FINISHED </span>
+
+**URL:** `/calls/closed/<id>`. 
+
+**Method:** `GET`
+
+**Description:**  Used to view all the details of the selected closed calls for proposals.
+
+**Inputs:**
+| Name                | Type   | Description                                              |
+|---------------------|--------|----------------------------------------------------------|
+| `id`                | String | Unique identifier for the call.                          |
+
+**Outputs:**
+| Field Name        | Type          | Description                                  |
+|-------------------|---------------|----------------------------------------------|
+|`university_name`  | Integer       | Name of the university offering the call.    |
+| `active`          | Boolean       | Indicates if the call is active or inactive. |
+| `begin_date`      |  Date         | Start date of the call.                      |
+| `deadline`        | Date          | Deadline for application submission.         |
+| `min_advance`     | Integer       | Minimum advance required for application.    |
+| `min_papa`        | Integer       | Minimum Papa score required for application. |
+| `format`          | String        | Format of the call.                          |
+| `study_level`     | String        | Level of study.                              |
+| `year`            | Integer       | Year of the call.                            |
+| `semester`        | Integer       | Semester of the call.                        |
+| `description`     | Text          | Description of the call.                     |
+| `available_slots` | Integer       | Number of available slots for the call.      |
+| `note`            | Text          | Additional notes about the call.             |
 
