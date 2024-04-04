@@ -155,5 +155,5 @@ recognize the current user.
 | `available_slots`    | Integer       | Number of available slots for the call.      |
 | `note`               | Text          | Additional notes about the call.             |
 | `highest_PAPA_winner`| Decimal       | Highest PAPA score among winners of the call.|
-| `minium_PAPA_winner` | Decimal       | Minimum PAPA score required for winners.     |
-| `selected`           | Integer       | Additional notes about the selection process.|
+| `minium_PAPA_winner` | Decimal       | Minimum PAPA score among winners of the call.|
+| `selected`           | Integer       | Number of winners.                           |
