@@ -81,18 +81,18 @@ recognize the current user.
 **Inputs:** Optional
 
 | Parameter Name   | Type   | Description                                          |
-|------------------|--------|------------------------------------------------------| |
+|------------------|--------|------------------------------------------------------| 
 | `country`        | String | Country where the call is offered.                   |
 | `language`       | String | Language requirement for the call.                   |
 | `name_university`| String | Name of the university offering the call.            |
 
 **Outputs:**
-| Field Name                        | Data Type    | Description                                                |
-|-----------------------------------|--------------|------------------------------------------------------------|
-| `name_university`                 | String       | Name of the university offering the call.                  |
-| `country`                         | String       | Country where the call is offered.                         |
-| `language`                        | String       | Language requirement for the call.                         |
-| `deadline`                        | Date         | Deadline for application submission for the call.          |
+| Field Name                        | Data Type    | Description                                                      |
+|-----------------------------------|--------------|------------------------------------------------------------------|
+| `name_university`                 | String       | Name of the university offering the call.                        |
+| `country`                         | String       | Country where the call is offered.                               |
+| `language`                        | String       | Language requirement for the call.                               |
+| `deadline`                        | Date         | Deadline for application submission for the call.                |
 | `average_winning_participants`    | Decimal      | Average number of selected participants (only for closed calls). |
 
 # 5.  Get details of open call
@@ -130,10 +130,7 @@ recognize the current user.
 
 **Description:**  Used to view all the details of the selected closed calls for proposals.
 
-**Inputs:**
-| Name                | Type   | Description                                              |
-|---------------------|--------|----------------------------------------------------------|
-| `id`                | String | Unique identifier for the call.                          |
+**Inputs:** NONE 
 
 **Outputs:**
 | Field Name            | Type          | Description                                      |
