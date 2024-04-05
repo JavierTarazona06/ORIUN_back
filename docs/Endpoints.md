@@ -48,56 +48,54 @@ recognize the current user.
 <span style="color: red; font-weight: bold;"> STATUS: NOT FINISHED </span>
 
 **URL:** `/call/open/`. 
-
-**Usage:** `/call/open/?id=<call_id>&country=<country>&language=<language>&name_university=<university_name>`
     
 **Method:** `GET`
 
-**Description:**  Used to filter and display open calls based on several criteria, such as ID, region, country, language requirement, application deadline and university name. Retrieves a list of open calls based on the provided criteria.
+**Description:**  Used to filter and display open calls based on several criteria, such as  country, language requirement and university name. Retrieves a list of open calls based on the provided criteria.
 
-**Inputs:** All criteria are optional
-| Parameter Name   | Type   | Description                                          |
-|------------------|--------|------------------------------------------------------|
-| `country`        | String | Country where the call is offered.                   |
-| `language`       | String | Language requirement for the call.                   |
-| `name_university`| String | Name of the university offering the call.            |
+**Inputs:**  These inputs (parameters) are not mandatory, since they are only filters. That means that you can send no filter, one filter, some of them or all of them. 
+
+
+| Parameter        | Description                                      | Type      | Required | Example                                               |   
+|------------------|--------------------------------------------------|-----------|----------|-------------------------------------------------------|
+| `country`        | Country of the university                        | String    | No       | country=Colombia                                      |
+| `language`       | Language of the university                       | ArrayField| No       | language=es                                           |
+| `name_university`| Name of the university                           | String    | No       | name_university=Universidad%20de%20los%20Andes        |
 
 **Outputs:**
 
-| Name                | Type   | Description                                              |
-|---------------------|--------|----------------------------------------------------------|
-| `name_university`   | String | Name of the university offering the call.                |
-| `country`           | String | Country where the call is offered.                       |
-| `language`          | String | Language requirement for the call.                       |
-| `deadline`          | Date   | Deadline for application submission for the call.        |
+| Name                | Type       | Description                                                  |
+|---------------------|------------|--------------------------------------------------------------|
+| `name_university`   | String     | Name of the university offering the call.                    |
+| `country`           | String     | Country where the call is offered.                           |
+| `language`          | ArrayField | Language requirement for the call.                           |
+| `deadline`          | Date       | Deadline for application submission for the call.(YYYY-MM-DD)|
 
 ## 4. Endpoint filter and display closed calls
 <span style="color: red; font-weight: bold;"> STATUS: NOT FINISHED </span>
 
 **URL:** `/call/closed/`. 
 
-**Usage:** `/call/closed/?id=<call_id>&country=<country>&language=<language>&name_university=<university_name>`
-
 **Method:** `GET`
 
-**Description:**  Used to filter and display close calls based on several criteria, such as ID, region, country, language requirement, application deadline, university name and average of selected participant.
+**Description:**  Used to filter and display close calls based on several criteria, such as country, language requirement, and university name. Retrieves a list of closed calls based on the provided criteria.
 
-**Inputs:** Optional
+**Inputs:** These inputs(paramaters) are not mandatory, since they are only filters. That means that you can send no filter, one filter, some of them or all of them. 
 
-| Parameter Name   | Type   | Description                                          |
-|------------------|--------|------------------------------------------------------| 
-| `country`        | String | Country where the call is offered.                   |
-| `language`       | String | Language requirement for the call.                   |
-| `name_university`| String | Name of the university offering the call.            |
+| Parameter        | Description                                      | Type      | Required | Example                                               |   
+|------------------|--------------------------------------------------|-----------|----------|-------------------------------------------------------|
+| country          | Country of the university                        | String    | No       | country=Colombia                                      |
+| language         | Language of the university                       | ArrayField| No       | language=es                                           |
+| name_university  | Name of the university                           | String    | No       | name_university=Universidad%20de%20los%20Andes        |
 
 **Outputs:**
 | Field Name                        | Data Type    | Description                                                      |
 |-----------------------------------|--------------|------------------------------------------------------------------|
 | `name_university`                 | String       | Name of the university offering the call.                        |
 | `country`                         | String       | Country where the call is offered.                               |
-| `language`                        | String       | Language requirement for the call.                               |
-| `deadline`                        | Date         | Deadline for application submission for the call.                |
-| `average_winning_participants`    | Decimal      | Average number of selected participants (only for closed calls). |
+| `language`                        | ArrayField   | Language requirement for the call.                               |
+| `deadline`                        | Date         | Deadline for application submission for the call.(YYYY-MM-DD)    |
+| `PAPA_winning_participants`       | Decimal      | Average number of selected participants.                         |
 
 # 5.  Get details of open call
 <span style="color: red; font-weight: bold;"> STATUS: NOT FINISHED </span>
@@ -114,10 +112,10 @@ recognize the current user.
 | Field Name        | Type          | Description                                           |
 |-------------------|---------------|-------------------------------------------------------|
 |`university_name`  | Integer       | Name of the university offering the call.             |
-| `begin_date`      |  Date         | Start date of the call.                               |
-| `deadline`        | Date          | Deadline for application submission.                  |
-| `min_advance`     | Integer       | Minimum advance required for application.             |
-| `min_papa`        | Integer       | Minimum Papa score required for application.          |
+| `begin_date`      | Date          | Start date of the call.(YYYY-MM-DD)                   |
+| `deadline`        | Date          | Deadline for application submission.(YYYY-MM-DD)      |
+| `min_advance`     | Decimal       | Minimum advance required for application.             |
+| `min_papa`        | Decimal       | Minimum Papa score required for application.          |
 | `format`          | String        | Format of the call.(virtual,presencial or mixed)      |
 | `year`            | Integer       | Year of the call.                                     |
 | `semester`        | Integer       | Semester of the call.                                 |
@@ -140,8 +138,8 @@ recognize the current user.
 | Field Name            | Type          | Description                                      |
 |----------------------|---------------|---------------------------------------------------|
 |`university_name`     | Integer       | Name of the university offering the call.         |
-| `begin_date`         |  Date         | Start date of the call.                           |
-| `deadline`           | Date          | Deadline for application submission.              |
+| `begin_date`         |  Date         | Start date of the call. (YYYY-MM-DD)              |
+| `deadline`           | Date          | Deadline for application submission.(YYYY-MM-DD)  |
 | `min_advance`        | Integer       | Minimum advance required for application.         |
 | `min_papa`           | Integer       | Minimum Papa score required for application.      |
 | `format`             | String        | Format of the call(virtual,presencial or mixed).  |
