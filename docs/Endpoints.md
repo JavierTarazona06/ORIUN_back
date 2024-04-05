@@ -95,7 +95,7 @@ recognize the current user.
 | `country`                         | String       | Country where the call is offered.                               |
 | `language`                        | ArrayField   | Language requirement for the call.                               |
 | `deadline`                        | Date         | Deadline for application submission for the call.(YYYY-MM-DD)    |
-| `Avg_PAPA_winning_participants`   | Float        | Average number of selected participants.                         |
+| `minium_PAPA_winner`              | Float        | Minimum PAPA score among winners of the call.                    |
 
 # 5.  Get details of open call
 <span style="color: red; font-weight: bold;"> STATUS: NOT FINISHED </span>
