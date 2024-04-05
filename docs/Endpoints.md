@@ -59,14 +59,14 @@ recognize the current user.
 | Parameter        | Description                                      | Type      | Required | Example                                               |   
 |------------------|--------------------------------------------------|-----------|----------|-------------------------------------------------------|
 | `country`        | Country of the university                        | String    | No       | country=Colombia                                      |
-| `language`       | Language of the university                       | ArrayField| No       | language=es                                           |
-| `name_university`| Name of the university                           | String    | No       | name_university=Universidad%20de%20los%20Andes        |
+| `language`       | Language requirement for the call                | ArrayField| No       | language=es                                           |
+| `university_name`| Name of the university                           | String    | No       | name_university=Universidad%20de%20los%20Andes        |
 
 **Outputs:**
 
 | Name                | Type       | Description                                                  |
 |---------------------|------------|--------------------------------------------------------------|
-| `name_university`   | String     | Name of the university offering the call.                    |
+| `university_name`   | String     | Name of the university offering the call.                    |
 | `country`           | String     | Country where the call is offered.                           |
 | `language`          | ArrayField | Language requirement for the call.                           |
 | `deadline`          | Date       | Deadline for application submission for the call.(YYYY-MM-DD)|
@@ -82,20 +82,20 @@ recognize the current user.
 
 **Inputs:** These inputs(paramaters) are not mandatory, since they are only filters. That means that you can send no filter, one filter, some of them or all of them. 
 
-| Parameter        | Description                                      | Type      | Required | Example                                               |   
-|------------------|--------------------------------------------------|-----------|----------|-------------------------------------------------------|
-| country          | Country of the university                        | String    | No       | country=Colombia                                      |
-| language         | Language of the university                       | ArrayField| No       | language=es                                           |
-| name_university  | Name of the university                           | String    | No       | name_university=Universidad%20de%20los%20Andes        |
+| Parameter         | Description                                      | Type      | Required | Example                                               |   
+|-------------------|--------------------------------------------------|-----------|----------|-------------------------------------------------------|
+| `country`         | Country of the university                        | String    | No       | country=Colombia                                      |
+| `language `       | Language requirement for the call                | ArrayField| No       | language=es                                           |
+| `university_name` | Name of the university                           | String    | No       | name_university=Universidad%20de%20los%20Andes        |
 
 **Outputs:**
 | Field Name                        | Data Type    | Description                                                      |
 |-----------------------------------|--------------|------------------------------------------------------------------|
-| `name_university`                 | String       | Name of the university offering the call.                        |
+| `university_name`                 | String       | Name of the university offering the call.                        |
 | `country`                         | String       | Country where the call is offered.                               |
 | `language`                        | ArrayField   | Language requirement for the call.                               |
 | `deadline`                        | Date         | Deadline for application submission for the call.(YYYY-MM-DD)    |
-| `PAPA_winning_participants`       | Decimal      | Average number of selected participants.                         |
+| `Avg_PAPA_winning_participants`   | Float        | Average number of selected participants.                         |
 
 # 5.  Get details of open call
 <span style="color: red; font-weight: bold;"> STATUS: NOT FINISHED </span>
@@ -104,24 +104,24 @@ recognize the current user.
 
 **Method:** `GET`
 
-**Description:**  Used to view all the details of the selected open calls for proposals.
+**Description:**  Used to view all details of the specific open call. 
 
 **Inputs:** None
 
 **Outputs:**
 | Field Name        | Type          | Description                                           |
 |-------------------|---------------|-------------------------------------------------------|
-|`university_name`  | Integer       | Name of the university offering the call.             |
+|`university_name`  | String        | Name of the university offering the call.             |
 | `begin_date`      | Date          | Start date of the call.(YYYY-MM-DD)                   |
 | `deadline`        | Date          | Deadline for application submission.(YYYY-MM-DD)      |
-| `min_advance`     | Decimal       | Minimum advance required for application.             |
-| `min_papa`        | Decimal       | Minimum Papa score required for application.          |
+| `min_advance`     | Float         | Minimum advance required for application.             |
+| `min_papa`        | Float         | Minimum PAPA score required for application.          |
 | `format`          | String        | Format of the call.(virtual,presencial or mixed)      |
 | `year`            | Integer       | Year of the call.                                     |
-| `semester`        | Integer       | Semester of the call.                                 |
+| `semester`        | Integer       | Semester of the call.(1,2)                            |
 | `description`     | Text          | Description of the call. May be null.                 |
 | `available_slots` | Integer       | Number of available slots for the call.               |
-| `note`            | Text          | Additional notes about the call.                      |
+| `note`            | Text          | Additional notes about the call.May be null           |
 
 # 6.  Get details of close call
 <span style="color: red; font-weight: bold;"> STATUS: NOT FINISHED </span>
@@ -130,24 +130,24 @@ recognize the current user.
 
 **Method:** `GET`
 
-**Description:**  Used to view all the details of the selected closed calls for proposals.
+**Description:** Used to view all details of the specific close call. 
 
 **Inputs:** NONE 
 
 **Outputs:**
 | Field Name            | Type          | Description                                      |
 |----------------------|---------------|---------------------------------------------------|
-|`university_name`     | Integer       | Name of the university offering the call.         |
-| `begin_date`         |  Date         | Start date of the call. (YYYY-MM-DD)              |
+|`university_name`     | String        | Name of the university offering the call.         |
+| `begin_date`         | Date          | Start date of the call. (YYYY-MM-DD)              |
 | `deadline`           | Date          | Deadline for application submission.(YYYY-MM-DD)  |
-| `min_advance`        | Integer       | Minimum advance required for application.         |
-| `min_papa`           | Integer       | Minimum Papa score required for application.      |
+| `min_advance`        | Float         | Minimum advance required for application.         |
+| `min_papa`           | Float         | Minimum PAPA score required for application.      |
 | `format`             | String        | Format of the call(virtual,presencial or mixed).  |
 | `year`               | Integer       | Year of the call.                                 |
-| `semester`           | Integer       | Semester of the call.                             |
+| `semester`           | Integer       | Semester of the call.1,2)                         |
 | `description`        | Text          | Description of the call.                          |
 | `available_slots`    | Integer       | Number of available slots for the call.           |
 | `note`               | Text          | Additional notes about the call.                  |
-| `highest_PAPA_winner`| Decimal       | Highest PAPA score among winners of the call.     |
-| `minium_PAPA_winner` | Decimal       | Minimum PAPA score among winners of the call.     |
+| `highest_PAPA_winner`| Float         | Highest PAPA score among winners of the call.     |
+| `minium_PAPA_winner` | Float         | Minimum PAPA score among winners of the call.     |
 | `selected`           | Integer       | Number of winners.                                |
