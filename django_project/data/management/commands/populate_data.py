@@ -53,5 +53,8 @@ class Command(BaseCommand):
                 semester=row['semester'],
                 description=row['description'],
                 available_slots=row['available_slots'],
-                note=row['note']
+                note=row['note'],
+                highest_papa_winner = row['highest_papa_winner'],
+                minimum_papa_winner=row['minimum_papa_winner'],
+                selected = row['selected']
             )
