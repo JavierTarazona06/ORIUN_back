@@ -47,13 +47,15 @@ recognize the current user.
 ## 3. Endpoint filter and display open calls
 <span style="color: red; font-weight: bold;"> STATUS: NOT FINISHED </span>
 
-**URL:** `/calls/open/`. 
+**URL:** `/call/open/`. 
 
+**Usage:** `/call/open/?id=<call_id>&country=<country>&language=<language>&name_university=<university_name>`
+    
 **Method:** `GET`
 
-**Description:**  Used to filter and display open calls based on several criteria, such as ID, region, country, language requirement, application deadline and university name.
+**Description:**  Used to filter and display open calls based on several criteria, such as ID, region, country, language requirement, application deadline and university name. Retrieves a list of open calls based on the provided criteria.
 
-**Inputs:** Optional 
+**Inputs:** All criteria are optional
 | Parameter Name   | Type   | Description                                          |
 |------------------|--------|------------------------------------------------------|
 | `country`        | String | Country where the call is offered.                   |
@@ -72,7 +74,9 @@ recognize the current user.
 ## 4. Endpoint filter and display closed calls
 <span style="color: red; font-weight: bold;"> STATUS: NOT FINISHED </span>
 
-**URL:** `/calls/closed/`. 
+**URL:** `/call/closed/`. 
+
+**Usage:** `/call/closed/?id=<call_id>&country=<country>&language=<language>&name_university=<university_name>`
 
 **Method:** `GET`
 
@@ -98,7 +102,7 @@ recognize the current user.
 # 5.  Get details of open call
 <span style="color: red; font-weight: bold;"> STATUS: NOT FINISHED </span>
 
-**URL:** `/calls/open/<id>/`.  The `id` is the identification of the selected call.
+**URL:** `/call/open/<id>/`.  The `id` is the identification of the selected call.
 
 **Method:** `GET`
 
@@ -124,7 +128,7 @@ recognize the current user.
 # 6.  Get details of close call
 <span style="color: red; font-weight: bold;"> STATUS: NOT FINISHED </span>
 
-**URL:** `/calls/closed/<id>/`. The `id` is the identification of the selected call.
+**URL:** `/call/closed/<id>/`. The `id` is the identification of the selected call.
 
 **Method:** `GET`
 
