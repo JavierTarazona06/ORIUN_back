@@ -71,6 +71,8 @@ recognize the current user.
 | `language`          | ArrayField | Language requirement for the call.                           |
 | `deadline`          | Date       | Deadline for application submission for the call.(YYYY-MM-DD)|
 
+
+
 ## 4. Endpoint filter and display closed calls
 <span style="color: red; font-weight: bold;"> STATUS: NOT FINISHED </span>
 
