@@ -13,6 +13,7 @@ def open_calls(request):
         university_name = request.GET.get('name_university')
 
 
+
         if university_name:
             university_name = university_name.lower()
 
@@ -26,8 +27,9 @@ def open_calls(request):
         if language:
             open_calls = open_calls.filter(university_id__language__contains=[language])
         if university_name:
-
             open_calls = open_calls.filter(university_id__name__icontains=university_name)
+
+
 
         # Serialize the filtered calls using the serializer
         serializer = CallSerializer(open_calls, many=True)
@@ -44,7 +46,8 @@ def closed_calls(request):
         country = request.GET.get('country')
         language = request.GET.getlist('language')
         name_university = request.GET.get('name_university')
-        # Filter calls based on provided criteria (CLOSE CALLS)
+        min_papa_winner = request.GET.get('minimum_papa_winner')
+        # Filter calls based on provided criteria (CLOSED CALLS)
         closed_calls = Call.objects.filter(active=False)
 
         if country:
@@ -55,6 +58,10 @@ def closed_calls(request):
 
         if name_university:
             closed_calls = closed_calls.filter(university_id__name__icontains=name_university)
+
+        if min_papa_winner:
+            closed_calls = closed_calls.filter(minimum_papa_winner__gte=float(min_papa_winner))
+
 
         # Serialize the data
         serializer = CallSerializer(closed_calls, many=True)
