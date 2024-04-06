@@ -32,6 +32,14 @@ class Person(models.Model):
         TUMACO = 'T', _('Tumaco')
         LA_PAZ = 'LP', _('La Paz')
 
+    class TypeUser(models.TextChoices):
+        ESTUDIANTE = 'E', _('Estudiante')
+        TRABAJADOR = 'T', _('Trabajador')
+
+    type_user = models.CharField(
+        max_length=2,
+        choices=TypeUser.choices,
+    )
     type_document = models.CharField(
         max_length=2,
         choices=TypeDocument.choices
@@ -46,8 +54,7 @@ class Person(models.Model):
     birth_place = models.TextField()
     country = models.CharField(max_length=100)
     city = models.CharField(max_length=100)
-    phone = models.TextField()
-    email = models.EmailField(max_length=100)
+    phone = models.CharField(max_length=20)
     address = models.CharField(max_length=100)
     ethnicity = models.CharField(
         max_length=2,

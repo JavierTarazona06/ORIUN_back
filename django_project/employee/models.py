@@ -9,3 +9,6 @@ class Employee(Person):
         DRE = 'DRE', _('Dirección de Relaciones Internacionales')
 
     dependency = models.CharField(max_length=3, choices=Dependence.choices)
+
+    def __str__(self):
+        return f"Employee: {self.name} with ID {self.id}."

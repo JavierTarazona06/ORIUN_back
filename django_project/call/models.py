@@ -29,17 +29,21 @@ class University(models.Model):
         RUSSIAN = "ru", _("Ruso")
         HINDI = "hi", _("Hindi")
 
+
     id = models.BigAutoField(primary_key = True, auto_created = True)
-    name = models.TextField(max_length=255)
-    webpage = models.TextField()
+    name = models.CharField(max_length=255)
+    webpage = models.CharField(max_length=255)
+
     region = models.CharField(
         choices=Region.choices
     )
-    country = models.TextField()
-    city = models.TextField()
-    language = ArrayField(models.CharField(max_length=3, choices=Language.choices))
-    academic_offer = models.TextField()
-    exchange_info = models.TextField()
+
+    country = models.CharField(max_length=50)
+    city = models.CharField(max_length=50)
+    language = ArrayField(models.CharField(max_length=2, choices=Language.choices))
+    academic_offer = models.CharField(max_length=255)
+    exchange_info = models.CharField(max_length=255)
+
 
     def __str__(self):
         return f'University: {self.name}'
@@ -64,8 +68,8 @@ class Call(models.Model):
     active = models.BooleanField()
     begin_date = models.DateField()
     deadline = models.DateField()
-    min_advance = models.SmallIntegerField()
-    min_papa = models.SmallIntegerField()
+    min_advance = models.FloatField()
+    min_papa = models.FloatField()
     format = models.CharField(
         max_length=1,
         choices=Format.choices
@@ -89,4 +93,4 @@ class Call(models.Model):
     selected = models.IntegerField(default=0)
 
     def __str__(self):
-        return f'University ID: {self.university_id}'
+        return f'Call: university {self.university_id.name} during semester {self.semester} on year {self.year}'
