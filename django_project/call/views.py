@@ -1,8 +1,7 @@
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 from .models import Call, University
-from .serializers import CallSerializer
-
+from .serializers import CallSerializerOpen, CallSerializerClosed
 
 @require_GET
 def open_calls(request):
@@ -11,8 +10,6 @@ def open_calls(request):
         country = request.GET.get('country')
         language = request.GET.get('language')
         university_name = request.GET.get('name_university')
-
-
 
         if university_name:
             university_name = university_name.lower()
@@ -28,12 +25,8 @@ def open_calls(request):
             open_calls = open_calls.filter(university_id__language__contains=[language])
         if university_name:
             open_calls = open_calls.filter(university_id__name__icontains=university_name)
-
-
-
         # Serialize the filtered calls using the serializer
-        serializer = CallSerializer(open_calls, many=True)
-
+        serializer = CallSerializerOpen(open_calls, many=True)
         # Return JSON response
         return JsonResponse(serializer.data, safe=False)
 
@@ -54,7 +47,7 @@ def closed_calls(request):
             closed_calls = closed_calls.filter(university_id__country=country)
 
         if language:
-            closed_calls = closed_calls.filter(university_id__language__overlap=language)
+            closed_calls = closed_calls.filter(university_id__language__overlap=[language])
 
         if name_university:
             closed_calls = closed_calls.filter(university_id__name__icontains=name_university)
@@ -62,12 +55,11 @@ def closed_calls(request):
         if min_papa_winner:
             closed_calls = closed_calls.filter(minimum_papa_winner__gte=float(min_papa_winner))
 
-
         # Serialize the data
-        serializer = CallSerializer(closed_calls, many=True)
+        serializer_closed = CallSerializerClosed(closed_calls, many=True)
 
         # Return JSON response
-        return JsonResponse(serializer.data, safe=False)
+        return JsonResponse(serializer_closed.data, safe=False)
 
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
