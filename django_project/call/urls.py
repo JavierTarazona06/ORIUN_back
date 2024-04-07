@@ -1,9 +1,9 @@
 from django.urls import path
-from .views import open_calls,closed_calls
+from .views import OpenCalls,ClosedCalls
 
 
 urlpatterns = [
-    path('open/', open_calls, name='open_calls'),
-    path('closed/', closed_calls, name='closed_calls'),
+    path('open/', OpenCalls.as_view(), name='open_calls'),
+    path('closed/', ClosedCalls.as_view(), name='closed_calls'),
 
 ]
