@@ -46,7 +46,7 @@ class OpenCallsStudent(APIView):
             if country:
                 open_calls = open_calls.filter(university_id__country=country)
             if language:
-                open_calls = open_calls.filter(university_id__language__contains=[language])
+                open_calls = open_calls.filter(language=language)
             if university_name:
                 open_calls = open_calls.filter(university_id__name__icontains=university_name)
 
@@ -87,7 +87,7 @@ class ClosedCallsStudent(APIView):
                 closed_calls = closed_calls.filter(university_id__country=country)
 
             if language:
-                closed_calls = closed_calls.filter(university_id__language__overlap=[language])
+                closed_calls = closed_calls.filter(language=language)
 
             if name_university:
                 closed_calls = closed_calls.filter(university_id__name__icontains=name_university)
@@ -216,7 +216,7 @@ def CallsFilterSearch(request):
         if country:
             queryset = queryset.filter(university_id__country=country)
         if language:
-            queryset = queryset.filter(university_id__language=language)
+            queryset = queryset.filter(language=language)
         if university_name:
             queryset = queryset.filter(university_id__name__icontains=university_name)
     

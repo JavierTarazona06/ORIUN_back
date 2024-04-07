@@ -21,9 +21,6 @@ class University(models.Model):
     country = models.CharField(max_length=50)
     city = models.CharField(max_length=50)
 
-    language_choices = [(choice['value'], _(choice['display'])) for choice in Constants.LANGUAGE_CHOICES]
-    language = models.CharField(max_length=2, choices=language_choices)
-
     academic_offer = models.CharField(max_length=255)
     exchange_info = models.CharField(max_length=255)
 
@@ -52,6 +49,9 @@ class Call(models.Model):
 
     semester_choices = [(choice['value'], _(choice['display'])) for choice in Constants.SEMESTER_CHOICES]
     semester = models.CharField(max_length=10, choices=semester_choices)
+
+    language_choices = [(choice['value'], _(choice['display'])) for choice in Constants.LANGUAGE_CHOICES]
+    language = models.CharField(max_length=2, choices=language_choices)
 
     description = models.TextField()
     available_slots = models.SmallIntegerField()

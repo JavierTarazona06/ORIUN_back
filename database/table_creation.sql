@@ -96,6 +96,7 @@ CREATE TABLE IF NOT EXISTS public.call
     study_level study_level_en[] NOT NULL,
     year smallint NOT NULL,
     semester semester_en NOT NULL,
+    language language_en NOT NULL,
     description character varying NOT NULL,
     available_slots smallint NOT NULL,
     note text,
@@ -152,7 +153,6 @@ CREATE TABLE IF NOT EXISTS public.university
     region region_en NOT NULL,
     country text NOT NULL,
     city text NOT NULL,
-    language language_en NOT NULL,
     academic_offer text NOT NULL,
     exchange_info text NOT NULL,
     PRIMARY KEY ("ID")
