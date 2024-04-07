@@ -9,10 +9,9 @@ from rest_framework import status, generics, permissions
 import json
 from django.utils import timezone
 from django.db.models import Q
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from .permissions import IsEmployee
-from .serializer import CallSerializer, UniversitySerializer
 
 
 class OpenCallsStudent(APIView):
@@ -177,6 +176,7 @@ class ClosedCalls(generics.ListCreateAPIView):
     
 
 @api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated, IsEmployee])
 def CallsFilterSearch(request):
     try:
         active = request.data.get('active')

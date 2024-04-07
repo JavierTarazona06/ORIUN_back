@@ -15,6 +15,7 @@ class CallSerializerClosed(CallSerializerOpen):
     class Meta(CallSerializerOpen.Meta):
         fields = CallSerializerOpen.Meta.fields + ('minimum_papa_winner',)
 
+
 class CallDetailsSerializerOpenStudent(serializers.ModelSerializer):
     university_name = serializers.CharField(source='university_id.name')
     country = serializers.CharField(source='university_id.country')
@@ -40,3 +41,15 @@ class CallDetailsSerializerClosedStudent(CallDetailsSerializerOpenStudent):
 
     class Meta(CallDetailsSerializerOpenStudent.Meta):
         fields = CallDetailsSerializerOpenStudent.Meta.fields + ('minimum_papa_winner', 'highest_papa_winner', 'selected')
+
+
+class CallSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Call
+        fields = '__all__'
+
+class UniversitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = University
+        fields = '__all__'
+
