@@ -1,10 +1,9 @@
 
 #from rest_framework import viewsets
 from django.http import JsonResponse
-from student.models import Student
 from django.views.decorators.http import require_GET
 from .models import Call, University
-from .serializers import CallSerializerOpen, CallSerializerClosed
+from .serializers import CallSerializerOpen, CallSerializerClosed, CallDetailsSerializerOpenStudent, CallDetailsSerializerClosedStudent
 from rest_framework.views import APIView
 from rest_framework import status, generics, permissions
 import json
@@ -75,6 +74,7 @@ class ClosedCallsStudent(APIView):
         try:
             if not request.user.is_authenticated:
                 return JsonResponse({'error': 'Unauthenticated user'}, status=status.HTTP_401_UNAUTHORIZED)
+            student = request.user.student
 
             country = request.GET.get('country')
             language = request.GET.getlist('language')
@@ -105,6 +105,47 @@ class ClosedCallsStudent(APIView):
 
             # Return JSON response
             return JsonResponse(serializer_closed.data, safe=False)
+
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+class OpenCallDetailStudent(APIView):
+    def get(self, request, id):
+        try:
+            if not request.user.is_authenticated:
+                return JsonResponse({'error': 'Unauthenticated user'}, status=status.HTTP_401_UNAUTHORIZED)
+            student = request.user.student
+
+            # obtain the specific open call by its ID
+            open_call = Call.objects.filter(id=id, active=True).first()
+            serializer = CallDetailsSerializerOpenStudent(open_call)
+
+            if open_call is None:
+                return JsonResponse({'message': 'No calls match the provided criteria'},
+                                    status=status.HTTP_404_NOT_FOUND)
+
+            return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+
+class ClosedCallDetailStudent(APIView):
+    def get(self, request, id):
+        try:
+            if not request.user.is_authenticated:
+                return JsonResponse({'error': 'Unauthenticated user'}, status=status.HTTP_401_UNAUTHORIZED)
+            student = request.user.student
+
+            # obtain the specific open call by its ID
+            close_call = Call.objects.filter(id=id, active=False).first()
+            serializer = CallDetailsSerializerClosedStudent(close_call)
+
+            if close_call is None:
+                return JsonResponse({'message': 'No calls match the provided criteria'},
+                                    status=status.HTTP_404_NOT_FOUND)
+
+            return JsonResponse(serializer.data, status=status.HTTP_200_OK)
 
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
