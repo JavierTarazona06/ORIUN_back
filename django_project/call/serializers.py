@@ -15,3 +15,12 @@ class CallSerializerClosed(CallSerializerOpen):
     class Meta(CallSerializerOpen.Meta):
         fields = CallSerializerOpen.Meta.fields + ('minimum_papa_winner',)
 
+class CallSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Call
+        fields = '__all__'
+
+class UniversitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = University
+        fields = '__all__'

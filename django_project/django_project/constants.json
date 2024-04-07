@@ -1,7 +1,7 @@
 {
     "sex_en": [
-        {"value": "m", "display": "Masculino"},
-        {"value": "f", "display": "Femenino"}
+        {"value": "M", "display": "Masculino"},
+        {"value": "F", "display": "Femenino"}
     ],
     "typ_doc_en":[
         {"value": "CC", "display": "Cédula de ciudadanía"},
@@ -9,10 +9,121 @@
         {"value": "PA", "display": "Pasaporte"}
     ],
     "ethnicity_en" : [
-        {"value": "I", "display": "Indígena"},
-        {"value": "A", "display": "Afrocolombiana"},
+        {"value": "IN", "display": "Indígena"},
+        {"value": "AF", "display": "Afrocolombiana"},
         {"value": "RG", "display": "Rom o gitana"},
-        {"value": "N", "display": "Ninguna"}
+        {"value": "NA", "display": "Ninguna"}
+    ],
+    "type_user_en": [
+        {"value": "E", "display": "Estudiante"},
+        {"value": "T", "display": "Trabajador"}
+    ],
+    "headquarter_en" : [
+        {"value": "BO", "display": "Bogotá"},
+        {"value": "AM", "display": "Amazonia"},
+        {"value": "CA", "display": "Caribe"},
+        {"value": "MA", "display": "Manizales"},
+        {"value": "ME", "display": "Medellín"},
+        {"value": "OR", "display": "Orinoquia"},
+        {"value": "PA", "display": "Palmira"},
+        {"value": "TU", "display": "Tumaco"},
+        {"value": "LP", "display": "La Paz"}
+    ],
+    "faculty_en": [
+        {"value": "Ciencias Agrarias", "display": "Facultad de Ciencias Agrarias"},
+        {"value": "Ciencias Económicas", "display": "Facultad de Ciencias Económicas"},
+        {"value": "Ciencias Humanas", "display": "Facultad de Ciencias Humanas"},
+        {"value": " Ciencias", "display": "Facultad de Ciencias"},
+        {"value": "Ciencias Agropecuarias", "display": "Facultad de Ciencias Agropecuarias"},
+        {"value": "Derecho, Ciencias Políticas y Sociales", "display": "Facultad de Derecho, Ciencias Políticas y Sociales"},
+        {"value": "Ingeniería", "display": "Facultad de Ingeniería"},
+        {"value": "Medicina", "display": "Facultad de Medicina"},
+        {"value": "Minas", "display": "Facultad de Minas"},
+        {"value": "Odontología", "display": "Facultad de Odontología"},
+        {"value": "Enfermería", "display": "Facultad de Enfermería"},
+        {"value": "Arquitectura", "display": "Facultad de Arquitectura"},
+        {"value": "Artes", "display": "Facultad de Artes"},
+        {"value": "Ciencias Administrativas", "display": "Facultad de Ciencias Administrativas"}
+    ],
+    "major_en": [
+        {"value": "ISCO", "display": "Ingeniería de Sistemas y Computación"},
+        {"value": "ISIN", "display": "Ingeniería de Sistemas e Informática"},
+        {"value": "ICIV", "display": "Ingeniería Civil"},
+        {"value": "IIND", "display": "Ingeniería Industrial"},
+        {"value": "IELO", "display": "Ingeniería Electrónica"},
+        {"value": "IELE", "display": "Ingeniería Eléctrica"},
+        {"value": "IMEC", "display": "Ingeniería Mecánica"},
+        {"value": "IMET", "display": "Ingeniería Mecatrónica"},
+        {"value": "IQUI", "display": "Ingeniería Química"},
+        {"value": "IAGR", "display": "Ingeniería Agrícola"},
+        {"value": "IAIN", "display": "Ingeniería Agroindustrial"},
+        {"value": "IAGN", "display": "Ingeniería Agronómica"},
+        {"value": "IGEO", "display": "Ingeniería Geológica"},
+        {"value": "IFOR", "display": "Ingeniería Forestal"},
+        {"value": "IMIN", "display": "Ingeniería de Minas y Metalurgia"},
+        {"value": "IPET", "display": "Ingeniería de Petróleos"},
+        {"value": "IADM", "display": "Ingeniería Administrativa"},
+        {"value": "ICON", "display": "Ingeniería de Control"},
+        {"value": "IAMB", "display": "Ingeniería Ambiental"},
+        {"value": "ECON", "display": "Economía"},
+        {"value": "ADME", "display": "Administración de Empresas"},
+        {"value": "CONT", "display": "Contaduría Pública"},
+        {"value": "DERE", "display": "Derecho"},
+        {"value": "MEDI", "display": "Medicina"},
+        {"value": "ODON", "display": "Odontología"},
+        {"value": "ENFE", "display": "Enfermería"},
+        {"value": "PSIC", "display": "Psicología"},
+        {"value": "ARQI", "display": "Arquitectura"},
+        {"value": "BIOL", "display": "Biología"},
+        {"value": "QUIM", "display": "Química"},
+        {"value": "FISI", "display": "Física"},
+        {"value": "MATE", "display": "Matemáticas"},
+        {"value": "ESTA", "display": "Estadística"},
+        {"value": "GEOL", "display": "Geología"},
+        {"value": "GEOG", "display": "Geografía"},
+        {"value": "SOCI", "display": "Sociología"},
+        {"value": "TRAB", "display": "Trabajo Social"},
+        {"value": "ANTR", "display": "Antropología"},
+        {"value": "HIST", "display": "Historia"},
+        {"value": "LING", "display": "Lingüística"},
+        {"value": "LITE", "display": "Literatura"},
+        {"value": "COSO", "display": "Comunicación Social"},
+        {"value": "FILO", "display": "Filosofía"},
+        {"value": "MUSI", "display": "Música"},
+        {"value": "MUIN", "display": "Música Instrumental"},
+        {"value": "DIND", "display": "Diseño Industrial"},
+        {"value": "BMAR", "display": "Biología Marina"},
+        {"value": "VETE", "display": "Medicina Veterinaria"},
+        {"value": "ZOOT", "display": "Zootecnia"},
+        {"value": "ARTE", "display": "Artes Plásticas"},
+        {"value": "CPOL", "display": "Ciencias Política"},
+        {"value": "CCOM", "display": "Ciencias de la Computación"},
+        {"value": "CITE", "display": "Cine y Televisión"},
+        {"value": "DGRA", "display": "Diseño Gráfico"},
+        {"value": "EFCL", "display": "Español y Filología Clásica"},
+        {"value": "FARM", "display": "Farmacia"},
+        {"value": "FIAL", "display": "Filología e Idiomas: Alemán"},
+        {"value": "FIFR", "display": "Filología e Idiomas: Francés"},
+        {"value": "FIIN", "display": "Filología e Idiomas: Inglés"},
+        {"value": "FISO", "display": "Fisioterapia"},
+        {"value": "NUDI", "display": "Nutrición y Dietética"},
+        {"value": "GECC", "display": "Gestión Cultural y Comunicativa"},
+        {"value": "ADSI", "display": "Administración de Sistemas Informáticos "},
+        {"value": "CONS", "display": "Construcción"}
+    ],
+    "dependence_en" : [
+        {"value": "ORI", "display": "Oficina de Relaciones Interinstitucionales"},
+        {"value": "DRE", "display": "Dirección de Relaciones Exteriores"}
+    ],
+    "admission_en": [
+        {"value": "REGUL", "display": "Regular"},
+        {"value": "PAES", "display": "PAES"},
+        {"value": "PEAMA", "display": "PEAMA"}
+    ],
+    "study_level_en" : [
+        {"value": "PRE", "display": "Pregrado"},
+        {"value": "POS", "display": "Postgrado"},
+        {"value": "DOC", "display": "Doctorado"}
     ],
     "regions_en" : [
         {"value": "NA", "display": "Norte América"},
@@ -21,5 +132,26 @@
         {"value": "OC", "display": "Oceanía"},
         {"value": "AN", "display": "Uniandes"},
         {"value": "SG", "display": "Convenio Sigueme/Nacional"}
+    ],
+    "format_en" : [
+        {"value": "P", "display": "Presencial"},
+        {"value": "V", "display": "Virtual"},
+        {"value": "M", "display": "Mixto"}
+    ],
+    "language_en": [
+        {"value": "en", "display": "Inglés"},
+        {"value": "es", "display": "Español"},
+        {"value": "fr", "display": "Francés"},
+        {"value": "pt", "display": "Portugués"},
+        {"value": "de", "display": "Alemán"},
+        {"value": "it", "display": "Italiano"},
+        {"value": "ko", "display": "Coreano"},
+        {"value": "ru", "display": "Ruso"},
+        {"value": "zh", "display": "Chino"},
+        {"value": "xx", "display": "Otro"}
+    ],
+    "semester_en": [
+        {"value": "1", "display": "1"},
+        {"value": "2", "display": "2"}
     ]
 }

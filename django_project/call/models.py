@@ -9,21 +9,6 @@ from django_project.constants import Constants
 
 class University(models.Model):
 
-    class Language(models.TextChoices):
-        ENGLISH = "en", _("Inglés")
-        SPANISH = "es", _("Español")
-        FRENCH = "fr", _("Francés")
-        GERMAN = "de", _("Alemán")
-        ITALIAN = "it", _("Italiano")
-        PORTUGUESE = "pt", _("Portugués")
-        CHINESE = "zh", _("Chino")
-        JAPANESE = "ja", _("Japonés")
-        KOREAN = "ko", _("Coreano")
-        ARABIC = "ar", _("Árabe")
-        RUSSIAN = "ru", _("Ruso")
-        HINDI = "hi", _("Hindi")
-
-
     id = models.BigAutoField(primary_key = True, auto_created = True)
     name = models.CharField(max_length=255)
     webpage = models.CharField(max_length=255)
@@ -35,7 +20,10 @@ class University(models.Model):
 
     country = models.CharField(max_length=50)
     city = models.CharField(max_length=50)
-    language = ArrayField(models.CharField(max_length=2, choices=Language.choices))
+
+    language_choices = [(choice['value'], _(choice['display'])) for choice in Constants.LANGUAGE_CHOICES]
+    language = models.CharField(max_length=2, choices=language_choices)
+
     academic_offer = models.CharField(max_length=255)
     exchange_info = models.CharField(max_length=255)
 
@@ -46,38 +34,25 @@ class University(models.Model):
 
 class Call(models.Model):
 
-    class Format(models.TextChoices):
-        PRESENCIAL = "P", _("Presencial")
-        VIRTUAL = 'V', _('Virtual')
-
-    class StudyLevel(models.TextChoices):
-        PREGRADO = 'PRE', _('Pregrado')
-        POSGRADO = 'POS', _('Posgrado')
-        DOCTORADO = 'DOC', _('Doctorado')
-
-    class Semester(models.IntegerChoices):
-        FIRST = 1
-        SECOND = 2
-
     university_id = models.ForeignKey('University', on_delete=models.CASCADE)
     active = models.BooleanField()
     begin_date = models.DateField()
     deadline = models.DateField()
     min_advance = models.FloatField()
     min_papa = models.FloatField()
-    format = models.CharField(
-        max_length=1,
-        choices=Format.choices
-    )
-    study_level = models.CharField(
-        max_length=10,
-        choices=StudyLevel.choices
-    )
+
+    format_choices = [(choice['value'], _(choice['display'])) for choice in Constants.FORMAT_CHOICES]
+    format = models.CharField(max_length=1, choices=format_choices)
+
+    study_level_choices = [(choice['value'], _(choice['display'])) for choice in Constants.STUDY_LEVEL_CHOICES]
+    study_level = models.CharField(max_length=10, choices=study_level_choices)
+
+
     year = models.SmallIntegerField()
-    semester = models.CharField(
-        max_length=10,
-        choices=Semester.choices
-    )
+
+    semester_choices = [(choice['value'], _(choice['display'])) for choice in Constants.SEMESTER_CHOICES]
+    semester = models.CharField(max_length=10, choices=semester_choices)
+
     description = models.TextField()
     available_slots = models.SmallIntegerField()
     note = models.TextField(blank=True, null=True)

@@ -10,40 +10,8 @@ from django_project.constants import Constants
 class Person(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
-    class TypeDocument(models.TextChoices):
-        CEDULA_CIUDADANIA = 'CC', _('Cédula de ciudadanía')
-        CEDULA_EXTRANJERIA = 'CE', _('Cédula de extranjería')
-        PASAPORTE = 'PA', _('Pasaporte')
-
-    class Sex(models.TextChoices):
-        MUJER = 'M', _('Mujer')
-        HOMBRE = 'H', _('Hombre')
-
-    class Ethnicity(models.TextChoices):
-        INDIGENA = 'I', _('Indígena')
-        AFROCOLOMBIANA = 'A', _('Afrocolombiana')
-        ROM_GITANA = 'RG', _('Rom o gitana')
-        NINGUNA = 'N', _('Ninguna')
-
-    class Headquarter(models.TextChoices):
-        AMAZONIA = 'A', _('Amazonia'),
-        CARIBE = 'C', _('Caribe'),
-        BOGOTA = 'B', _('Bogotá'),
-        MANIZALES = 'MA', _('Manizales'),
-        MEDELLIN = 'ME', _('Medellin'),
-        ORINOQUIA = 'O', _('Orinoquía'),
-        PALMIRA = 'P', _('Palmira'),
-        TUMACO = 'T', _('Tumaco')
-        LA_PAZ = 'LP', _('La Paz')
-
-    class TypeUser(models.TextChoices):
-        ESTUDIANTE = 'E', _('Estudiante')
-        TRABAJADOR = 'T', _('Trabajador')
-
-    type_user = models.CharField(
-        max_length=2,
-        choices=TypeUser.choices,
-    )
+    type_user_choices = [(choice['value'], _(choice['display'])) for choice in Constants.TYPE_USER_CHOICES]
+    type_user = models.CharField(max_length=2, choices=type_user_choices)
 
     type_document_choices = [(choice['value'], _(choice['display'])) for choice in Constants.TYPE_DOC_CHOICES]
     type_document = models.CharField(max_length=2, choices=type_document_choices)
@@ -51,25 +19,23 @@ class Person(models.Model):
     name = models.CharField(max_length=100)
     lastname = models.CharField(max_length=100)
     birth = models.DateField()
-    sex = models.CharField(
-        max_length=1,
-        choices=Sex.choices
-    )
+
+    sex_choices = [(choice['value'], _(choice['display'])) for choice in Constants.SEX_CHOICES]
+    sex = models.CharField(max_length=1, choices=sex_choices)
+
     birth_place = models.TextField()
     country = models.CharField(max_length=100)
     city = models.CharField(max_length=100)
     phone = models.CharField(max_length=20)
     address = models.CharField(max_length=100)
-    ethnicity = models.CharField(
-        max_length=2,
-        choices=Ethnicity.choices,
-        default=Ethnicity.NINGUNA
-    )
-    headquarter = models.CharField(
-        max_length=2,
-        choices=Headquarter.choices,
-        default=Headquarter.BOGOTA
-    )
+
+    ethnicity_choices = [(choice['value'], _(choice['display'])) for choice in Constants.ETHNICITY_CHOICES]
+    ethnicity = models.CharField(max_length=2, choices=ethnicity_choices, default=ethnicity_choices[-1])
+    # ethnicity_choices[-1] debe ser "Ninguna"
+
+    headquarter_choices = [(choice['value'], _(choice['display'])) for choice in Constants.HEADQUARTER_CHOICES]
+    headquarter = models.CharField(max_length=2, choices=headquarter_choices, default=headquarter_choices[0])
+    # ethnicity_choices[0] debe ser "Bogotá"
 
     class Meta:
         abstract = True

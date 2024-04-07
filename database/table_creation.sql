@@ -152,7 +152,7 @@ CREATE TABLE IF NOT EXISTS public.university
     region region_en NOT NULL,
     country text NOT NULL,
     city text NOT NULL,
-    language language_en[] NOT NULL,
+    language language_en NOT NULL,
     academic_offer text NOT NULL,
     exchange_info text NOT NULL,
     PRIMARY KEY ("ID")
