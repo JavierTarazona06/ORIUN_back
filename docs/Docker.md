@@ -31,10 +31,6 @@ This command builds a Docker image named oriun using the Dockerfile located in t
 
 Remeber to create the .env file with database credentials and environment variables for the project.
 
-Take into acocunt:
-DATABASE_HOST=host.docker.internal For Docker
-DATABASE_HOST=localhost Not for Docker
-
 Once the Docker image is built successfully, you can run a Docker container using the following command if
 you will use your local PostgresSQL server and you are in a Linux machine:
 
