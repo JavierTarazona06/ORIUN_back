@@ -3,7 +3,7 @@
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 from .models import Call, University
-from .serializers import CallSerializerOpen, CallSerializerClosed, CallDetailsSerializerOpenStudent, CallDetailsSerializerClosedStudent
+from .serializers import CallSerializerOpen, CallSerializerClosed, CallDetailsSerializerOpenStudent, CallDetailsSerializerClosedStudent, CallSerializer, UniversitySerializer
 from rest_framework.views import APIView
 from rest_framework import status, generics, permissions
 import json
