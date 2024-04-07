@@ -26,16 +26,26 @@ sudo docker build -t oriun .
 
 This command builds a Docker image named oriun using the Dockerfile located in the current directory.
 
+
 ## Step 3: Run Docker Container
 
+Remeber to create the .env file with database credentials and environment variables for the project.
+
 Once the Docker image is built successfully, you can run a Docker container using the following command if
-you will use your local PostgresSQL server:
+you will use your local PostgresSQL server and you are in a Linux machine:
 
 ```bash
 sudo docker run -d -p 8080:8080 --env-file=.env --name oriun-container --network=host oriun
 ```
 
-Otherwise, run this code:
+If you are in another OS and wants to use you local database, run the next code, and use 
+`DATABASE_HOST=host.docker.internal` instead `DATABASE_HOST=localhost`
+
+```bash
+sudo docker run -d -p 8080:8080 --env-file=.env --name oriun-container oriun
+```
+
+If you want to use the database in the server, use this code:
 
 ```bash
 sudo docker run -d -p 8080:8080 --env-file=.env --name oriun-container oriun
@@ -44,6 +54,12 @@ sudo docker run -d -p 8080:8080 --env-file=.env --name oriun-container oriun
 This command creates and starts a Docker container named oriun-container based on the oriun image. It maps port 8080 of
 the host machine to port 8080 of the container. Additionally, it reads environment variables from the .env file.
 
+
+## Bonus: Open Docker Terminal 
+
+```
+docker exec -it oriun-container /bin/bash
+```
 
 ## Conclusion
 

@@ -1,19 +1,13 @@
+import json
+import os
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.utils.translation import gettext_lazy as _
 
+from django_project.constants import Constants
+
 
 class University(models.Model):
-
-    class Region(models.TextChoices):
-        NORTE_AMERICA = "NA", _("Norte América")
-        CENTRO_AMERICA = "CA", _("Centro América")
-        SUR_AMERICA = "SA", _("Sur América")
-        EUROPA = "EU", _("Europa")
-        ASIA = "AS", _("Asia")
-        AFRICA = "AF", _("África")
-        OCEANIA = "OC", _("Oceanía")
-        ANTARTIDA = "AN", _("Antártida")
 
     class Language(models.TextChoices):
         ENGLISH = "en", _("Inglés")
@@ -34,9 +28,10 @@ class University(models.Model):
     name = models.CharField(max_length=255)
     webpage = models.CharField(max_length=255)
 
-    region = models.CharField(
-        choices=Region.choices
-    )
+
+    region_choices = [(choice['value'], _(choice['display'])) for choice in Constants.REGION_CHOICES]
+    region = models.CharField(max_length=2, choices=region_choices)
+    
 
     country = models.CharField(max_length=50)
     city = models.CharField(max_length=50)

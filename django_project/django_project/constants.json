@@ -1,0 +1,25 @@
+{
+    "sex_en": [
+        {"value": "m", "display": "Masculino"},
+        {"value": "f", "display": "Femenino"}
+    ],
+    "typ_doc_en":[
+        {"value": "CC", "display": "Cédula de ciudadanía"},
+        {"value": "CE", "display": "Cédula de extranjería"},
+        {"value": "PA", "display": "Pasaporte"}
+    ],
+    "ethnicity_en" : [
+        {"value": "I", "display": "Indígena"},
+        {"value": "A", "display": "Afrocolombiana"},
+        {"value": "RG", "display": "Rom o gitana"},
+        {"value": "N", "display": "Ninguna"}
+    ],
+    "regions_en" : [
+        {"value": "NA", "display": "Norte América"},
+        {"value": "LA", "display": "Latinoamérica"},
+        {"value": "EU", "display": "Europa"},
+        {"value": "OC", "display": "Oceanía"},
+        {"value": "AN", "display": "Uniandes"},
+        {"value": "SG", "display": "Convenio Sigueme/Nacional"}
+    ]
+}
