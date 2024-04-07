@@ -9,7 +9,7 @@ class Command(BaseCommand):
     help = 'Populate University,Call models from CSV'
 
     def add_arguments(self, parser):
-        parser.add_argument('--path', type=str, default='/Users/knsmolina.28/Desktop/data',
+        parser.add_argument('--path', type=str, default='data',
                             help='Path to the CSV folder')
 
     def handle(self, *args, **options):
