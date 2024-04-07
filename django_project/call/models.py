@@ -24,17 +24,21 @@ class University(models.Model):
         HINDI = "hi", _("Hindi")
 
 
-    name = models.CharField(max_length=50)
+    id = models.BigAutoField(primary_key = True, auto_created = True)
+    name = models.CharField(max_length=255)
     webpage = models.CharField(max_length=255)
+
 
     region_choices = [(choice['value'], _(choice['display'])) for choice in Constants.REGION_CHOICES]
     region = models.CharField(max_length=2, choices=region_choices)
     
+
     country = models.CharField(max_length=50)
     city = models.CharField(max_length=50)
     language = ArrayField(models.CharField(max_length=2, choices=Language.choices))
     academic_offer = models.CharField(max_length=255)
     exchange_info = models.CharField(max_length=255)
+
 
     def __str__(self):
         return f'University: {self.name}'
@@ -77,6 +81,11 @@ class Call(models.Model):
     description = models.TextField()
     available_slots = models.SmallIntegerField()
     note = models.TextField(blank=True, null=True)
+
+    # Add 3 new fields only for testing in case 3 (need to create a new model that includes this).
+    highest_papa_winner = models.FloatField(default=0.0)
+    minimum_papa_winner = models.FloatField(default=0.0)
+    selected = models.IntegerField(default=0)
 
     def __str__(self):
         return f'Call: university {self.university_id.name} during semester {self.semester} on year {self.year}'
