@@ -1,7 +1,11 @@
+import os
+import json
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 
+from django_project.constants import Constants
 
 class Person(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -40,10 +44,10 @@ class Person(models.Model):
         max_length=2,
         choices=TypeUser.choices,
     )
-    type_document = models.CharField(
-        max_length=2,
-        choices=TypeDocument.choices
-    )
+
+    type_document_choices = [(choice['value'], _(choice['display'])) for choice in Constants.TYPE_DOC_CHOICES]
+    type_document = models.CharField(max_length=2, choices=type_document_choices)
+
     name = models.CharField(max_length=100)
     lastname = models.CharField(max_length=100)
     birth = models.DateField()
