@@ -50,9 +50,9 @@ class OpenCallsStudent(APIView):
             if university_name:
                 open_calls = open_calls.filter(university_id__name__icontains=university_name)
 
-            #open_calls = open_calls.filter(min_papa__gte=student_papa)
-            #open_calls = open_calls.filter(study_level=student_study_level)
-            #open_calls = open_calls.filter(min_advance__gte=student_advance)
+            open_calls = open_calls.filter(min_papa__lte=student_papa)
+            open_calls = open_calls.filter(study_level=student_study_level)
+            open_calls = open_calls.filter(min_advance__lte=student_advance)
 
             # Serialize the filtered calls using the serializer
             serializer = CallSerializerOpen(open_calls, many=True)
