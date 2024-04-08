@@ -15,7 +15,7 @@ class University(models.Model):
 
 
     region_choices = [(choice['value'], _(choice['display'])) for choice in Constants.REGION_CHOICES]
-    region = models.CharField(max_length=2, choices=region_choices)
+    region = models.CharField(max_length=10, choices=region_choices)
     
 
     country = models.CharField(max_length=50)
@@ -39,7 +39,7 @@ class Call(models.Model):
     min_papa = models.FloatField()
 
     format_choices = [(choice['value'], _(choice['display'])) for choice in Constants.FORMAT_CHOICES]
-    format = models.CharField(max_length=1, choices=format_choices)
+    format = models.CharField(max_length=10, choices=format_choices)
 
     study_level_choices = [(choice['value'], _(choice['display'])) for choice in Constants.STUDY_LEVEL_CHOICES]
     study_level = models.CharField(max_length=10, choices=study_level_choices)
@@ -51,7 +51,7 @@ class Call(models.Model):
     semester = models.CharField(max_length=10, choices=semester_choices)
 
     language_choices = [(choice['value'], _(choice['display'])) for choice in Constants.LANGUAGE_CHOICES]
-    language = models.CharField(max_length=2, choices=language_choices)
+    language = models.CharField(max_length=10, choices=language_choices)
 
     description = models.TextField()
     available_slots = models.SmallIntegerField()
