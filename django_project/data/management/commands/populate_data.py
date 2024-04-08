@@ -34,7 +34,6 @@ class Command(BaseCommand):
                 region=row['region'],
                 country=row['country'],
                 city=row['city'],
-                language=language,
                 academic_offer=row['academic_offer'],
                 exchange_info=row['exchange_info']
             )
@@ -63,6 +62,7 @@ class Command(BaseCommand):
                     study_level=row['study_level'],
                     year=row['year'],
                     semester=row['semester'],
+                    language=row['language'],
                     description=row['description'],
                     available_slots=row['available_slots'],
                     note=row['note'],
