@@ -153,30 +153,40 @@ class ClosedCallDetailStudent(APIView):
 class CallView(generics.ListCreateAPIView):
     queryset = Call.objects.all()
     serializer_class = CallSerializer
-    permission_classes = [permissions.IsAuthenticated, IsEmployee]
+    permission_classes = [permissions.IsAuthenticated]
+
+'''class CallView(generics.ListAPIView):
+    queryset = Call.objects.all()
+    serializer_class = CallSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset'''
+
 
 class CallDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = Call.objects.all()
     serializer_class = CallSerializer
-    permission_classes = [permissions.IsAuthenticated, IsEmployee]
+    permission_classes = [permissions.IsAuthenticated]
 
 class OpenCalls(generics.ListCreateAPIView):
     serializer_class = CallSerializer
-    permission_classes = [permissions.IsAuthenticated, IsEmployee]
+    permission_classes = [permissions.IsAuthenticated]
     def get_queryset(self):
         current_date = timezone.now().date()
         return Call.objects.filter(deadline__gte=current_date, active=True)
 
 class ClosedCalls(generics.ListCreateAPIView):
     serializer_class = CallSerializer
-    permission_classes = [permissions.IsAuthenticated, IsEmployee]
+    permission_classes = [permissions.IsAuthenticated]
     def get_queryset(self):
         current_date = timezone.now().date()
         return Call.objects.filter(Q(deadline__lt=current_date) | Q(active=False))
     
 
 @api_view(['GET'])
-@permission_classes([permissions.IsAuthenticated, IsEmployee])
+@permission_classes([permissions.IsAuthenticated])
 def CallsFilterSearch(request):
     try:
         active = request.data.get('active')
@@ -229,5 +239,5 @@ def CallsFilterSearch(request):
 class UniversityView(generics.ListCreateAPIView):
     queryset = University.objects.all()
     serializer_class = UniversitySerializer
-    permission_classes = [permissions.IsAuthenticated, IsEmployee]
+    permission_classes = [permissions.IsAuthenticated]
 
