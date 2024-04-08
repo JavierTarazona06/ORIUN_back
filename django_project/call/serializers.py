@@ -1,10 +1,11 @@
 from rest_framework import serializers
 from .models import Call, University
+from django_project.constants import Constants
 
 class CallSerializerOpen(serializers.ModelSerializer):
     university_name = serializers.CharField(source='university_id.name')
     country = serializers.CharField(source='university_id.country')
-    language = serializers.ListField(child=serializers.CharField(), source='university_id.language')
+    language = serializers.ChoiceField(choices=Call.language_choices)
     deadline = serializers.DateField(format='%Y-%m-%d')
 
     class Meta:
@@ -19,7 +20,7 @@ class CallSerializerClosed(CallSerializerOpen):
 class CallDetailsSerializerOpenStudent(serializers.ModelSerializer):
     university_name = serializers.CharField(source='university_id.name')
     country = serializers.CharField(source='university_id.country')
-    language = serializers.ListField(child=serializers.CharField(), source='university_id.language')
+    language = serializers.ChoiceField(choices=Call.language_choices)
     deadline = serializers.DateField(format='%Y-%m-%d')
     min_advance = serializers.FloatField()
     min_papa = serializers.FloatField()
