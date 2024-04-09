@@ -8,12 +8,12 @@ class CallSerializerOpen(serializers.ModelSerializer):
     language = serializers.CharField()
     deadline = serializers.DateField(format='%Y-%m-%d')
 
-    def to_representation(self, instance):
+    '''def to_representation(self, instance):
         representation = super().to_representation(instance)
         language_value = representation['language'].strip("[]'")
         representation['language'] = language_value
         return representation
-
+'''
     class Meta:
         model = Call
         fields = ('university_name', 'country', 'language', 'deadline')
@@ -26,7 +26,7 @@ class CallSerializerClosed(CallSerializerOpen):
 class CallDetailsSerializerOpenStudent(serializers.ModelSerializer):
     university_name = serializers.CharField(source='university_id.name')
     country = serializers.CharField(source='university_id.country')
-    language = serializers.ChoiceField(choices=Call.language_choices)
+    #language = serializers.ChoiceField(choices=Call.language_choices)
     deadline = serializers.DateField(format='%Y-%m-%d')
     min_advance = serializers.FloatField()
     min_papa = serializers.FloatField()
@@ -36,11 +36,11 @@ class CallDetailsSerializerOpenStudent(serializers.ModelSerializer):
     description = serializers.CharField(allow_null=True)
     available_slots = serializers.IntegerField()
     note = serializers.CharField(allow_null=True)
-    def to_representation(self, instance):
+    '''def to_representation(self, instance):
         representation = super().to_representation(instance)
         language_value = representation['language'].strip("[]'")
         representation['language'] = language_value
-        return representation
+        return representation'''
     class Meta:
         model = Call
         fields = ('university_name', 'country', 'language', 'deadline', 'min_advance', 'min_papa', 'format', 'year', 'semester', 'description', 'available_slots', 'note')
