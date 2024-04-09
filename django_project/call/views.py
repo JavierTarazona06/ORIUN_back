@@ -149,44 +149,43 @@ class ClosedCallDetailStudent(APIView):
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
+# Javi
 
 class CallView(generics.ListCreateAPIView):
-    queryset = Call.objects.all()
     serializer_class = CallSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-'''class CallView(generics.ListAPIView):
-    queryset = Call.objects.all()
-    serializer_class = CallSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsEmployee]
 
     def get_queryset(self):
-        queryset = super().get_queryset()
-        return queryset'''
+        queryset = Call.objects.all()
+        if self.request.method == 'POST':
+            university_id = self.request.data.get('university_id', None)
+            if university_id is not None:
+                queryset = queryset.filter(university_id=university_id)
+        return queryset
 
 
 class CallDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = Call.objects.all()
     serializer_class = CallSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsEmployee]
 
 class OpenCalls(generics.ListCreateAPIView):
     serializer_class = CallSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsEmployee]
     def get_queryset(self):
         current_date = timezone.now().date()
         return Call.objects.filter(deadline__gte=current_date, active=True)
 
 class ClosedCalls(generics.ListCreateAPIView):
     serializer_class = CallSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsEmployee]
     def get_queryset(self):
         current_date = timezone.now().date()
         return Call.objects.filter(Q(deadline__lt=current_date) | Q(active=False))
     
 
 @api_view(['GET'])
-@permission_classes([permissions.IsAuthenticated])
+@permission_classes([permissions.IsAuthenticated, IsEmployee])
 def CallsFilterSearch(request):
     try:
         active = request.data.get('active')
@@ -239,5 +238,5 @@ def CallsFilterSearch(request):
 class UniversityView(generics.ListCreateAPIView):
     queryset = University.objects.all()
     serializer_class = UniversitySerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsEmployee]
 
