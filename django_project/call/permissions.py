@@ -1,5 +1,4 @@
 from rest_framework import permissions
-from signin.serializers import MyTokenObtainPairSerializer
 from django.contrib.auth.models import User
 from employee.models import Employee
 
