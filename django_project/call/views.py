@@ -12,6 +12,8 @@ from django.db.models import Q
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from .permissions import IsEmployee
+from employee.models import Employee
+from django.contrib.auth.models import User
 
 
 class OpenCallsStudent(APIView):
@@ -149,8 +151,11 @@ class ClosedCallDetailStudent(APIView):
 # Javi
 
 class CallView(generics.ListCreateAPIView):
+    queryset = Call.objects.all()
     serializer_class = CallSerializer
     permission_classes = [permissions.IsAuthenticated, IsEmployee]
+
+    '''user = self.request.user
 
     def get_queryset(self):
         queryset = Call.objects.all()
@@ -158,7 +163,7 @@ class CallView(generics.ListCreateAPIView):
             university_id = self.request.data.get('university_id', None)
             if university_id is not None:
                 queryset = queryset.filter(university_id=university_id)
-        return queryset
+        return queryset'''      
 
 
 class CallDetails(generics.RetrieveUpdateDestroyAPIView):
