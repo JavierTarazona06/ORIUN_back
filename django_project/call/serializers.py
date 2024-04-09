@@ -8,15 +8,10 @@ class CallSerializerOpen(serializers.ModelSerializer):
     language = serializers.CharField()
     deadline = serializers.DateField(format='%Y-%m-%d')
 
-    '''def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        language_value = representation['language'].strip("[]'")
-        representation['language'] = language_value
-        return representation
-'''
+
     class Meta:
         model = Call
-        fields = ('university_name', 'country', 'language', 'deadline')
+        fields = ('id','university_name', 'country', 'language', 'deadline')
 
 class CallSerializerClosed(CallSerializerOpen):
     class Meta(CallSerializerOpen.Meta):
@@ -36,11 +31,7 @@ class CallDetailsSerializerOpenStudent(serializers.ModelSerializer):
     description = serializers.CharField(allow_null=True)
     available_slots = serializers.IntegerField()
     note = serializers.CharField(allow_null=True)
-    '''def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        language_value = representation['language'].strip("[]'")
-        representation['language'] = language_value
-        return representation'''
+
     class Meta:
         model = Call
         fields = ('university_name', 'country', 'language', 'deadline', 'min_advance', 'min_papa', 'format', 'year', 'semester', 'description', 'available_slots', 'note')
