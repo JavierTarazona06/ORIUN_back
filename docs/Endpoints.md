@@ -257,15 +257,32 @@ recognize the current user.
 **Permissions:** Employee and Admin.
 
 **Inputs:** 
-| Field Name           | Required      | Type          | Description                                      |
-|----------------------|---------------|---------------|--------------------------------------------------|
-|`call_id`             | YES - In Path | int           | ID of the call to be updated.                    |
+| Field Name           | Required      | Type          | Description                                                |
+|----------------------|---------------|---------------|------------------------------------------------------------|
+|`call_id`             | YES - In Path | int           | ID of the call to be updated.                              |
+|`university_id`       | YES           | int           | ID of the University offering the call.                    | 
+| `active`             | YES           | bool          | True if is active, false otherwise                         |
+| `begin_date`         | YES           | Date          | Calls start date.(YYYY-MM-DD)                              |
+| `deadline`           | YES           | Date          | Calls deadline date for submission.(YYYY-MM-DD)            |
+| `min_advance`        | YES           | Float         | Minimum advance required for application.                  |
+| `min_papa`           | YES           | Float         | Minimum PAPA score required for application.               |
+| `format`             | YES           | String        | Format of the call(virtual,presencial or mixed).           |
+| `study_level`        | YES           | String        | Value from (pre_pregrado,pos_postgrado or doc_doctorado).  |
+| `year`               | YES           | Integer       | Year of the exchange.                                      |
+| `semester`           | YES           | Integer       | Semester of the exchange. (1,2)                            |
+| `language`           | YES           | String        | Language of the call according to ISO 639-1                |
+| `description`        | YES           | Text          | Description of the call.                                   |
+| `available_slots`    | YES           | Integer       | Number of available slots for the call.                    |
+| `note`               | NO            | Text          | Additional notes about the call.                           |
+| `highest_PAPA_winner`| NO            | Float         | Highest PAPA score among winners of the call.              |
+| `minium_PAPA_winner` | NO            | Float         | Minimum PAPA score among winners of the call.              |
+| `selected`           | NO            | Integer       | Number of winners.                                         |
 
 
 **Outputs:**
 | Field Name           | Type          | Description                                                |
 |----------------------|---------------|------------------------------------------------------------|
-|`id`                  | int           | ID of the call.                    | 
+|`id`                  | int           | ID of the call.                                            | 
 |`university_id`       | int           | ID of the University offering the call.                    | 
 | `active`             | bool          | True if is active, false otherwise                         |
 | `begin_date`         | Date          | Calls start date.(YYYY-MM-DD)                              |
@@ -511,3 +528,67 @@ recognize the current user.
     {"value": "OC", "display": "Oceanía"},
     {"value": "AN", "display": "Uniandes"},
     {"value": "SG", "display": "Convenio Sigueme/Nacional"}
+
+
+# 16.  Update Universities: Employee
+<span style="color: green; font-weight: bold;"> FINISHED </span>
+
+**URL:** `/call/university_api/`.
+
+**Method:** `PUT`
+
+**Description:** Update a university according to given ID.
+
+**Permissions:** Employee and Admin.
+
+**Inputs:** 
+| Field Name           | Required      | Type          | Description                                                  |
+|----------------------|---------------|---------------|--------------------------------------------------------------|
+| `id`                 | YES - In Path | integer       | A unique integer value identifying this university.          |
+| `name`               | YES           | String        | Name of the University.                                      |
+| `webpage`            | YES           | String        | Main webpage of the University.                              |
+| `region`             | YES           | String (Enum) | Region of the University.*                                   |
+| `country`            | YES           | String        | Country of the University.                                   |
+| `city`               | YES           | String        | City of the University.                                      |
+| `academic_offer`     | YES           | String        | Link to the university's webpage for its academic offerings. |
+| `exchange_info`      | YES           | String        | Link to the university's webpage for its exchange info.      |
+
+
+**Outputs:** 
+| Field Name           | Type          | Description                                                  |
+|----------------------|---------------|--------------------------------------------------------------|
+| `id`                 | int           | ID of the University.                                        | 
+| `name`               | String        | Name of the University.                                      |
+| `webpage`            | String        | Main webpage of the University.                              |
+| `region`             | String (Enum) | Region of the University.*                                   |
+| `country`            | String        | Country of the University.                                   |
+| `city`               | String        | City of the University.                                      |
+| `academic_offer`     | String        | Link to the university's webpage for its academic offerings. |
+| `exchange_info`      | String        | Link to the university's webpage for its exchange info.      |
+
+* University Regions:
+    {"value": "NA", "display": "Norte América"},
+    {"value": "LA", "display": "Latinoamérica"},
+    {"value": "EU", "display": "Europa"},
+    {"value": "OC", "display": "Oceanía"},
+    {"value": "AN", "display": "Uniandes"},
+    {"value": "SG", "display": "Convenio Sigueme/Nacional"}
+
+
+# 17.  Delete Universities: Employee
+<span style="color: green; font-weight: bold;"> FINISHED </span>
+
+**URL:** `/call/university_api/`.
+
+**Method:** `DELETE`
+
+**Description:** Delete a university according to the given ID.
+
+**Permissions:** Employee and Admin.
+
+**Inputs:** 
+| Field Name           | Required      | Type          | Description                                                  |
+|----------------------|---------------|---------------|--------------------------------------------------------------|
+| `id`                 | YES - In Path | integer       | A unique integer value identifying this university.          |
+
+**Outputs:** None

@@ -240,3 +240,7 @@ class UniversityView(generics.ListCreateAPIView):
     serializer_class = UniversitySerializer
     permission_classes = [permissions.IsAuthenticated, IsEmployee]
 
+class UniversityDetails(generics.RetrieveUpdateDestroyAPIView):
+    queryset = University.objects.all()
+    serializer_class = UniversitySerializer
+    permission_classes = [permissions.IsAuthenticated, IsEmployee]

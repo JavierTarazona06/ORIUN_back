@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import OpenCallsStudent, ClosedCallsStudent, CallView, CallDetails, OpenCalls, ClosedCalls, CallsFilterSearch, OpenCallDetailStudent, ClosedCallDetailStudent
+from .views import OpenCallsStudent, ClosedCallsStudent, CallView, CallDetails, OpenCalls, ClosedCalls, CallsFilterSearch, OpenCallDetailStudent, ClosedCallDetailStudent, UniversityDetails
 from .views import UniversityView
 from rest_framework.documentation import include_docs_urls
 
@@ -12,6 +12,7 @@ urlpatterns = [
     path('api/closed/', ClosedCalls.as_view(), name='calls_closed'),
     path('api/employee_filter/', CallsFilterSearch, name='calls_employee_filter'),
     path('university_api/', UniversityView.as_view(), name='univ_list'),
+    path('university_api/<int:pk>/', UniversityDetails.as_view(), name='calls_detail'),
     path('open/<int:id>/', OpenCallDetailStudent.as_view(), name='open-call-detail'),
     path('closed/<int:id>/', ClosedCallDetailStudent.as_view(), name='closed-call-detail'),
     path("docs/", include_docs_urls(title="CALLS docs"))
