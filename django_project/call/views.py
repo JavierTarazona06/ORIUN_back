@@ -30,9 +30,8 @@ class OpenCallsStudent(APIView):
             student_study_level = request.user.student.study_level
             student_advance = request.user.student.advance
 
-            call_id = request.GET.get('id')
-            country = request.GET.get('country')
-            language = request.GET.get('language')
+            countries = request.GET.get('countries')
+            languages = request.GET.get('languages')
             university_name = request.GET.get('name_university')
 
             if university_name:
@@ -41,12 +40,10 @@ class OpenCallsStudent(APIView):
             # Filter open calls based on provided criteria (OPEN CALLS)
             open_calls = Call.objects.filter(active=True)
 
-            if call_id:
-                open_calls = open_calls.filter(id=call_id)
-            if country:
-                open_calls = open_calls.filter(university_id__country=country)
-            if language:
-                open_calls = open_calls.filter(language=language)
+            if countries:
+                open_calls = open_calls.filter(university_id__country__in=countries.split(','))
+            if languages:
+                open_calls = open_calls.filter(language__in=languages.split(','))
             if university_name:
                 open_calls = open_calls.filter(university_id__name__icontains=university_name)
 
