@@ -47,7 +47,6 @@ class Command(BaseCommand):
 
         call_df = pd.read_csv(call_csv_path, delimiter=';')
         for index, row in call_df.iterrows():
-            language = [lang.strip() for lang in row['language'].strip('[]').split(',')] if row['language'] else []
             university_id = row['university_id']
             university = universities.get(university_id)
             if university:
@@ -62,7 +61,7 @@ class Command(BaseCommand):
                     study_level=row['study_level'],
                     year=row['year'],
                     semester=row['semester'],
-                    language=language,
+                    language=row['language'],
                     description=row['description'],
                     available_slots=row['available_slots'],
                     note=row['note'],
