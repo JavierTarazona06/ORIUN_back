@@ -151,25 +151,28 @@ class ClosedCallDetailStudent(APIView):
 # Javi
 
 class CallView(generics.ListCreateAPIView):
-    queryset = Call.objects.all()
     serializer_class = CallSerializer
     permission_classes = [permissions.IsAuthenticated, IsEmployee]
 
-    '''user = self.request.user
+    def handle_exception(self, exc):
+        return JsonResponse({'error': str(exc)}, status=500)
 
     def get_queryset(self):
-        queryset = Call.objects.all()
-        if self.request.method == 'POST':
-            university_id = self.request.data.get('university_id', None)
-            if university_id is not None:
-                queryset = queryset.filter(university_id=university_id)
-        return queryset'''      
+        return Call.objects.all()   
 
 
 class CallDetails(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Call.objects.all()
-    serializer_class = CallSerializer
-    permission_classes = [permissions.IsAuthenticated, IsEmployee]
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        try:
+            self.queryset = Call.objects.all()
+            self.serializer_class = CallSerializer
+            self.permission_classes = [permissions.IsAuthenticated, IsEmployee]
+        except Exception as e:
+            self.handle_exception(e)
+
+    def handle_exception(self, exc):
+        return JsonResponse({'error': str(exc)}, status=500)  
 
 class OpenCalls(generics.ListCreateAPIView):
     serializer_class = CallSerializer
@@ -177,6 +180,8 @@ class OpenCalls(generics.ListCreateAPIView):
     def get_queryset(self):
         current_date = timezone.now().date()
         return Call.objects.filter(deadline__gte=current_date, active=True)
+    def handle_exception(self, exc):
+        return JsonResponse({'error': str(exc)}, status=500)
 
 class ClosedCalls(generics.ListCreateAPIView):
     serializer_class = CallSerializer
@@ -184,65 +189,98 @@ class ClosedCalls(generics.ListCreateAPIView):
     def get_queryset(self):
         current_date = timezone.now().date()
         return Call.objects.filter(Q(deadline__lt=current_date) | Q(active=False))
+    def handle_exception(self, exc):
+        return JsonResponse({'error': str(exc)}, status=500)
     
 
-@api_view(['GET'])
-@permission_classes([permissions.IsAuthenticated, IsEmployee])
-def CallsFilterSearch(request):
-    try:
-        active = request.data.get('active')
-        university_id = request.data.get('university_id')
-        university_name = request.data.get('university_name')
-        deadline = request.data.get('deadline')
-        format = request.data.get('format')
-        study_level = request.data.get('study_level')
-        year = request.data.get('year')
-        semester = request.data.get('semester')
-        region = request.data.get('region')
-        country = request.data.get('country')
-        language = request.data.get('language')
+class CallsFilterSearch(APIView):
+    serializer_class = CallSerializer
+    permission_classes = [permissions.IsAuthenticated, IsEmployee]
+    def get(self,request):
+        try:
+            active = request.GET.get('active')
+            university_id = request.GET.get('university_id')
+            university_name = request.GET.get('university_name')
+            deadline = request.GET.get('deadline')
+            format = request.GET.get('format')
+            study_level = request.GET.get('study_level')
+            year = request.GET.get('year')
+            semester = request.GET.get('semester')
+            region = request.GET.get('region')
+            country = request.GET.get('country')
+            language = request.GET.get('language')
+            
+            if university_name:
+                university_name = university_name.lower()
+
+            # Construct queryset based on parameters
+            queryset = Call.objects.all()
+
+            if active:
+                if (active=="true"):
+                    active = "T"+active[1:]
+                if (active=="false"):
+                    active = "F"+active[1:]
+                queryset = queryset.filter(active=active)        
+            if university_id:
+                queryset = queryset.filter(university_id__id=university_id)
+            if deadline:
+                queryset = queryset.filter(deadline__lte=deadline)
+            if format:
+                if format=="P":
+                    format = 'P'
+                elif format == "V":
+                    format = 'V'
+                elif format=="M":
+                    format = 'M'
+                queryset = queryset.filter(format=format)
+            if study_level:
+                queryset = queryset.filter(study_level=study_level)
+            if year:
+                queryset = queryset.filter(year=year)
+            if semester:
+                queryset = queryset.filter(semester=semester)
+            if region:
+                queryset = queryset.filter(university_id__region=region)
+            if country:
+                queryset = queryset.filter(university_id__country__icontains=country)
+            if language:
+                queryset = queryset.filter(language=language)
+            if university_name:
+                queryset = queryset.filter(university_id__name__icontains=university_name)
         
-        if university_name:
-            university_name = university_name.lower()
 
-        # Construct queryset based on parameters
-        queryset = Call.objects.all()
+            if not queryset.exists():
+                return JsonResponse({'message': 'No calls match the provided criteria'},
+                                    status=status.HTTP_404_NOT_FOUND)
 
-        if active:
-            queryset = queryset.filter(active=active)        
-        if university_id:
-            queryset = queryset.filter(university_id__id=university_id)
-        if deadline:
-            queryset = queryset.filter(deadline__lte=deadline)
-        if format:
-            queryset = queryset.filter(format=format)
-        if study_level:
-            queryset = queryset.filter(study_level=study_level)
-        if year:
-            queryset = queryset.filter(year=year)
-        if semester:
-            queryset = queryset.filter(semester=semester)
-        if region:
-            queryset = queryset.filter(university_id__region=region)
-        if country:
-            queryset = queryset.filter(university_id__country=country)
-        if language:
-            queryset = queryset.filter(language=language)
-        if university_name:
-            queryset = queryset.filter(university_id__name__icontains=university_name)
-    
-        serializer = CallSerializer(queryset, many=True)
-        return JsonResponse(serializer.data, safe=False)
+            serializer = CallSerializer(queryset, many=True)
+            return JsonResponse(serializer.data, safe=False)
+        
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
 
-    except Exception as e:
-        return JsonResponse({'error': 'Invalid JSON in request body'}, status=400)
     
 class UniversityView(generics.ListCreateAPIView):
-    queryset = University.objects.all()
     serializer_class = UniversitySerializer
     permission_classes = [permissions.IsAuthenticated, IsEmployee]
 
+    def handle_exception(self, exc):
+        return JsonResponse({'error': str(exc)}, status=500)
+
+    def get_queryset(self):
+        return University.objects.all()
+
+   
 class UniversityDetails(generics.RetrieveUpdateDestroyAPIView):
-    queryset = University.objects.all()
-    serializer_class = UniversitySerializer
-    permission_classes = [permissions.IsAuthenticated, IsEmployee]
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        try:
+            self.queryset = University.objects.all()
+            self.serializer_class = UniversitySerializer
+            self.permission_classes = [permissions.IsAuthenticated, IsEmployee]
+        except Exception as e:
+            self.handle_exception(e)
+
+    def handle_exception(self, exc):
+        return JsonResponse({'error': str(exc)}, status=500)    
