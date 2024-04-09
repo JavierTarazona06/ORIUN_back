@@ -4,6 +4,7 @@ from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.utils.translation import gettext_lazy as _
 from django_project.constants import Constants
+import ast
 
 
 class University(models.Model):
@@ -50,7 +51,7 @@ class Call(models.Model):
     semester = models.CharField(max_length=10, choices=semester_choices)
 
     language_choices = [(choice['value'], _(choice['display'])) for choice in Constants.LANGUAGE_CHOICES]
-    language = models.CharField(max_length=10, choices=language_choices)
+    language = models.CharField(max_length=5, choices=language_choices)
 
     description = models.TextField()
     available_slots = models.SmallIntegerField()

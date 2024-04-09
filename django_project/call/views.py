@@ -76,7 +76,7 @@ class ClosedCallsStudent(APIView):
             student = request.user.student
 
             country = request.GET.get('country')
-            language = request.GET.getlist('language')
+            language = request.GET.get('language')
             name_university = request.GET.get('name_university')
             min_papa_winner = request.GET.get('minimum_papa_winner')
 
