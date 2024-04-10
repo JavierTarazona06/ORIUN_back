@@ -97,7 +97,7 @@ recognize the current user.
 | `country`                         | String       | Country where the call is offered.                               |
 | `language`                        | ArrayField   | Language requirement for the call.                               |
 | `deadline`                        | Date         | Deadline for application submission for the call.(YYYY-MM-DD)    |
-| `minium_PAPA_winner`              | Float        | Minimum PAPA score among winners of the call.                    |
+| `minimum_PAPA_winner`              | Float        | Minimum PAPA score among winners of the call.                    |
 
 # 5.  Get details of open call
 <span style="color: red; font-weight: bold;"> STATUS: NOT FINISHED </span>
@@ -111,6 +111,7 @@ recognize the current user.
 **Inputs:** None
 
 **Outputs:**
+
 | Field Name        | Type          | Description                                           |
 |-------------------|---------------|-------------------------------------------------------|
 |`university_name`  | String        | Name of the university offering the call.             |
@@ -137,6 +138,7 @@ recognize the current user.
 **Inputs:** NONE 
 
 **Outputs:**
+
 | Field Name            | Type          | Description                                      |
 |----------------------|---------------|---------------------------------------------------|
 |`university_name`     | String        | Name of the university offering the call.         |
@@ -151,7 +153,7 @@ recognize the current user.
 | `available_slots`    | Integer       | Number of available slots for the call.           |
 | `note`               | Text          | Additional notes about the call.                  |
 | `highest_PAPA_winner`| Float         | Highest PAPA score among winners of the call.     |
-| `minium_PAPA_winner` | Float         | Minimum PAPA score among winners of the call.     |
+| `minimum_PAPA_winner` | Float         | Minimum PAPA score among winners of the call.     |
 | `selected`           | Integer       | Number of winners.                                |
 
 
@@ -169,6 +171,7 @@ recognize the current user.
 **Inputs:** NONE 
 
 **Outputs:**
+
 | Field Name            | Type          | Description                                               |
 |----------------------|---------------|------------------------------------------------------------|
 |`university_id`       | int           | ID of the University offering the call.                    | 
@@ -186,7 +189,7 @@ recognize the current user.
 | `available_slots`    | Integer       | Number of available slots for the call.                    |
 | `note`               | Text          | Additional notes about the call.                           |
 | `highest_PAPA_winner`| Float         | Highest PAPA score among winners of the call.              |
-| `minium_PAPA_winner` | Float         | Minimum PAPA score among winners of the call.              |
+| `minimum_PAPA_winner` | Float         | Minimum PAPA score among winners of the call.              |
 | `selected`           | Integer       | Number of winners.                                         |
 
 
@@ -201,48 +204,50 @@ recognize the current user.
 
 **Permissions:** Employee and Admin
 
-**Inputs:** 
-| Field Name           | Required  | Type          | Description                                                |
-|----------------------|-----------|---------------|------------------------------------------------------------|
-|`university_id`       | YES       | int           | ID of the University offering the call.                    | 
-| `active`             | YES       | bool          | True if is active, false otherwise                         |
-| `begin_date`         | YES       | Date          | Calls start date.(YYYY-MM-DD)                              |
-| `deadline`           | YES       | Date          | Calls deadline date for submission.(YYYY-MM-DD)            |
-| `min_advance`        | YES       | Float         | Minimum advance required for application.                  |
-| `min_papa`           | YES       | Float         | Minimum PAPA score required for application.               |
-| `format`             | YES       | String        | Format of the call(virtual,presencial or mixed).           |
-| `study_level`        | YES       | String        | Value from (pre_pregrado,pos_postgrado or doc_doctorado).  |
-| `year`               | YES       | Integer       | Year of the exchange.                                      |
-| `semester`           | YES       | Integer       | Semester of the exchange. (1,2)                            |
-| `language`           | YES       | String        | Language of the call according to ISO 639-1                |
-| `description`        | YES       | Text          | Description of the call.                                   |
-| `available_slots`    | YES       | Integer       | Number of available slots for the call.                    |
-| `note`               | NO        | Text          | Additional notes about the call.                           |
-| `highest_PAPA_winner`| NO        | Float         | Highest PAPA score among winners of the call.              |
-| `minium_PAPA_winner` | NO        | Float         | Minimum PAPA score among winners of the call.              |
-| `selected`           | NO        | Integer       | Number of winners.                                         |
+**Inputs:**
+
+| Field Name            | Required  | Type          | Description                                                |
+|-----------------------|-----------|---------------|------------------------------------------------------------|
+| `university_id`       | YES       | int           | ID of the University offering the call.                    | 
+| `active`              | YES       | bool          | True if is active, false otherwise                         |
+| `begin_date`          | YES       | Date          | Calls start date.(YYYY-MM-DD)                              |
+| `deadline`            | YES       | Date          | Calls deadline date for submission.(YYYY-MM-DD)            |
+| `min_advance`         | YES       | Float         | Minimum advance required for application.                  |
+| `min_papa`            | YES       | Float         | Minimum PAPA score required for application.               |
+| `format`              | YES       | String        | Format of the call(virtual,presencial or mixed).           |
+| `study_level`         | YES       | String        | Value from (pre_pregrado,pos_postgrado or doc_doctorado).  |
+| `year`                | YES       | Integer       | Year of the exchange.                                      |
+| `semester`            | YES       | Integer       | Semester of the exchange. (1,2)                            |
+| `language`            | YES       | String        | Language of the call according to ISO 639-1                |
+| `description`         | YES       | Text          | Description of the call.                                   |
+| `available_slots`     | YES       | Integer       | Number of available slots for the call.                    |
+| `note`                | NO        | Text          | Additional notes about the call.                           |
+| `highest_PAPA_winner` | NO        | Float         | Highest PAPA score among winners of the call.              |
+| `minimum_PAPA_winner` | NO        | Float         | Minimum PAPA score among winners of the call.              |
+| `selected`            | NO        | Integer       | Number of winners.                                         |
 
 
 **Outputs:**
-| Field Name           | Type          | Description                                                |
-|----------------------|---------------|------------------------------------------------------------|
-|`university_id`       | int           | ID of the University offering the call.                    | 
-| `active`             | bool          | True if is active, false otherwise                         |
-| `begin_date`         | Date          | Calls start date.(YYYY-MM-DD)                              |
-| `deadline`           | Date          | Calls deadline date for submission.(YYYY-MM-DD)            |
-| `min_advance`        | Float         | Minimum advance required for application.                  |
-| `min_papa`           | Float         | Minimum PAPA score required for application.               |
-| `format`             | String        | Format of the call(virtual,presencial or mixed).           |
-| `study_level`        | String        | Value from (pre_pregrado,pos_postgrado or doc_doctorado).  |
-| `year`               | Integer       | Year of the exchange.                                      |
-| `semester`           | Integer       | Semester of the exchange. (1,2)                            |
-| `language`           | String        | Language of the call according to ISO 639-1                |
-| `description`        | Text          | Description of the call.                                   |
-| `available_slots`    | Integer       | Number of available slots for the call.                    |
-| `note`               | Text          | Additional notes about the call.                           |
-| `highest_PAPA_winner`| Float         | Highest PAPA score among winners of the call.              |
-| `minium_PAPA_winner` | Float         | Minimum PAPA score among winners of the call.              |
-| `selected`           | Integer       | Number of winners.                                         |
+
+| Field Name            | Type          | Description                                                |
+|-----------------------|---------------|------------------------------------------------------------|
+| `university_id`       | int           | ID of the University offering the call.                    | 
+| `active`              | bool          | True if is active, false otherwise                         |
+| `begin_date`          | Date          | Calls start date.(YYYY-MM-DD)                              |
+| `deadline`            | Date          | Calls deadline date for submission.(YYYY-MM-DD)            |
+| `min_advance`         | Float         | Minimum advance required for application.                  |
+| `min_papa`            | Float         | Minimum PAPA score required for application.               |
+| `format`              | String        | Format of the call(virtual,presencial or mixed).           |
+| `study_level`         | String        | Value from (pre_pregrado,pos_postgrado or doc_doctorado).  |
+| `year`                | Integer       | Year of the exchange.                                      |
+| `semester`            | Integer       | Semester of the exchange. (1,2)                            |
+| `language`            | String        | Language of the call according to ISO 639-1                |
+| `description`         | Text          | Description of the call.                                   |
+| `available_slots`     | Integer       | Number of available slots for the call.                    |
+| `note`                | Text          | Additional notes about the call.                           |
+| `highest_PAPA_winner` | Float         | Highest PAPA score among winners of the call.              |
+| `minimum_PAPA_winner` | Float         | Minimum PAPA score among winners of the call.              |
+| `selected`            | Integer       | Number of winners.                                         |
 
 
 
@@ -258,32 +263,34 @@ recognize the current user.
 **Permissions:** Employee and Admin.
 
 **Inputs:** 
+
 | Field Name           | Required      | Type          | Description                                                |
 |----------------------|---------------|---------------|------------------------------------------------------------|
 |`call_id`             | YES - In Path | int           | ID of the call to be updated.                              |
 
 
 **Outputs:**
-| Field Name           | Type          | Description                                                |
-|----------------------|---------------|------------------------------------------------------------|
-|`id`                  | int           | ID of the call.                                            | 
-|`university_id`       | int           | ID of the University offering the call.                    | 
-| `active`             | bool          | True if is active, false otherwise                         |
-| `begin_date`         | Date          | Calls start date.(YYYY-MM-DD)                              |
-| `deadline`           | Date          | Calls deadline date for submission.(YYYY-MM-DD)            |
-| `min_advance`        | Float         | Minimum advance required for application.                  |
-| `min_papa`           | Float         | Minimum PAPA score required for application.               |
-| `format`             | String        | Format of the call(virtual,presencial or mixed).           |
-| `study_level`        | String        | Value from (pre_pregrado,pos_postgrado or doc_doctorado).  |
-| `year`               | Integer       | Year of the exchange.                                      |
-| `semester`           | Integer       | Semester of the exchange. (1,2)                            |
-| `language`           | String        | Language of the call according to ISO 639-1                |
-| `description`        | Text          | Description of the call.                                   |
-| `available_slots`    | Integer       | Number of available slots for the call.                    |
-| `note`               | Text          | Additional notes about the call.                           |
-| `highest_PAPA_winner`| Float         | Highest PAPA score among winners of the call.              |
-| `minium_PAPA_winner` | Float         | Minimum PAPA score among winners of the call.              |
-| `selected`           | Integer       | Number of winners.                                         |
+
+| Field Name            | Type          | Description                                                |
+|-----------------------|---------------|------------------------------------------------------------|
+| `id`                  | int           | ID of the call.                                            | 
+| `university_id`       | int           | ID of the University offering the call.                    | 
+| `active`              | bool          | True if is active, false otherwise                         |
+| `begin_date`          | Date          | Calls start date.(YYYY-MM-DD)                              |
+| `deadline`            | Date          | Calls deadline date for submission.(YYYY-MM-DD)            |
+| `min_advance`         | Float         | Minimum advance required for application.                  |
+| `min_papa`            | Float         | Minimum PAPA score required for application.               |
+| `format`              | String        | Format of the call(virtual,presencial or mixed).           |
+| `study_level`         | String        | Value from (pre_pregrado,pos_postgrado or doc_doctorado).  |
+| `year`                | Integer       | Year of the exchange.                                      |
+| `semester`            | Integer       | Semester of the exchange. (1,2)                            |
+| `language`            | String        | Language of the call according to ISO 639-1                |
+| `description`         | Text          | Description of the call.                                   |
+| `available_slots`     | Integer       | Number of available slots for the call.                    |
+| `note`                | Text          | Additional notes about the call.                           |
+| `highest_PAPA_winner` | Float         | Highest PAPA score among winners of the call.              |
+| `minimum_PAPA_winner` | Float         | Minimum PAPA score among winners of the call.              |
+| `selected`            | Integer       | Number of winners.                                         |
 
 
 # 10.  Update Call: Employee
@@ -298,29 +305,31 @@ recognize the current user.
 **Permissions:** Employee and Admin.
 
 **Inputs:** 
-| Field Name           | Required      | Type          | Description                                                |
-|----------------------|---------------|---------------|------------------------------------------------------------|
-|`call_id`             | YES - In Path | int           | ID of the call to be updated.                              |
-|`university_id`       | YES           | int           | ID of the University offering the call.                    | 
-| `active`             | YES           | bool          | True if is active, false otherwise                         |
-| `begin_date`         | YES           | Date          | Calls start date.(YYYY-MM-DD)                              |
-| `deadline`           | YES           | Date          | Calls deadline date for submission.(YYYY-MM-DD)            |
-| `min_advance`        | YES           | Float         | Minimum advance required for application.                  |
-| `min_papa`           | YES           | Float         | Minimum PAPA score required for application.               |
-| `format`             | YES           | String        | Format of the call(virtual,presencial or mixed).           |
-| `study_level`        | YES           | String        | Value from (pre_pregrado,pos_postgrado or doc_doctorado).  |
-| `year`               | YES           | Integer       | Year of the exchange.                                      |
-| `semester`           | YES           | Integer       | Semester of the exchange. (1,2)                            |
-| `language`           | YES           | String        | Language of the call according to ISO 639-1                |
-| `description`        | YES           | Text          | Description of the call.                                   |
-| `available_slots`    | YES           | Integer       | Number of available slots for the call.                    |
-| `note`               | NO            | Text          | Additional notes about the call.                           |
-| `highest_PAPA_winner`| NO            | Float         | Highest PAPA score among winners of the call.              |
-| `minium_PAPA_winner` | NO            | Float         | Minimum PAPA score among winners of the call.              |
-| `selected`           | NO            | Integer       | Number of winners.                                         |
+
+| Field Name            | Required      | Type          | Description                                                |
+|-----------------------|---------------|---------------|------------------------------------------------------------|
+| `call_id`             | YES - In Path | int           | ID of the call to be updated.                              |
+| `university_id`       | YES           | int           | ID of the University offering the call.                    | 
+| `active`              | YES           | bool          | True if is active, false otherwise                         |
+| `begin_date`          | YES           | Date          | Calls start date.(YYYY-MM-DD)                              |
+| `deadline`            | YES           | Date          | Calls deadline date for submission.(YYYY-MM-DD)            |
+| `min_advance`         | YES           | Float         | Minimum advance required for application.                  |
+| `min_papa`            | YES           | Float         | Minimum PAPA score required for application.               |
+| `format`              | YES           | String        | Format of the call(virtual,presencial or mixed).           |
+| `study_level`         | YES           | String        | Value from (pre_pregrado,pos_postgrado or doc_doctorado).  |
+| `year`                | YES           | Integer       | Year of the exchange.                                      |
+| `semester`            | YES           | Integer       | Semester of the exchange. (1,2)                            |
+| `language`            | YES           | String        | Language of the call according to ISO 639-1                |
+| `description`         | YES           | Text          | Description of the call.                                   |
+| `available_slots`     | YES           | Integer       | Number of available slots for the call.                    |
+| `note`                | NO            | Text          | Additional notes about the call.                           |
+| `highest_PAPA_winner` | NO            | Float         | Highest PAPA score among winners of the call.              |
+| `minimum_PAPA_winner` | NO            | Float         | Minimum PAPA score among winners of the call.              |
+| `selected`            | NO            | Integer       | Number of winners.                                         |
 
 
 **Outputs:**
+
 | Field Name           | Type          | Description                                                |
 |----------------------|---------------|------------------------------------------------------------|
 |`id`                  | int           | ID of the call.                                            | 
@@ -339,7 +348,7 @@ recognize the current user.
 | `available_slots`    | Integer       | Number of available slots for the call.                    |
 | `note`               | Text          | Additional notes about the call.                           |
 | `highest_PAPA_winner`| Float         | Highest PAPA score among winners of the call.              |
-| `minium_PAPA_winner` | Float         | Minimum PAPA score among winners of the call.              |
+| `minimum_PAPA_winner` | Float         | Minimum PAPA score among winners of the call.              |
 | `selected`           | Integer       | Number of winners.                                         |
 
 
@@ -355,6 +364,7 @@ recognize the current user.
 **Permissions:** Employee and Admin.
 
 **Inputs:** 
+
 | Field Name           | Required      | Type          | Description                                      |
 |----------------------|---------------|---------------|--------------------------------------------------|
 |`call_id`             | YES - In Path | int           | ID of the call to be updated.                    |
@@ -377,6 +387,7 @@ recognize the current user.
 **Inputs:** None
 
 **Outputs:** 
+
 | Field Name           | Type          | Description                                                |
 |----------------------|---------------|------------------------------------------------------------|
 |`id`                  | int           | ID of the call.                    | 
@@ -395,7 +406,7 @@ recognize the current user.
 | `available_slots`    | Integer       | Number of available slots for the call.                    |
 | `note`               | Text          | Additional notes about the call.                           |
 | `highest_PAPA_winner`| Float         | Highest PAPA score among winners of the call.              |
-| `minium_PAPA_winner` | Float         | Minimum PAPA score among winners of the call.              |
+| `minimum_PAPA_winner` | Float         | Minimum PAPA score among winners of the call.              |
 | `selected`           | Integer       | Number of winners.                                         |
 
 
@@ -413,6 +424,7 @@ recognize the current user.
 **Inputs:** None
 
 **Outputs:** 
+
 | Field Name           | Type          | Description                                                |
 |----------------------|---------------|------------------------------------------------------------|
 |`id`                  | int           | ID of the call.                    | 
@@ -431,7 +443,7 @@ recognize the current user.
 | `available_slots`    | Integer       | Number of available slots for the call.                    |
 | `note`               | Text          | Additional notes about the call.                           |
 | `highest_PAPA_winner`| Float         | Highest PAPA score among winners of the call.              |
-| `minium_PAPA_winner` | Float         | Minimum PAPA score among winners of the call.              |
+| `minimum_PAPA_winner` | Float         | Minimum PAPA score among winners of the call.              |
 | `selected`           | Integer       | Number of winners.                                         |
 
 # 14.  Filter Over Calls: Employee
@@ -447,6 +459,7 @@ recognize the current user.
 **Permissions:** Employee and Admin.
 
 **Inputs:**
+
 | Field Name           | Required      | Type           | Description                                                |
 |----------------------|---------------|----------------|------------------------------------------------------------|
 |`active`              | Optional      | bool           | True if is active, false otherwise.                        |
@@ -471,6 +484,7 @@ recognize the current user.
 
 
 **Outputs:** 
+
 | Field Name           | Type          | Description                                                   |
 |----------------------|---------------|---------------------------------------------------------------|
 | `id`                 | int           | ID of the call.                                               | 
@@ -489,7 +503,7 @@ recognize the current user.
 | `available_slots`    | Integer       | Number of available slots for the call.                       |
 | `note`               | Text          | Additional notes about the call.                              |
 | `highest_PAPA_winner`| Float         | Highest PAPA score among winners of the call.                 |
-| `minium_PAPA_winner` | Float         | Minimum PAPA score among winners of the call.                 |
+| `minimum_PAPA_winner` | Float         | Minimum PAPA score among winners of the call.                 |
 | `selected`           | Integer       | Number of winners.                                            |
 
 
@@ -507,6 +521,7 @@ recognize the current user.
 **Inputs:** None
 
 **Outputs:** 
+
 | Field Name           | Type          | Description                                                  |
 |----------------------|---------------|--------------------------------------------------------------|
 | `id`                 | int           | ID of the University.                                        | 
@@ -539,6 +554,7 @@ recognize the current user.
 **Permissions:** Employee and Admin.
 
 **Inputs:** 
+
 | Field Name           | Required      | Type          | Description                                                  |
 |----------------------|---------------|---------------|--------------------------------------------------------------|
 | `name`               | YES           | String        | Name of the University.                                      |
@@ -551,6 +567,7 @@ recognize the current user.
 
 
 **Outputs:** 
+
 | Field Name           | Type          | Description                                                  |
 |----------------------|---------------|--------------------------------------------------------------|
 | `id`                 | int           | ID of the University.                                        | 
@@ -582,13 +599,15 @@ recognize the current user.
 
 **Permissions:** Employee and Admin.
 
-**Inputs:** 
+**Inputs:**
+
 | Field Name           | Required      | Type          | Description                                                  |
 |----------------------|---------------|---------------|--------------------------------------------------------------|
 | `id`                 | YES - In Path | integer       | A unique integer value identifying this university.          |
 
 
-**Outputs:** 
+**Outputs:**
+
 | Field Name           | Type          | Description                                                  |
 |----------------------|---------------|--------------------------------------------------------------|
 | `id`                 | int           | ID of the University.                                        | 
@@ -620,7 +639,8 @@ recognize the current user.
 
 **Permissions:** Employee and Admin.
 
-**Inputs:** 
+**Inputs:**
+
 | Field Name           | Required      | Type          | Description                                                  |
 |----------------------|---------------|---------------|--------------------------------------------------------------|
 | `id`                 | YES - In Path | integer       | A unique integer value identifying this university.          |
@@ -634,6 +654,7 @@ recognize the current user.
 
 
 **Outputs:** 
+
 | Field Name           | Type          | Description                                                  |
 |----------------------|---------------|--------------------------------------------------------------|
 | `id`                 | int           | ID of the University.                                        | 
@@ -666,6 +687,7 @@ recognize the current user.
 **Permissions:** Employee and Admin.
 
 **Inputs:** 
+
 | Field Name           | Required      | Type          | Description                                                  |
 |----------------------|---------------|---------------|--------------------------------------------------------------|
 | `id`                 | YES - In Path | integer       | A unique integer value identifying this university.          |
