@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 from call.models import Call, University
 from student.models import ContactPerson, Student
+from employee.models import Employee
 import pandas as pd
 import os
 from django.contrib.auth.models import User
@@ -83,7 +84,7 @@ class Command(BaseCommand):
         student_df = pd.read_csv(student_csv_path, delimiter=';')
         for index, row in student_df.iterrows():
             birth_date = datetime.strptime(str(row['birth']), '%Y-%m-%d').date()
-            print(index, row['birth'])
+
             user = User.objects.create_user(
                 username=row['username'],
                 password=str(row['password']),
@@ -124,4 +125,41 @@ class Command(BaseCommand):
 
 
         self.stdout.write(self.style.SUCCESS(f"Populated {len(student_df)} students."))
-  
+
+
+        # Populating data to employee table
+        employee_csv_path = os.path.join(csv_abs_path, 'employee_data.csv')
+        if not os.path.exists(employee_csv_path):
+            self.stdout.write(self.style.WARNING(f"Employee data file '{employee_csv_path}' does not exist."))
+            return
+
+        employee_df = pd.read_csv(employee_csv_path, delimiter=';')
+        for index, row in employee_df.iterrows():
+            birth_date = datetime.strptime(str(row['birth']), '%Y-%m-%d').date()
+
+            user = User.objects.create_user(
+                username=row['username'],
+                password=str(row['password']),
+                email=str(row['email'])
+            )
+            # Create an employee associated with the user
+            employee = Employee.objects.create(
+                user=user,
+                type_user=row['type_user'],
+                type_document=row['type_document'],
+                name=row['name'],
+                lastname=row['lastname'],
+                birth=birth_date,
+                sex=row['sex'],
+                birth_place=row['birth_place'],
+                country=row['country'],
+                city=row['city'],
+                phone=row['phone'],
+                address=row['address'],
+                ethnicity=row['ethnicity'],
+                headquarter=row['headquarter'],
+                dependency=row['dependency']
+            )
+
+            self.stdout.write(self.style.SUCCESS(f"Populated {len(student_df)} employees."))
+
