@@ -293,11 +293,11 @@ class CallsFilterSearch(APIView):
             if format:
                 print("-------------------------", format)
                 if format == "P":
-                    queryset = queryset.filter(format="P")
+                    queryset = queryset.filter(format='P')
                 elif format == "V":
-                    queryset = queryset.filter(format="V")
+                    queryset = queryset.filter(format='V')
                 elif format == "M":
-                    queryset = queryset.filter(format="M")
+                    queryset = queryset.filter(format='M')
                 #queryset = queryset.filter(format=format)
             if study_level:
                 queryset = queryset.filter(study_level=study_level)
