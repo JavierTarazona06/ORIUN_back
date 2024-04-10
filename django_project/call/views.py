@@ -227,13 +227,14 @@ class CallsFilterSearch(APIView):
             if deadline:
                 queryset = queryset.filter(deadline__lte=deadline)
             if format:
+                print("-------------------------", format)
                 if format=="P":
-                    format = 'P'
+                    queryset = queryset.filter(format="P")
                 elif format == "V":
-                    format = 'V'
+                    queryset = queryset.filter(format="V")
                 elif format=="M":
-                    format = 'M'
-                queryset = queryset.filter(format=format)
+                    queryset = queryset.filter(format="M")
+                #queryset = queryset.filter(format=format)
             if study_level:
                 queryset = queryset.filter(study_level=study_level)
             if year:

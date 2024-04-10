@@ -245,7 +245,48 @@ recognize the current user.
 | `selected`           | Integer       | Number of winners.                                         |
 
 
-# 9.  Update Call: Employee
+
+# 9.  Get Call by ID: Employee
+<span style="color: green; font-weight: bold;"> FINISHED </span>
+
+**URL:** `/call/api/<int:pk>/`.
+
+**Method:** `PUT`
+
+**Description:** Get a call according to the giving ID.
+
+**Permissions:** Employee and Admin.
+
+**Inputs:** 
+| Field Name           | Required      | Type          | Description                                                |
+|----------------------|---------------|---------------|------------------------------------------------------------|
+|`call_id`             | YES - In Path | int           | ID of the call to be updated.                              |
+
+
+**Outputs:**
+| Field Name           | Type          | Description                                                |
+|----------------------|---------------|------------------------------------------------------------|
+|`id`                  | int           | ID of the call.                                            | 
+|`university_id`       | int           | ID of the University offering the call.                    | 
+| `active`             | bool          | True if is active, false otherwise                         |
+| `begin_date`         | Date          | Calls start date.(YYYY-MM-DD)                              |
+| `deadline`           | Date          | Calls deadline date for submission.(YYYY-MM-DD)            |
+| `min_advance`        | Float         | Minimum advance required for application.                  |
+| `min_papa`           | Float         | Minimum PAPA score required for application.               |
+| `format`             | String        | Format of the call(virtual,presencial or mixed).           |
+| `study_level`        | String        | Value from (pre_pregrado,pos_postgrado or doc_doctorado).  |
+| `year`               | Integer       | Year of the exchange.                                      |
+| `semester`           | Integer       | Semester of the exchange. (1,2)                            |
+| `language`           | String        | Language of the call according to ISO 639-1                |
+| `description`        | Text          | Description of the call.                                   |
+| `available_slots`    | Integer       | Number of available slots for the call.                    |
+| `note`               | Text          | Additional notes about the call.                           |
+| `highest_PAPA_winner`| Float         | Highest PAPA score among winners of the call.              |
+| `minium_PAPA_winner` | Float         | Minimum PAPA score among winners of the call.              |
+| `selected`           | Integer       | Number of winners.                                         |
+
+
+# 10.  Update Call: Employee
 <span style="color: green; font-weight: bold;"> FINISHED </span>
 
 **URL:** `/call/api/<int:pk>/`.
@@ -302,7 +343,7 @@ recognize the current user.
 | `selected`           | Integer       | Number of winners.                                         |
 
 
-# 10.  Delete Call: Employee
+# 11.  Delete Call: Employee
 <span style="color: green; font-weight: bold;"> FINISHED </span>
 
 **URL:** `/call/api/<int:pk>/`.
@@ -322,7 +363,7 @@ recognize the current user.
 **Outputs:** None
 
 
-# 11.  Open Calls: Employee
+# 12.  Open Calls: Employee
 <span style="color: green; font-weight: bold;"> FINISHED </span>
 
 **URL:** `/call/api/opened/`.
@@ -358,7 +399,7 @@ recognize the current user.
 | `selected`           | Integer       | Number of winners.                                         |
 
 
-# 12.  Closed Calls: Employee
+# 13.  Closed Calls: Employee
 <span style="color: green; font-weight: bold;"> FINISHED </span>
 
 **URL:** `/call/api/closed/`.
@@ -393,7 +434,7 @@ recognize the current user.
 | `minium_PAPA_winner` | Float         | Minimum PAPA score among winners of the call.              |
 | `selected`           | Integer       | Number of winners.                                         |
 
-# 13.  Filter Over Calls: Employee
+# 14.  Filter Over Calls: Employee
 <span style="color: green; font-weight: bold;"> FINISHED </span>
 
 **URL:** `/call/api/employee_filter/`.
@@ -452,7 +493,7 @@ recognize the current user.
 | `selected`           | Integer       | Number of winners.                                            |
 
 
-# 14.  Get Universities: Employee
+# 15.  Get Universities: Employee
 <span style="color: green; font-weight: bold;"> FINISHED </span>
 
 **URL:** `/call/university_api/`.
@@ -486,7 +527,7 @@ recognize the current user.
     {"value": "SG", "display": "Convenio Sigueme/Nacional"}
 
 
-# 15.  Create Universities: Employee
+# 16.  Create Universities: Employee
 <span style="color: green; font-weight: bold;"> FINISHED </span>
 
 **URL:** `/call/university_api/`.
@@ -530,7 +571,45 @@ recognize the current user.
     {"value": "SG", "display": "Convenio Sigueme/Nacional"}
 
 
-# 16.  Update Universities: Employee
+# 17.  Get University by ID: Employee
+<span style="color: green; font-weight: bold;"> FINISHED </span>
+
+**URL:** `/call/university_api/`.
+
+**Method:** `PUT`
+
+**Description:** Get a university according to given ID.
+
+**Permissions:** Employee and Admin.
+
+**Inputs:** 
+| Field Name           | Required      | Type          | Description                                                  |
+|----------------------|---------------|---------------|--------------------------------------------------------------|
+| `id`                 | YES - In Path | integer       | A unique integer value identifying this university.          |
+
+
+**Outputs:** 
+| Field Name           | Type          | Description                                                  |
+|----------------------|---------------|--------------------------------------------------------------|
+| `id`                 | int           | ID of the University.                                        | 
+| `name`               | String        | Name of the University.                                      |
+| `webpage`            | String        | Main webpage of the University.                              |
+| `region`             | String (Enum) | Region of the University.*                                   |
+| `country`            | String        | Country of the University.                                   |
+| `city`               | String        | City of the University.                                      |
+| `academic_offer`     | String        | Link to the university's webpage for its academic offerings. |
+| `exchange_info`      | String        | Link to the university's webpage for its exchange info.      |
+
+* University Regions:
+    {"value": "NA", "display": "Norte América"},
+    {"value": "LA", "display": "Latinoamérica"},
+    {"value": "EU", "display": "Europa"},
+    {"value": "OC", "display": "Oceanía"},
+    {"value": "AN", "display": "Uniandes"},
+    {"value": "SG", "display": "Convenio Sigueme/Nacional"}
+
+
+# 18.  Update Universities: Employee
 <span style="color: green; font-weight: bold;"> FINISHED </span>
 
 **URL:** `/call/university_api/`.
@@ -575,7 +654,7 @@ recognize the current user.
     {"value": "SG", "display": "Convenio Sigueme/Nacional"}
 
 
-# 17.  Delete Universities: Employee
+# 19.  Delete Universities: Employee
 <span style="color: green; font-weight: bold;"> FINISHED </span>
 
 **URL:** `/call/university_api/`.
