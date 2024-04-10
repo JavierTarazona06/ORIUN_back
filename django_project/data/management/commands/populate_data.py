@@ -1,13 +1,16 @@
 from django.core.management.base import BaseCommand
-from person.models import Person
 from call.models import Call, University
 from student.models import ContactPerson, Student
 import pandas as pd
 import os
+from django.contrib.auth.models import User
+from datetime import datetime
+
+
 
 
 class Command(BaseCommand):
-    help = 'Populate University, Call models from CSV'
+    help = 'Populate University, Call, Student models from CSV'
 
     def add_arguments(self, parser):
         parser.add_argument('--path', type=str, default='data_csv',
@@ -70,3 +73,55 @@ class Command(BaseCommand):
                     selected=row['selected']
                 )
         self.stdout.write(self.style.SUCCESS(f"Populated {len(call_df)} calls."))
+
+        # Populating data to student table
+        student_csv_path = os.path.join(csv_abs_path, 'student_data.csv')
+        if not os.path.exists(student_csv_path):
+            self.stdout.write(self.style.WARNING(f"Student data file '{student_csv_path}' does not exist."))
+            return
+        
+        student_df = pd.read_csv(student_csv_path, delimiter=';')
+        for index, row in student_df.iterrows():
+            birth_date = datetime.strptime(str(row['birth']), '%Y-%m-%d').date()
+            print(index, row['birth'])
+            user = User.objects.create_user(
+                username=row['username'],
+                password=str(row['password']),
+                email=str(row['email'])
+            )
+
+            # Create a student associated with the user
+
+            student = Student.objects.create(
+                user=user,
+                type_user=row['type_user'],
+                type_document=row['type_document'],
+                name=row['name'],
+                lastname=row['lastname'],
+                birth=birth_date,
+                sex=row['sex'],
+                country=row['country'],
+                city=row['city'],
+                phone=row['phone'],
+                address=row['address'],
+                ethnicity=row['ethnicity'],
+                headquarter=row['headquarter'],
+                PAPA=row['PAPA'],
+                PAPI=row['PAPI'],
+                PA=row['PA'],
+                PBM=row['PBM'],
+                advance=row['advance'],
+                faculty=row['faculty'],
+                major=row['major'],
+                is_enrolled=row['is_enrolled'],
+                #date_banned_mobility=row['date_banned_mobility'],
+                is_banned_behave_un=row['is_banned_behave_un'],
+                admission=row['admission'],
+                study_level=row['study_level'],
+                num_semesters=row['num_semesters'],
+                #contact_id = row['contact_id']
+            )
+
+
+        self.stdout.write(self.style.SUCCESS(f"Populated {len(student_df)} students."))
+  
