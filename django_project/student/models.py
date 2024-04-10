@@ -2,14 +2,14 @@ from django.db import models
 from person.models import Person
 from django.utils.translation import gettext_lazy as _
 from django_project.constants import Constants
-
+from datetime import date
 
 class ContactPerson(models.Model):
     name = models.CharField(max_length=20)
     last_name = models.CharField(max_length=20)
     email = models.EmailField()
     relationship = models.CharField(max_length=50)
-    cellphone = models.IntegerField()
+    cellphone = models.CharField(max_length=20)
 
     def __str__(self):
         return f'Contact {self.name}, {self.last_name}'
@@ -32,15 +32,15 @@ class Student(Person):
 
     calls_done = models.ManyToManyField('call.Call')
     is_enrolled = models.BooleanField()
-    date_banned_mobility = models.DateField(default='2000-01-01')
+    date_banned_mobility = models.DateField(default=date(2000, 1, 1))
     is_banned_behave_un = models.BooleanField()
 
     admission_choices = [(choice['value'], _(choice['display'])) for choice in Constants.ADMISSION_CHOICES]
-    admission = models.CharField(max_length=5, choices=admission_choices, default=admission_choices[0])
+    admission = models.CharField(max_length=10, choices=admission_choices, default=admission_choices[0])
     # admission_choices[0] debe ser "Regular"
 
     study_level_choices = [(choice['value'], _(choice['display'])) for choice in Constants.STUDY_LEVEL_CHOICES]
-    study_level = models.CharField(max_length=3, choices=study_level_choices)
+    study_level = models.CharField(max_length=10, choices=study_level_choices)
 
     num_semesters = models.SmallIntegerField()
     contact_id = models.ForeignKey(ContactPerson, on_delete=models.CASCADE, null=True)
