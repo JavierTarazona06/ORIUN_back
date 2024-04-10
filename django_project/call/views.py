@@ -15,6 +15,8 @@ from .permissions import IsEmployee
 from employee.models import Employee
 from django.contrib.auth.models import User
 from django_project.constants_dict_front import constants_dict_front
+from django.views import View
+from django.views.decorators.csrf import csrf_exempt
 
 
 class OpenCallsStudent(APIView):
@@ -208,6 +210,40 @@ class CallDetails(generics.RetrieveUpdateDestroyAPIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UpdateCallsView(View):
+    @csrf_exempt
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_object(self, pk):
+        try:
+            return Call.objects.get(pk=pk)
+        except Call.DoesNotExist:
+            return None
+
+    def put(self, request, pk):
+        call = self.get_object(pk)
+        if not call:
+            return JsonResponse({'error': 'La convocatoria especificada no existe'}, status=404)
+
+        try:
+            # Actualiza los atributos según los parámetros opcionales proporcionados en la solicitud
+            if 'atributo_1' in request.POST:
+                call.atributo_1 = request.POST['atributo_1']
+            if 'atributo_2' in request.POST:
+                call.atributo_2 = request.POST['atributo_2']
+            # Agrega más atributos según sea necesario
+
+            call.save()
+            return JsonResponse({'mensaje': 'Llamada actualizada exitosamente'})
+        except Exception as e:
+            return self.handle_exception(e)
+
+    def handle_exception(self, exc):
+        return JsonResponse({'error': str(exc)}, status=500)
+
 
 
 class OpenCalls(generics.ListCreateAPIView):
