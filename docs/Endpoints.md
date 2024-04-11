@@ -97,7 +97,7 @@ recognize the current user.
 | `country`                         | String       | Country where the call is offered.                               |
 | `language`                        | ArrayField   | Language requirement for the call.                               |
 | `deadline`                        | Date         | Deadline for application submission for the call.(YYYY-MM-DD)    |
-| `minimum_PAPA_winner`              | Float        | Minimum PAPA score among winners of the call.                    |
+| `minimum_papa_winner`              | Float        | Minimum PAPA score among winners of the call.                    |
 
 # 5.  Get details of open call
 <span style="color: red; font-weight: bold;"> STATUS: NOT FINISHED </span>
@@ -152,8 +152,8 @@ recognize the current user.
 | `description`        | Text          | Description of the call.                          |
 | `available_slots`    | Integer       | Number of available slots for the call.           |
 | `note`               | Text          | Additional notes about the call.                  |
-| `highest_PAPA_winner`| Float         | Highest PAPA score among winners of the call.     |
-| `minimum_PAPA_winner` | Float         | Minimum PAPA score among winners of the call.     |
+| `highest_papa_winner`| Float         | Highest PAPA score among winners of the call.     |
+| `minimum_papa_winner` | Float         | Minimum PAPA score among winners of the call.     |
 | `selected`           | Integer       | Number of winners.                                |
 
 
@@ -188,8 +188,8 @@ recognize the current user.
 | `description`        | Text          | Description of the call.                                   |
 | `available_slots`    | Integer       | Number of available slots for the call.                    |
 | `note`               | Text          | Additional notes about the call.                           |
-| `highest_PAPA_winner`| Float         | Highest PAPA score among winners of the call.              |
-| `minimum_PAPA_winner` | Float         | Minimum PAPA score among winners of the call.              |
+| `highest_papa_winner`| Float         | Highest PAPA score among winners of the call.              |
+| `minimum_papa_winner` | Float         | Minimum PAPA score among winners of the call.              |
 | `selected`           | Integer       | Number of winners.                                         |
 
 
@@ -222,8 +222,8 @@ recognize the current user.
 | `description`         | YES       | Text          | Description of the call.                                   |
 | `available_slots`     | YES       | Integer       | Number of available slots for the call.                    |
 | `note`                | NO        | Text          | Additional notes about the call.                           |
-| `highest_PAPA_winner` | NO        | Float         | Highest PAPA score among winners of the call.              |
-| `minimum_PAPA_winner` | NO        | Float         | Minimum PAPA score among winners of the call.              |
+| `highest_papa_winner` | NO        | Float         | Highest PAPA score among winners of the call.              |
+| `minimum_papa_winner` | NO        | Float         | Minimum PAPA score among winners of the call.              |
 | `selected`            | NO        | Integer       | Number of winners.                                         |
 
 
@@ -245,8 +245,8 @@ recognize the current user.
 | `description`         | Text          | Description of the call.                                   |
 | `available_slots`     | Integer       | Number of available slots for the call.                    |
 | `note`                | Text          | Additional notes about the call.                           |
-| `highest_PAPA_winner` | Float         | Highest PAPA score among winners of the call.              |
-| `minimum_PAPA_winner` | Float         | Minimum PAPA score among winners of the call.              |
+| `highest_papa_winner` | Float         | Highest PAPA score among winners of the call.              |
+| `minimum_papa_winner` | Float         | Minimum PAPA score among winners of the call.              |
 | `selected`            | Integer       | Number of winners.                                         |
 
 
@@ -288,15 +288,15 @@ recognize the current user.
 | `description`         | Text          | Description of the call.                                   |
 | `available_slots`     | Integer       | Number of available slots for the call.                    |
 | `note`                | Text          | Additional notes about the call.                           |
-| `highest_PAPA_winner` | Float         | Highest PAPA score among winners of the call.              |
-| `minimum_PAPA_winner` | Float         | Minimum PAPA score among winners of the call.              |
+| `highest_papa_winner` | Float         | Highest PAPA score among winners of the call.              |
+| `minimum_papa_winner` | Float         | Minimum PAPA score among winners of the call.              |
 | `selected`            | Integer       | Number of winners.                                         |
 
 
 # 10.  Update Call: Employee
 <span style="color: green; font-weight: bold;"> FINISHED </span>
 
-**URL:** `/call/api/<int:pk>/`.
+**URL:** `/call/api_put/<int:pk>/`.
 
 **Method:** `PUT`
 
@@ -309,22 +309,22 @@ recognize the current user.
 | Field Name            | Required      | Type          | Description                                                |
 |-----------------------|---------------|---------------|------------------------------------------------------------|
 | `call_id`             | YES - In Path | int           | ID of the call to be updated.                              |
-| `university_id`       | YES           | int           | ID of the University offering the call.                    | 
-| `active`              | YES           | bool          | True if is active, false otherwise                         |
-| `begin_date`          | YES           | Date          | Calls start date.(YYYY-MM-DD)                              |
-| `deadline`            | YES           | Date          | Calls deadline date for submission.(YYYY-MM-DD)            |
-| `min_advance`         | YES           | Float         | Minimum advance required for application.                  |
-| `min_papa`            | YES           | Float         | Minimum PAPA score required for application.               |
-| `format`              | YES           | String        | Format of the call(virtual,presencial or mixed).           |
-| `study_level`         | YES           | String        | Value from (pre_pregrado,pos_postgrado or doc_doctorado).  |
-| `year`                | YES           | Integer       | Year of the exchange.                                      |
-| `semester`            | YES           | Integer       | Semester of the exchange. (1,2)                            |
-| `language`            | YES           | String        | Language of the call according to ISO 639-1                |
-| `description`         | YES           | Text          | Description of the call.                                   |
-| `available_slots`     | YES           | Integer       | Number of available slots for the call.                    |
+| `university_id`       | NO            | int           | ID of the University offering the call.                    | 
+| `active`              | NO            | bool          | True if is active, false otherwise                         |
+| `begin_date`          | NO            | Date          | Calls start date.(YYYY-MM-DD)                              |
+| `deadline`            | NO            | Date          | Calls deadline date for submission.(YYYY-MM-DD)            |
+| `min_advance`         | NO            | Float         | Minimum advance required for application.                  |
+| `min_papa`            | NO            | Float         | Minimum PAPA score required for application.               |
+| `format`              | NO            | String        | Format of the call(virtual,presencial or mixed).           |
+| `study_level`         | NO            | String        | Value from (pre_pregrado,pos_postgrado or doc_doctorado).  |
+| `year`                | NO            | Integer       | Year of the exchange.                                      |
+| `semester`            | NO            | Integer       | Semester of the exchange. (1,2)                            |
+| `language`            | NO            | String        | Language of the call according to ISO 639-1                |
+| `description`         | NO            | Text          | Description of the call.                                   |
+| `available_slots`     | NO            | Integer       | Number of available slots for the call.                    |
 | `note`                | NO            | Text          | Additional notes about the call.                           |
-| `highest_PAPA_winner` | NO            | Float         | Highest PAPA score among winners of the call.              |
-| `minimum_PAPA_winner` | NO            | Float         | Minimum PAPA score among winners of the call.              |
+| `highest_papa_winner` | NO            | Float         | Highest PAPA score among winners of the call.              |
+| `minimum_papa_winner` | NO            | Float         | Minimum PAPA score among winners of the call.              |
 | `selected`            | NO            | Integer       | Number of winners.                                         |
 
 
@@ -347,8 +347,8 @@ recognize the current user.
 | `description`        | Text          | Description of the call.                                   |
 | `available_slots`    | Integer       | Number of available slots for the call.                    |
 | `note`               | Text          | Additional notes about the call.                           |
-| `highest_PAPA_winner`| Float         | Highest PAPA score among winners of the call.              |
-| `minimum_PAPA_winner` | Float         | Minimum PAPA score among winners of the call.              |
+| `highest_papa_winner`| Float         | Highest PAPA score among winners of the call.              |
+| `minimum_papa_winner` | Float         | Minimum PAPA score among winners of the call.              |
 | `selected`           | Integer       | Number of winners.                                         |
 
 
@@ -405,8 +405,8 @@ recognize the current user.
 | `description`        | Text          | Description of the call.                                   |
 | `available_slots`    | Integer       | Number of available slots for the call.                    |
 | `note`               | Text          | Additional notes about the call.                           |
-| `highest_PAPA_winner`| Float         | Highest PAPA score among winners of the call.              |
-| `minimum_PAPA_winner` | Float         | Minimum PAPA score among winners of the call.              |
+| `highest_papa_winner`| Float         | Highest PAPA score among winners of the call.              |
+| `minimum_papa_winner` | Float         | Minimum PAPA score among winners of the call.              |
 | `selected`           | Integer       | Number of winners.                                         |
 
 
@@ -442,8 +442,8 @@ recognize the current user.
 | `description`        | Text          | Description of the call.                                   |
 | `available_slots`    | Integer       | Number of available slots for the call.                    |
 | `note`               | Text          | Additional notes about the call.                           |
-| `highest_PAPA_winner`| Float         | Highest PAPA score among winners of the call.              |
-| `minimum_PAPA_winner` | Float         | Minimum PAPA score among winners of the call.              |
+| `highest_papa_winner`| Float         | Highest PAPA score among winners of the call.              |
+| `minimum_papa_winner` | Float         | Minimum PAPA score among winners of the call.              |
 | `selected`           | Integer       | Number of winners.                                         |
 
 # 14.  Filter Over Calls: Employee
@@ -502,8 +502,8 @@ recognize the current user.
 | `description`        | Text          | Description of the call.                                      |
 | `available_slots`    | Integer       | Number of available slots for the call.                       |
 | `note`               | Text          | Additional notes about the call.                              |
-| `highest_PAPA_winner`| Float         | Highest PAPA score among winners of the call.                 |
-| `minimum_PAPA_winner` | Float         | Minimum PAPA score among winners of the call.                 |
+| `highest_papa_winner`| Float         | Highest PAPA score among winners of the call.                 |
+| `minimum_papa_winner` | Float         | Minimum PAPA score among winners of the call.                 |
 | `selected`           | Integer       | Number of winners.                                            |
 
 
@@ -591,7 +591,7 @@ recognize the current user.
 # 17.  Get University by ID: Employee
 <span style="color: green; font-weight: bold;"> FINISHED </span>
 
-**URL:** `/call/university_api/`.
+**URL:** `/call/university_api/<int:pk>/`.
 
 **Method:** `PUT`
 
@@ -631,7 +631,7 @@ recognize the current user.
 # 18.  Update Universities: Employee
 <span style="color: green; font-weight: bold;"> FINISHED </span>
 
-**URL:** `/call/university_api/`.
+**URL:** `/call/university_api_put/<int:pk>/`.
 
 **Method:** `PUT`
 
