@@ -678,7 +678,7 @@ recognize the current user.
 # 19.  Delete Universities: Employee
 <span style="color: green; font-weight: bold;"> FINISHED </span>
 
-**URL:** `/call/university_api/`.
+**URL:** `/call/university_api/<int:pk>/`.
 
 **Method:** `DELETE`
 
