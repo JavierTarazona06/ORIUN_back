@@ -17,6 +17,8 @@ from django.contrib.auth.models import User
 from django_project.constants_dict_front import constants_dict_front
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
+from datetime import datetime
+
 
 
 class OpenCallsStudent(APIView):
@@ -213,6 +215,7 @@ class CallDetails(generics.RetrieveUpdateDestroyAPIView):
 
 
 class UpdateCallsView(View):
+    permission_classes = [permissions.IsAuthenticated, IsEmployee]
     @csrf_exempt
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
@@ -229,21 +232,57 @@ class UpdateCallsView(View):
             return JsonResponse({'error': 'La convocatoria especificada no existe'}, status=404)
 
         try:
-            # Actualiza los atributos según los parámetros opcionales proporcionados en la solicitud
-            if 'atributo_1' in request.POST:
-                call.atributo_1 = request.POST['atributo_1']
-            if 'atributo_2' in request.POST:
-                call.atributo_2 = request.POST['atributo_2']
-            # Agrega más atributos según sea necesario
+            data = json.loads(request.body.decode('utf-8'))
+
+            if 'university_id' in data:
+                university_id = int(data['university_id'])
+                try:
+                    university_instance = University.objects.get(pk=university_id)
+                except University.DoesNotExist:
+                    return JsonResponse({'error': 'La universidad especificada no existe'}, status=400)
+                call.university_id  = university_instance
+            if 'active' in data:
+                call.active = data['active']
+            if 'begin_date' in data:
+                call.begin_date = data['begin_date']
+            if 'deadline' in data:
+                call.deadline = data['deadline']
+            if 'min_advance' in data:
+                call.min_advance = data['min_advance']
+            if 'min_papa' in data:
+                call.min_papa = data['min_papa']
+            if 'format' in data:
+                call.format = data['format']
+            if 'study_level' in data:
+                call.study_level= data['study_level']
+            if 'year' in data:
+                call.year = data['year']
+            if 'semester' in data:
+                call.semester = data['semester']
+            if 'language' in data:
+                call.language = data['language']
+            if 'description' in data:
+                call.description = data['description']
+            if 'available_slots' in data:
+                call.available_slots = data['available_slots']
+            if 'note' in data:
+                call.note = data['note']
+            if 'highest_papa_winner' in data:
+                call.highest_papa_winner = data['highest_papa_winner']
+            if 'minimum_papa_winner' in data:
+                call.minimum_papa_winner = data['minimum_papa_winner']
+            if 'selected' in data:
+                call.selected = data['selected']
 
             call.save()
-            return JsonResponse({'mensaje': 'Llamada actualizada exitosamente'})
+            return JsonResponse({'mensaje': 'Convocatoria actualizada exitosamente'})
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Solicitud JSON no válida'}, status=400)
         except Exception as e:
             return self.handle_exception(e)
 
     def handle_exception(self, exc):
         return JsonResponse({'error': str(exc)}, status=500)
-
 
 
 class OpenCalls(generics.ListCreateAPIView):
@@ -302,7 +341,7 @@ class CallsFilterSearch(APIView):
             university_id = request.GET.get('university_id')
             university_name = request.GET.get('university_name')
             deadline = request.GET.get('deadline')
-            format = request.GET.get('format')
+            format = request.GET.get('formato')
             study_level = request.GET.get('study_level')
             year = request.GET.get('year')
             semester = request.GET.get('semester')
@@ -327,7 +366,6 @@ class CallsFilterSearch(APIView):
             if deadline:
                 queryset = queryset.filter(deadline__lte=deadline)
             if format:
-                print("-------------------------", format)
                 if format == "P":
                     queryset = queryset.filter(format='P')
                 elif format == "V":
@@ -418,3 +456,49 @@ class UniversityDetails(generics.RetrieveUpdateDestroyAPIView):
 
         serializer = self.get_serializer(instance)
         return JsonResponse(serializer.data)
+
+
+class UpdateUniversityView(View):
+    permission_classes = [permissions.IsAuthenticated, IsEmployee]
+    @csrf_exempt
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_object(self, pk):
+        try:
+            return University.objects.get(pk=pk)
+        except University.DoesNotExist:
+            return None
+
+    def put(self, request, pk):
+        university = self.get_object(pk)
+        if not university:
+            return JsonResponse({'error': 'La universidad especificada no existe'}, status=404)
+
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+
+            if 'name' in data:
+                university.name = data['name']
+            if 'webpage' in data:
+                university.webpage = data['webpage']
+            if 'region' in data:
+                university.region = data['region']
+            if 'country' in data:
+                university.country = data['country']
+            if 'city' in data:
+                university.city = data['city']
+            if 'academic_offer' in data:
+                university.academic_offer = data['academic_offer']
+            if 'exchange_info' in data:
+                university.exchange_info = data['exchange_info']
+
+            university.save()
+            return JsonResponse({'mensaje': 'Universidad actualizada exitosamente'})
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Solicitud JSON no válida'}, status=400)
+        except Exception as e:
+            return self.handle_exception(e)
+
+    def handle_exception(self, exc):
+        return JsonResponse({'error': str(exc)}, status=500)
