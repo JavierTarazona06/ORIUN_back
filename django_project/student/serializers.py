@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Student, ContactPerson
+from django_project.constants import Constants
 
 
 class ContactPersonSerializer(serializers.ModelSerializer):
@@ -10,10 +11,17 @@ class ContactPersonSerializer(serializers.ModelSerializer):
 
 class StudentApplicationSerializer(serializers.ModelSerializer):
     contact_id = ContactPersonSerializer(required=False)
+    info_coordinator = serializers.SerializerMethodField(read_only=True)
+
+    def get_info_coordinator(self, obj):
+        headquarter = obj.get_headquarter_display()
+        faculty = obj.get_faculty_display()
+        major = obj.get_major_display()
+        return Constants.INFO_FACULTIES[headquarter][faculty][major]
 
     class Meta:
         model = Student
-        fields = ['contact_id', 'diseases', 'medication']
+        fields = ['contact_id', 'diseases', 'medication', 'info_coordinator']
 
     def update(self, instance, validated_data):
         instance.diseases = validated_data.get('diseases', instance.diseases)
