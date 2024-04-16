@@ -20,7 +20,6 @@ class EligibilityView(APIView):
     def get(self, request):
         student = request.user.student
 
-        # TODO: check requirement of max 1 ida en los andes y avance en las otras
         # Being matriculated or en 'reserva de cupo'
         if not student.is_enrolled:
             return JsonResponse({'eligibility': False, 'message': 'Necesita estar matriculado o en reserva de cupo'})
