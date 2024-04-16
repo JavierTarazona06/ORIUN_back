@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 from .models import Call, University
 from .serializers import CallSerializerOpen, CallSerializerClosed, CallDetailsSerializerOpenStudent, \
-    CallDetailsSerializerClosedStudent, CallSerializer, UniversitySerializer, CallForUniSerializer
+    CallDetailsSerializerClosedStudent, CallSerializer, UniversitySerializer, CallForUniSerializer, CallSerializerPost, UniversitySerializerPost
 from rest_framework.views import APIView
 from rest_framework import status, generics, permissions
 import json
@@ -157,11 +157,11 @@ class ClosedCallDetailStudent(APIView):
 # Javi
 
 class CallView(generics.ListCreateAPIView):
-    serializer_class = CallSerializer
+    serializer_class = CallSerializerPost
     permission_classes = [permissions.IsAuthenticated, IsEmployee]
 
     def handle_exception(self, exc):
-        return JsonResponse({'error': str(exc)}, status=500)
+        return JsonResponse({'error': str(exc)})
 
     def get_queryset(self):
         return Call.objects.all()
@@ -203,7 +203,7 @@ class CallDetails(generics.RetrieveUpdateDestroyAPIView):
         super().__init__(*args, **kwargs)
         try:
             self.queryset = Call.objects.all()
-            self.serializer_class = CallSerializer
+            self.serializer_class = CallSerializerPost
             self.permission_classes = [permissions.IsAuthenticated, IsEmployee]
         except Exception as e:
             self.handle_exception(e)
@@ -227,7 +227,7 @@ class CallDetails(generics.RetrieveUpdateDestroyAPIView):
         except Call.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        serializer = CallSerializer(instance=call, data=request.data, partial=True)
+        serializer = CallSerializerPost(instance=call, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -352,7 +352,7 @@ class ClosedCalls(generics.ListCreateAPIView):
 
 
 class CallsFilterSearch(APIView):
-    serializer_class = CallSerializer
+    serializer_class = CallSerializerPost
     permission_classes = [permissions.IsAuthenticated, IsEmployee]
 
     def get(self, request):
@@ -368,6 +368,7 @@ class CallsFilterSearch(APIView):
             region = request.GET.get('region')
             country = request.GET.get('country')
             language = request.GET.get('language')
+            print(language)
 
             if university_name:
                 university_name = university_name.lower()
@@ -417,7 +418,7 @@ class CallsFilterSearch(APIView):
                 call.study_level = constants_dict_front["study_level"][str(call.study_level)]
                 call.language = constants_dict_front["language"][str(call.language)]
 
-            serializer = CallSerializer(queryset, many=True)
+            serializer = CallSerializerPost(queryset, many=True)
             return JsonResponse(serializer.data, safe=False)
 
         except Exception as e:
@@ -425,7 +426,7 @@ class CallsFilterSearch(APIView):
 
 
 class UniversityView(generics.ListCreateAPIView):
-    serializer_class = UniversitySerializer
+    serializer_class = UniversitySerializerPost
     permission_classes = [permissions.IsAuthenticated, IsEmployee]
 
     def handle_exception(self, exc):
@@ -449,7 +450,7 @@ class UniversityDetails(generics.RetrieveUpdateDestroyAPIView):
         super().__init__(*args, **kwargs)
         try:
             self.queryset = University.objects.all()
-            self.serializer_class = UniversitySerializer
+            self.serializer_class = UniversitySerializerPost
             self.permission_classes = [permissions.IsAuthenticated, IsEmployee]
         except Exception as e:
             self.handle_exception(e)
@@ -463,7 +464,7 @@ class UniversityDetails(generics.RetrieveUpdateDestroyAPIView):
         except University.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        serializer = UniversitySerializer(instance=university, data=request.data, partial=True)
+        serializer = UniversitySerializerPost(instance=university, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)

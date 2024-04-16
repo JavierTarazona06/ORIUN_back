@@ -157,10 +157,10 @@ recognize the current user.
 | `selected`           | Integer       | Number of winners.                                |
 
 
-# 7.  Get Call: Employee
+# 7.  Get Call: Employee with Universities
 <span style="color: green; font-weight: bold;"> FINISHED </span>
 
-**URL:** `/call/api/`.
+**URL:** `/call/apiu/`.
 
 **Method:** `GET`
 

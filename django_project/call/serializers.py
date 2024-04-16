@@ -54,12 +54,21 @@ class CallSerializer(serializers.ModelSerializer):
         model = Call
         fields = '__all__'
 
+class CallSerializerPost(serializers.ModelSerializer):
+    class Meta:
+        model = Call
+        fields = '__all__'
+
 class UniversitySerializer(serializers.ModelSerializer):
     region = serializers.CharField(source="get_region_display")
     class Meta:
         model = University
         fields = '__all__'
 
+class UniversitySerializerPost(serializers.ModelSerializer):
+    class Meta:
+        model = University
+        fields = '__all__'
 
 class CallForUniSerializer(serializers.ModelSerializer):
     university_id = UniversitySerializer()
