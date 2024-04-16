@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 from .models import Call, University
 from .serializers import CallSerializerOpen, CallSerializerClosed, CallDetailsSerializerOpenStudent, \
-    CallDetailsSerializerClosedStudent, CallSerializer, UniversitySerializer
+    CallDetailsSerializerClosedStudent, CallSerializer, UniversitySerializer, CallForUniSerializer
 from rest_framework.views import APIView
 from rest_framework import status, generics, permissions
 import json
@@ -176,6 +176,26 @@ class CallView(generics.ListCreateAPIView):
 
         serializer = self.get_serializer(queryset, many=True)
         return JsonResponse(serializer.data, safe=False)
+
+
+class CallWithUniversityView(View):
+    permission_classes = [permissions.IsAuthenticated, IsEmployee]
+
+    def get(self, request):
+        try:
+            calls_with_universities = Call.objects.select_related('university_id').all()
+
+
+            serialized_calls = CallForUniSerializer(calls_with_universities, many=True).data
+
+
+            return JsonResponse(serialized_calls, safe=False)
+        except Exception as e:
+            return self.handle_exception(e)
+
+    def handle_exception(self, exc):
+        return JsonResponse({'error': str(exc)}, status=500)
+
 
 
 class CallDetails(generics.RetrieveUpdateDestroyAPIView):

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Call, University
-from django_project.constants import Constants
+
 
 class CallSerializerOpen(serializers.ModelSerializer):
     university_name = serializers.CharField(source='university_id.name')
@@ -47,12 +47,25 @@ class CallDetailsSerializerClosedStudent(CallDetailsSerializerOpenStudent):
 
 
 class CallSerializer(serializers.ModelSerializer):
+    format = serializers.CharField(source="get_format_display")
+    study_level = serializers.CharField(source="get_study_level_display")
+    language = serializers.CharField(source="get_language_display")
     class Meta:
         model = Call
         fields = '__all__'
 
 class UniversitySerializer(serializers.ModelSerializer):
+    region = serializers.CharField(source="get_region_display")
     class Meta:
         model = University
         fields = '__all__'
 
+
+class CallForUniSerializer(serializers.ModelSerializer):
+    university_id = UniversitySerializer()
+    format = serializers.CharField(source="get_format_display")
+    study_level = serializers.CharField(source="get_study_level_display")
+    language = serializers.CharField(source="get_language_display")
+    class Meta:
+        model = Call
+        fields = '__all__'
