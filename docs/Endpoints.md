@@ -172,25 +172,33 @@ recognize the current user.
 
 **Outputs:**
 
-| Field Name            | Type          | Description                                               |
-|----------------------|---------------|------------------------------------------------------------|
-|`university_id`       | int           | ID of the University offering the call.                    | 
-| `active`             | bool          | True if is active, false otherwise                         |
-| `begin_date`         | Date          | Calls start date.(YYYY-MM-DD)                              |
-| `deadline`           | Date          | Calls deadline date for submission.(YYYY-MM-DD)            |
-| `min_advance`        | Float         | Minimum advance required for application.                  |
-| `min_papa`           | Float         | Minimum PAPA score required for application.               |
-| `format`             | String        | Format of the call(virtual,presencial or mixed).           |
-| `study_level`        | String        | Value from (pre_pregrado,pos_postgrado or doc_doctorado).  |
-| `year`               | Integer       | Year of the exchange.                                      |
-| `semester`           | Integer       | Semester of the exchange. (1,2)                            |
-| `language`           | String        | Language of the call according to ISO 639-1                |
-| `description`        | Text          | Description of the call.                                   |
-| `available_slots`    | Integer       | Number of available slots for the call.                    |
-| `note`               | Text          | Additional notes about the call.                           |
-| `highest_papa_winner`| Float         | Highest PAPA score among winners of the call.              |
-| `minimum_papa_winner` | Float         | Minimum PAPA score among winners of the call.              |
-| `selected`           | Integer       | Number of winners.                                         |
+| Field Name            | Type       | Description                                               |
+|-----------------------|------------|-----------------------------------------------------------|
+| `university_id`       | Dictionary | Dictionary                                                |
+| -`id`                 | int        | University ID                                             |
+| -`region`             | String     | University Region                                         |
+| -`name`               | String     | University name                                           |
+| -`webpage`            | String     | University webpage                                        |
+| -`country`            | String     | University country                                        |
+| -`city`               | String     | University city                                           |
+| -`academic_offer`     | String     | University academic_offer                                 |
+| -`exchange_info`      | String     | University exchange_info                                  |
+| `active`              | bool       | True if is active, false otherwise                        |
+| `begin_date`          | Date       | Calls start date.(YYYY-MM-DD)                             |
+| `deadline`            | Date       | Calls deadline date for submission.(YYYY-MM-DD)           |
+| `min_advance`         | Float      | Minimum advance required for application.                 |
+| `min_papa`            | Float      | Minimum PAPA score required for application.              |
+| `format`              | String     | Format of the call(virtual,presencial or mixed).          |
+| `study_level`         | String     | Value from (pre_pregrado,pos_postgrado or doc_doctorado). |
+| `year`                | Integer    | Year of the exchange.                                     |
+| `semester`            | Integer    | Semester of the exchange. (1,2)                           |
+| `language`            | String     | Language of the call according to ISO 639-1               |
+| `description`         | Text       | Description of the call.                                  |
+| `available_slots`     | Integer    | Number of available slots for the call.                   |
+| `note`                | Text       | Additional notes about the call.                          |
+| `highest_papa_winner` | Float      | Highest PAPA score among winners of the call.             |
+| `minimum_papa_winner` | Float      | Minimum PAPA score among winners of the call.             |
+| `selected`            | Integer    | Number of winners.                                        |
 
 
 # 8.  Post Call: Employee
