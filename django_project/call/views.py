@@ -374,18 +374,44 @@ class CallsFilterSearch(APIView):
 
     def get(self, request):
         try:
-            active = request.GET.get('active')
-            university_id = request.GET.get('university_id')
-            university_name = request.GET.get('university_name')
-            deadline = request.GET.get('deadline')
-            format = request.GET.get('formato')
-            study_level = request.GET.get('study_level')
-            year = request.GET.get('year')
-            semester = request.GET.get('semester')
-            region = request.GET.get('region')
-            country = request.GET.get('country')
-            language = request.GET.get('language')
-            print(language)
+            data = json.loads(request.body)
+            print(data)
+            active = ""
+            university_id = ""
+            university_name = ""
+            deadline = ""
+            format = ""
+            study_level = ""
+            year = ""
+            semester = ""
+            region = ""
+            country = ""
+            language = ""
+
+
+            if 'active' in data:
+                active = data['active']
+            if 'university_id' in data:
+                university_id = data['university_id']
+            if 'university_name' in data:
+                university_name = data['university_name']
+            if 'deadline' in data:
+                deadline = data['deadline']
+            if 'formato' in data:
+                format = data['formato']
+            if 'study_level' in data:
+                study_level = data['study_level']
+            if 'year' in data:
+                year = data['year']
+            if 'semester' in data:
+                semester = data['semester']
+            if 'region' in data:
+                region = data['region']
+            if 'country' in data:
+                country = data['country']
+            if 'language' in data:
+                language = data['language']
+
 
             if university_name:
                 university_name = university_name.lower()
@@ -410,7 +436,7 @@ class CallsFilterSearch(APIView):
                     queryset = queryset.filter(format='V')
                 elif format == "M":
                     queryset = queryset.filter(format='M')
-                #queryset = queryset.filter(format=format)
+                queryset = queryset.filter(format=format)
             if study_level:
                 queryset = queryset.filter(study_level=study_level)
             if year:

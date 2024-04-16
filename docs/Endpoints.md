@@ -91,13 +91,14 @@ recognize the current user.
 | `university_name` | Name of the university                           | String    | No       | name_university=Universidad%20de%20los%20Andes        |
 
 **Outputs:**
-| Field Name                        | Data Type    | Description                                                      |
-|-----------------------------------|--------------|------------------------------------------------------------------|
-| `university_name`                 | String       | Name of the university offering the call.                        |
-| `country`                         | String       | Country where the call is offered.                               |
-| `language`                        | ArrayField   | Language requirement for the call.                               |
-| `deadline`                        | Date         | Deadline for application submission for the call.(YYYY-MM-DD)    |
-| `minimum_papa_winner`              | Float        | Minimum PAPA score among winners of the call.                    |
+
+| Field Name                        | Data Type    | Description                                                     |
+|-----------------------------------|--------------|-----------------------------------------------------------------|
+| `university_name`                 | String       | Name of the university offering the call.                       |
+| `country`                         | String       | Country where the call is offered.                              |
+| `language`                        | ArrayField   | Language requirement for the call.                              |
+| `deadline`                        | Date         | Deadline for application submission for the call.(YYYY-MM-DD)   |
+| `minimum_papa_winner              | Float        | Minimum PAPA score among winners of the call.                   |
 
 # 5.  Get details of open call
 <span style="color: red; font-weight: bold;"> STATUS: NOT FINISHED </span>
