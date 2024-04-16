@@ -178,20 +178,15 @@ class CallView(generics.ListCreateAPIView):
         return JsonResponse(serializer.data, safe=False)
 
     def post(self, request, *args, **kwargs):
-        data = request.POST
+        data = json.loads(request.body)
 
-        # Crear una instancia de CallSerializer con los datos de la solicitud
-        serializer = CallSerializer(data=data)
+        serializer = CallSerializerPost(data=data)
 
-        # Validar los datos
         if serializer.is_valid():
-            # Guardar la instancia de Call en la base de datos
             call_instance = serializer.save()
 
-            # Devolver una respuesta JSON indicando que la operación fue exitosa
-            return JsonResponse({'mensaje': 'Llamada creada exitosamente', 'id': call_instance.id}, status=201)
+            return JsonResponse({'mensaje': 'Convocatoria creada exitosamente', 'id': call_instance.id}, status=201)
         else:
-            # Devolver una respuesta JSON con los errores de validación si los datos no son válidos
             return JsonResponse(serializer.errors, status=400)
 
 
@@ -249,6 +244,14 @@ class CallDetails(generics.RetrieveUpdateDestroyAPIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            self.perform_destroy(instance)
+            return Response({'mensaje': 'Convocatoria eliminada satisfactoriamente'}, status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class UpdateCallsView(View):
