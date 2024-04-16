@@ -56,11 +56,11 @@ recognize the current user.
 **Inputs:**  These inputs (parameters) are not mandatory, since they are only filters. That means that you can send no filter, one filter, some of them or all of them. 
 
 
-| Parameter        | Description                                      | Type      | Required | Example                                               |   
-|------------------|--------------------------------------------------|-----------|----------|-------------------------------------------------------|
-| `country`        | Country of the university                        | String    | No       | country=Colombia                                      |
-| `language`       | Language requirement for the call                | ArrayField| No       | language=es                                           |
-| `university_name`| Name of the university                           | String    | No       | name_university=Universidad%20de%20los%20Andes        |
+| Parameter         | Description                                                        | Type      | Required | Example                                        |   
+|-------------------|--------------------------------------------------------------------|-----------|----------|------------------------------------------------|
+| `countries`       | Country of the university. First of each word in Capital letters.  | String    | No       | countries=Colombia                             |
+| `languages`       | Language requirement for the call                                  | ArrayField| No       | languages=es                                   |
+| `university_name` | Name of the university                                             | String    | No       | name_university=Universidad%20de%20los%20Andes |
 
 **Outputs:**
 
@@ -84,21 +84,21 @@ recognize the current user.
 
 **Inputs:** These inputs(paramaters) are not mandatory, since they are only filters. That means that you can send no filter, one filter, some of them or all of them. 
 
-| Parameter         | Description                                      | Type      | Required | Example                                               |   
-|-------------------|--------------------------------------------------|-----------|----------|-------------------------------------------------------|
-| `country`         | Country of the university                        | String    | No       | country=Colombia                                      |
-| `language `       | Language requirement for the call                | ArrayField| No       | language=es                                           |
-| `university_name` | Name of the university                           | String    | No       | name_university=Universidad%20de%20los%20Andes        |
+| Parameter         | Description                                                       | Type      | Required | Example                                        |   
+|-------------------|-------------------------------------------------------------------|-----------|----------|------------------------------------------------|
+| `country`         | Country of the university. First of each word in Capital letters. | String    | No       | country=Colombia                               |
+| `language `       | Language requirement for the call                                 | ArrayField| No       | language=es                                   |
+| `university_name` | Name of the university                                            | String    | No       | name_university=Universidad%20de%20los%20Andes |
 
 **Outputs:**
 
-| Field Name                        | Data Type    | Description                                                     |
-|-----------------------------------|--------------|-----------------------------------------------------------------|
-| `university_name`                 | String       | Name of the university offering the call.                       |
-| `country`                         | String       | Country where the call is offered.                              |
-| `language`                        | ArrayField   | Language requirement for the call.                              |
-| `deadline`                        | Date         | Deadline for application submission for the call.(YYYY-MM-DD)   |
-| `minimum_papa_winner              | Float        | Minimum PAPA score among winners of the call.                   |
+| Field Name            | Data Type    | Description                                                     |
+|-----------------------|--------------|-----------------------------------------------------------------|
+| `university_name`     | String       | Name of the university offering the call.                       |
+| `country`             | String       | Country where the call is offered.                              |
+| `language`            | ArrayField   | Language requirement for the call.                              |
+| `deadline`            | Date         | Deadline for application submission for the call.(YYYY-MM-DD)   |
+| `minimum_papa_winner` | Float        | Minimum PAPA score among winners of the call.                   |
 
 # 5.  Get details of open call
 <span style="color: red; font-weight: bold;"> STATUS: NOT FINISHED </span>
@@ -469,19 +469,19 @@ recognize the current user.
 
 **Inputs:**
 
-| Field Name           | Required      | Type           | Description                                                |
-|----------------------|---------------|----------------|------------------------------------------------------------|
-|`active`              | Optional      | bool           | True if is active, false otherwise.                        |
-|`university_id`       | Optional      | int            | ID of the University offering the call.                    |
-|`university_name`     | Optional      | String         | Name of the University offering the call.                  |
-|`deadline`            | Optional      | date           | Calls deadline date for submission.(YYYY-MM-DD)            |
-|`format`              | Optional      | String (Enum)  | Format of the call(virtual,presencial or mixed).           |
-|`study_level`         | Optional      | String (Enum)  | Value from (pre_pregrado,pos_postgrado or doc_doctorado).  |
-|`year`                | Optional      | int            | Year of the exchange.                                      |
-|`semester`            | Optional      | int            | Semester of the exchange. (1,2)                            |
-|`region`              | Optional      | String (Enum)  | University region.*                                        |
-|`country`             | Optional      | String         | University country.                                        |
-|`language`            | Optional      | String (Enum)  | Language that is demanded by the call.                     |
+| Field Name           | Required      | Type                 | Description                                                |
+|----------------------|---------------|----------------------|------------------------------------------------------------|
+|`active`              | Optional      | String (true, false) | True if is active, false otherwise.                        |
+|`university_id`       | Optional      | int                  | ID of the University offering the call.                    |
+|`university_name`     | Optional      | String               | Name of the University offering the call.                  |
+|`deadline`            | Optional      | date                 | Calls deadline date for submission.(YYYY-MM-DD)            |
+|`format`              | Optional      | String (Enum)        | Format of the call(virtual,presencial or mixed).           |
+|`study_level`         | Optional      | String (Enum)        | Value from (pre_pregrado,pos_postgrado or doc_doctorado).  |
+|`year`                | Optional      | int                  | Year of the exchange.                                      |
+|`semester`            | Optional      | int                  | Semester of the exchange. (1,2)                            |
+|`region`              | Optional      | String (Enum)        | University region.*                                        |
+|`country`             | Optional      | String               | University country.                                        |
+|`language`            | Optional      | String (Enum)        | Language that is demanded by the call.                     |
 
 * University Regions:
     {"value": "NA", "display": "Norte América"},

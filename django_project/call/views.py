@@ -394,6 +394,9 @@ class CallsFilterSearch(APIView):
 
             if 'active' in data:
                 active = data['active']
+
+            if active==False:
+                active = "False"
             if 'university_id' in data:
                 university_id = data['university_id']
             if 'university_name' in data:
@@ -424,9 +427,11 @@ class CallsFilterSearch(APIView):
 
             if active:
                 if (active == "true"):
-                    active = "T" + active[1:]
+                    #active = "T" + active[1:]
+                    active = "True"
                 if (active == "false"):
-                    active = "F" + active[1:]
+                    #active = "F" + active[1:]
+                    active = "False"
                 queryset = queryset.filter(active=active)
             if university_id:
                 queryset = queryset.filter(university_id__id=university_id)
