@@ -177,6 +177,23 @@ class CallView(generics.ListCreateAPIView):
         serializer = self.get_serializer(queryset, many=True)
         return JsonResponse(serializer.data, safe=False)
 
+    def post(self, request, *args, **kwargs):
+        data = request.POST
+
+        # Crear una instancia de CallSerializer con los datos de la solicitud
+        serializer = CallSerializer(data=data)
+
+        # Validar los datos
+        if serializer.is_valid():
+            # Guardar la instancia de Call en la base de datos
+            call_instance = serializer.save()
+
+            # Devolver una respuesta JSON indicando que la operación fue exitosa
+            return JsonResponse({'mensaje': 'Llamada creada exitosamente', 'id': call_instance.id}, status=201)
+        else:
+            # Devolver una respuesta JSON con los errores de validación si los datos no son válidos
+            return JsonResponse(serializer.errors, status=400)
+
 
 class CallWithUniversityView(View):
     permission_classes = [permissions.IsAuthenticated, IsEmployee]
