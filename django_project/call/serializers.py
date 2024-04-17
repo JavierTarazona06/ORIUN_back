@@ -1,17 +1,27 @@
 from rest_framework import serializers
 from .models import Call, University
-
+from django_project.constants_dict_front import constants_dict_front
 
 class CallSerializerOpen(serializers.ModelSerializer):
     university_name = serializers.CharField(source='university_id.name')
     country = serializers.CharField(source='university_id.country')
-    language = serializers.CharField()
+    language = serializers.SerializerMethodField()
     deadline = serializers.DateField(format='%Y-%m-%d')
+    region =  serializers.SerializerMethodField(source = 'university_id.region')
 
+    def get_language(self, obj):
+        language_value = obj.language
+        return constants_dict_front.get("language", {}).get(str(language_value), language_value)
+
+    def get_region(self, obj):
+        university = obj.university_id
+        if university:
+            return constants_dict_front.get("region", {}).get(str(university.region), university.region)
+        return None
 
     class Meta:
         model = Call
-        fields = ('id','university_name', 'country', 'language', 'deadline')
+        fields = ('id','university_name', 'country', 'language', 'deadline','region')
 
 class CallSerializerClosed(CallSerializerOpen):
     class Meta(CallSerializerOpen.Meta):

@@ -40,6 +40,9 @@ class OpenCallsStudent(APIView):
             countries = request.GET.get('countries')
             languages = request.GET.get('languages')
             university_name = request.GET.get('name_university')
+            deadline = request.GET.get('deadline')
+            call_id = request.GET.get('id')
+            region = request.GET.get('region')
 
             if university_name:
                 university_name = university_name.lower()
@@ -53,6 +56,14 @@ class OpenCallsStudent(APIView):
                 open_calls = open_calls.filter(language__in=languages.split(','))
             if university_name:
                 open_calls = open_calls.filter(university_id__name__icontains=university_name)
+            if deadline:
+                # Filter calls with a deadline before or equal to the specified parameter
+                open_calls = open_calls.filter(deadline__lte=deadline)
+            if call_id:
+                open_calls = open_calls.filter(id=call_id)
+            if region:
+                open_calls = open_calls.filter(university_id__region=region)
+
 
             open_calls = open_calls.filter(min_papa__lte=student_papa)
             open_calls = open_calls.filter(study_level=student_study_level)
@@ -82,6 +93,7 @@ class ClosedCallsStudent(APIView):
             language = request.GET.get('language')
             name_university = request.GET.get('name_university')
             min_papa_winner = request.GET.get('minimum_papa_winner')
+            region = request.GET.get('region')
 
             # Filter calls based on provided criteria (CLOSED CALLS)
             closed_calls = Call.objects.filter(active=False)
@@ -90,13 +102,16 @@ class ClosedCallsStudent(APIView):
                 closed_calls = closed_calls.filter(university_id__country=country)
 
             if language:
-                closed_calls = closed_calls.filter(language=language)
+                closed_calls = closed_calls.filter(language__icontains=language)
 
             if name_university:
                 closed_calls = closed_calls.filter(university_id__name__icontains=name_university)
 
             if min_papa_winner:
                 closed_calls = closed_calls.filter(minimum_papa_winner__gte=float(min_papa_winner))
+
+            if region:
+                closed_calls = closed_calls.filter(university_id__region=region)
 
             # Serialize the data
             serializer_closed = CallSerializerClosed(closed_calls, many=True)
