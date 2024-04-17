@@ -379,90 +379,94 @@ class CallsFilterSearch(APIView):
         try:
             data = json.loads(request.body)
             print(data)
-            active = ""
-            university_id = ""
-            university_name = ""
-            deadline = ""
-            format = ""
-            study_level = ""
-            year = ""
-            semester = ""
-            region = ""
-            country = ""
-            language = ""
+
+            call_id = None
+            active = None
+            university_id = None
+            university_name = None
+            deadline = None
+            format = None
+            study_level = None
+            year = None
+            semester = None
+            region = None
+            country = None
+            language = None
 
 
-            if 'active' in data:
-                active = data['active']
+            if 'call_id' in data:
+                call_id = data['call_id']
+                queryset = Call.objects.filter(id=call_id)
+                if not queryset.exists():
+                    return JsonResponse(
+                        {'message': 'No hay convocatoria que se relacione con ID especificado'},
+                        status=status.HTTP_404_NOT_FOUND)
+            else:
+                if 'active' in data:
+                    active = data['active']
+                    if active==False:
+                        active = "False"
+                if 'university_id' in data:
+                    university_id = data['university_id']
+                if 'university_name' in data:
+                    university_name = data['university_name']
+                    university_name = university_name.lower()
+                if 'deadline' in data:
+                    deadline = data['deadline']
+                if 'formato' in data:
+                    format = data['formato']
+                if 'study_level' in data:
+                    study_level = data['study_level']
+                if 'year' in data:
+                    year = data['year']
+                if 'semester' in data:
+                    semester = data['semester']
+                if 'region' in data:
+                    region = data['region']
+                if 'country' in data:
+                    country = data['country']
+                if 'language' in data:
+                    language = data['language']
 
-            if active==False:
-                active = "False"
-            if 'university_id' in data:
-                university_id = data['university_id']
-            if 'university_name' in data:
-                university_name = data['university_name']
-            if 'deadline' in data:
-                deadline = data['deadline']
-            if 'formato' in data:
-                format = data['formato']
-            if 'study_level' in data:
-                study_level = data['study_level']
-            if 'year' in data:
-                year = data['year']
-            if 'semester' in data:
-                semester = data['semester']
-            if 'region' in data:
-                region = data['region']
-            if 'country' in data:
-                country = data['country']
-            if 'language' in data:
-                language = data['language']
+                # Construct queryset based on parameters
+                queryset = Call.objects.all()
 
+                if active:
+                    if (active == "true"):
+                        active = "True"
+                    if (active == "false"):
+                        active = "False"
+                    queryset = queryset.filter(active=active)
+                if university_id:
+                    queryset = queryset.filter(university_id__id=university_id)
+                if deadline:
+                    queryset = queryset.filter(deadline__lte=deadline)
+                if format:
+                    if format == "P":
+                        queryset = queryset.filter(format='P')
+                    elif format == "V":
+                        queryset = queryset.filter(format='V')
+                    elif format == "M":
+                        queryset = queryset.filter(format='M')
+                    queryset = queryset.filter(format=format)
+                if study_level:
+                    queryset = queryset.filter(study_level=study_level)
+                if year:
+                    queryset = queryset.filter(year=year)
+                if semester:
+                    queryset = queryset.filter(semester=semester)
+                if region:
+                    queryset = queryset.filter(university_id__region=region)
+                if country:
+                    queryset = queryset.filter(university_id__country__icontains=country)
+                if language:
+                    queryset = queryset.filter(language=language)
+                if university_name:
+                    queryset = queryset.filter(university_id__name__icontains=university_name)
 
-            if university_name:
-                university_name = university_name.lower()
-
-            # Construct queryset based on parameters
-            queryset = Call.objects.all()
-
-            if active:
-                if (active == "true"):
-                    #active = "T" + active[1:]
-                    active = "True"
-                if (active == "false"):
-                    #active = "F" + active[1:]
-                    active = "False"
-                queryset = queryset.filter(active=active)
-            if university_id:
-                queryset = queryset.filter(university_id__id=university_id)
-            if deadline:
-                queryset = queryset.filter(deadline__lte=deadline)
-            if format:
-                if format == "P":
-                    queryset = queryset.filter(format='P')
-                elif format == "V":
-                    queryset = queryset.filter(format='V')
-                elif format == "M":
-                    queryset = queryset.filter(format='M')
-                queryset = queryset.filter(format=format)
-            if study_level:
-                queryset = queryset.filter(study_level=study_level)
-            if year:
-                queryset = queryset.filter(year=year)
-            if semester:
-                queryset = queryset.filter(semester=semester)
-            if region:
-                queryset = queryset.filter(university_id__region=region)
-            if country:
-                queryset = queryset.filter(university_id__country__icontains=country)
-            if language:
-                queryset = queryset.filter(language=language)
-            if university_name:
-                queryset = queryset.filter(university_id__name__icontains=university_name)
-
-            if not queryset.exists():
-                return JsonResponse({'message': 'No calls match the provided criteria'},
-                                    status=status.HTTP_404_NOT_FOUND)
+                if not queryset.exists():
+                    return JsonResponse({'message': 'No hay convocatorias que se relacionen con los criterios especificados'},
+                                        status=status.HTTP_404_NOT_FOUND)
 
             for call in queryset:
                 call.format = constants_dict_front["format"][str(call.format)]
