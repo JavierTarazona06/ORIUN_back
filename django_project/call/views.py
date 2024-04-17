@@ -215,7 +215,7 @@ class CallDetails(generics.RetrieveUpdateDestroyAPIView):
         super().__init__(*args, **kwargs)
         try:
             self.queryset = Call.objects.all()
-            self.serializer_class = CallSerializerPost
+            self.serializer_class = CallForUniSerializer
             self.permission_classes = [permissions.IsAuthenticated, IsEmployee]
         except Exception as e:
             self.handle_exception(e)
@@ -326,7 +326,7 @@ class UpdateCallsView(View):
 
 
 class OpenCalls(generics.ListCreateAPIView):
-    serializer_class = CallSerializer
+    serializer_class = CallForUniSerializer
     permission_classes = [permissions.IsAuthenticated, IsEmployee]
 
     def get_queryset(self):
@@ -349,7 +349,7 @@ class OpenCalls(generics.ListCreateAPIView):
 
 
 class ClosedCalls(generics.ListCreateAPIView):
-    serializer_class = CallSerializer
+    serializer_class = CallForUniSerializer
     permission_classes = [permissions.IsAuthenticated, IsEmployee]
 
     def get_queryset(self):
@@ -397,6 +397,7 @@ class CallsFilterSearch(APIView):
             if 'call_id' in data:
                 call_id = data['call_id']
                 queryset = Call.objects.filter(id=call_id)
+                queryset = queryset.select_related('university_id').all()
                 if not queryset.exists():
                     return JsonResponse(
                         {'message': 'No hay convocatoria que se relacione con ID especificado'},
@@ -473,7 +474,7 @@ class CallsFilterSearch(APIView):
                 call.study_level = constants_dict_front["study_level"][str(call.study_level)]
                 call.language = constants_dict_front["language"][str(call.language)]
 
-            serializer = CallSerializerPost(queryset, many=True)
+            serializer = CallForUniSerializer(queryset, many=True)
             return JsonResponse(serializer.data, safe=False)
 
         except Exception as e:
@@ -498,6 +499,18 @@ class UniversityView(generics.ListCreateAPIView):
 
         serializer = self.get_serializer(queryset, many=True)
         return JsonResponse(serializer.data, safe=False)
+
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+
+        serializer = UniversitySerializerPost(data=data)
+
+        if serializer.is_valid():
+            uni_instance = serializer.save()
+
+            return JsonResponse({'mensaje': 'Universidad creada exitosamente', 'id': uni_instance.id}, status=201)
+        else:
+            return JsonResponse(serializer.errors, status=400)
 
 
 class UniversityDetails(generics.RetrieveUpdateDestroyAPIView):
@@ -532,6 +545,14 @@ class UniversityDetails(generics.RetrieveUpdateDestroyAPIView):
 
         serializer = self.get_serializer(instance)
         return JsonResponse(serializer.data)
+
+    def delete(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            self.perform_destroy(instance)
+            return Response({'mensaje': 'Universidad eliminada satisfactoriamente'}, status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class UpdateUniversityView(View):

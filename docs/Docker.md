@@ -24,6 +24,11 @@ Navigate to the root directory of the Oriun project and build the Docker image u
 sudo docker build -t oriun .
 ```
 
+If you already have an image:
+```bash
+sudo docker rmi oriun .
+```
+
 This command builds a Docker image named oriun using the Dockerfile located in the current directory.
 
 

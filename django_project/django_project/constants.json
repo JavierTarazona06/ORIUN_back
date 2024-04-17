@@ -130,7 +130,7 @@
         {"value": "LA", "display": "Latinoamérica"},
         {"value": "EU", "display": "Europa"},
         {"value": "OC", "display": "Oceanía"},
-        {"value": "AS", "display": "Oceanía"},
+        {"value": "AS", "display": "Asia"},
         {"value": "AN", "display": "Uniandes"},
         {"value": "SG", "display": "Convenio Sigueme/Nacional"}
     ],
