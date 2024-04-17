@@ -392,8 +392,8 @@ class CallsFilterSearch(APIView):
 
     def get(self, request):
         try:
-            data = json.loads(request.body)
-            print(data)
+            #data = json.loads(request.body)
+            #print(data)
 
             call_id = None
             active = None
@@ -407,6 +407,9 @@ class CallsFilterSearch(APIView):
             region = None
             country = None
             language = None
+
+            data = request.GET
+            print(data)
 
 
             if 'call_id' in data:
@@ -456,6 +459,8 @@ class CallsFilterSearch(APIView):
                 if university_id:
                     queryset = queryset.filter(university_id__id=university_id)
                 if deadline:
+                    current_date = timezone.now()
+                    queryset = queryset.filter(deadline__gte=current_date)
                     queryset = queryset.filter(deadline__lte=deadline)
                 if format:
                     if format == "P":
