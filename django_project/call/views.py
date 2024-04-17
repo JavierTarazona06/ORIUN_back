@@ -58,6 +58,8 @@ class OpenCallsStudent(APIView):
                 open_calls = open_calls.filter(university_id__name__icontains=university_name)
             if deadline:
                 # Filter calls with a deadline before or equal to the specified parameter
+                current_date = timezone.now()
+                open_calls = open_calls.filter(deadline__gte=current_date)
                 open_calls = open_calls.filter(deadline__lte=deadline)
             if call_id:
                 open_calls = open_calls.filter(id=call_id)
@@ -392,9 +394,6 @@ class CallsFilterSearch(APIView):
 
     def get(self, request):
         try:
-            #data = json.loads(request.body)
-            #print(data)
-
             call_id = None
             active = None
             university_id = None
