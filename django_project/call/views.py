@@ -90,7 +90,7 @@ class ClosedCallsStudent(APIView):
                 closed_calls = closed_calls.filter(university_id__country=country)
 
             if language:
-                closed_calls = closed_calls.filter(language=language)
+                closed_calls = closed_calls.filter(language__icontains=language)
 
             if name_university:
                 closed_calls = closed_calls.filter(university_id__name__icontains=name_university)
