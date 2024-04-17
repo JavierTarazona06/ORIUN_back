@@ -509,20 +509,20 @@ recognize the current user.
 
 All parameters are optional, but at least, an empty dictionary {} must be send.
 
-| Field Name        | Required      | Type                                | Description                                               |
-|-------------------|---------------|-------------------------------------|-----------------------------------------------------------|
-| `call_id`         | Optional      | int                                 | Call ID                                                   |
-| `active`          | Optional      | String (true, false) or Python Bool | True if is active, false otherwise.                       |
-| `university_id`   | Optional      | int                                 | ID of the University offering the call.                   |
-| `university_name` | Optional      | String                              | Name of the University offering the call.                 |
-| `deadline`        | Optional      | date                                | Calls deadline date for submission.(YYYY-MM-DD)           |
-| `format`          | Optional      | String (Enum)                       | Format of the call(virtual,presencial or mixed).          |
-| `study_level`     | Optional      | String (Enum)                       | Value from (pre_pregrado,pos_postgrado or doc_doctorado). |
-| `year`            | Optional      | int                                 | Year of the exchange.                                     |
-| `semester`        | Optional      | int                                 | Semester of the exchange. (1,2)                           |
-| `region`          | Optional      | String (Enum)                       | University region.*                                       |
-| `country`         | Optional      | String                              | University country.                                       |
-| `language`        | Optional      | String (Enum)                       | Language that is demanded by the call.                    |
+| Field Name        | Required      | Type                                | Description                                                                                     |
+|-------------------|---------------|-------------------------------------|-------------------------------------------------------------------------------------------------|
+| `call_id`         | Optional      | int                                 | Call ID                                                                                         |
+| `active`          | Optional      | String (true, false) or Python Bool | True if is active, false otherwise.                                                             |
+| `university_id`   | Optional      | int                                 | ID of the University offering the call.                                                         |
+| `university_name` | Optional      | String                              | Name of the University offering the call.                                                       |
+| `deadline`        | Optional      | date                                | Calls with deadline date for submission before given date and after current date.(YYYY-MM-DD)   |
+| `format`          | Optional      | String (Enum)                       | Format of the call(virtual,presencial or mixed).                                                |
+| `study_level`     | Optional      | String (Enum)                       | Value from (pre_pregrado,pos_postgrado or doc_doctorado).                                       |
+| `year`            | Optional      | int                                 | Year of the exchange.                                                                           |
+| `semester`        | Optional      | int                                 | Semester of the exchange. (1,2)                                                                 |
+| `region`          | Optional      | String (Enum)                       | University region.*                                                                             |
+| `country`         | Optional      | String                              | University country.                                                                             |
+| `language`        | Optional      | String (Enum)                       | Language that is demanded by the call.                                                          |
 
 * University Regions:
     {"value": "NA", "display": "Norte América"},
