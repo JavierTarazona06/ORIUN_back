@@ -51,25 +51,29 @@ recognize the current user.
     
 **Method:** `GET`
 
-**Description:**  Used to filter and display open calls based on several criteria, such as  country, language requirement and university name. Retrieves a list of open calls based on the provided criteria.
+**Description:**  Used to filter and display open calls based on several criteria, such as  country, language requirement, university name, call_id, region and deadline. Retrieves a list of open calls based on the provided criteria.
 
 **Inputs:**  These inputs (parameters) are not mandatory, since they are only filters. That means that you can send no filter, one filter, some of them or all of them. 
 
 
-| Parameter         | Description                                                        | Type      | Required | Example                                        |   
-|-------------------|--------------------------------------------------------------------|-----------|----------|------------------------------------------------|
-| `countries`       | Country of the university. First of each word in Capital letters.  | String    | No       | countries=Colombia                             |
-| `languages`       | Language requirement for the call                                  | ArrayField| No       | languages=es                                   |
-| `university_name` | Name of the university                                             | String    | No       | name_university=Universidad%20de%20los%20Andes |
+| Parameter         | Description                                                                                                                     | Type       | Required | Example                                        |   
+|-------------------|---------------------------------------------------------------------------------------------------------------------------------|------------|----------|------------------------------------------------|
+| `countries`       | Country of the university. First of each word in Capital letters.                                                               | String     | No       | countries=Colombia                             |
+| `languages`       | Language requirement for the call                                                                                               | ArrayField | No       | languages=es                                   |
+| `university_name` | Name of the university                                                                                                          | String     | No       | name_university=Universidad%20de%20los%20Andes |
+| `call_id`         | ID of the call                                                                                                                  | String     | No       | 3                                              |
+| `region`          | Region of the university                                                                                                        | String     | No       | 'LA' for Latin America                         |
+| `deadline`        | The program will display calls with a deadline before or equal to the specified parameter and after or equal to current date.   | Date       | No       | '2022-04-26' : YYYY-MM-DD                      |
+
 
 **Outputs:**
 
-| Name                | Type       | Description                                                  |
-|---------------------|------------|--------------------------------------------------------------|
-| `university_name`   | String     | Name of the university offering the call.                    |
-| `country`           | String     | Country where the call is offered.                           |
-| `language`          | ArrayField | Language requirement for the call.                           |
-| `deadline`          | Date       | Deadline for application submission for the call.(YYYY-MM-DD)|
+| Name              | Type        | Description                                                   |
+|-------------------|-------------|---------------------------------------------------------------|
+| `university_name` | String      | Name of the university offering the call.                     |
+| `country`         | String      | Country where the call is offered.                            |
+| `language`        | ArrayField  | Language requirement for the call.                            |
+| `deadline`        | Date        | Deadline for application submission for the call.(YYYY-MM-DD) |
 
 
 
@@ -80,15 +84,16 @@ recognize the current user.
 
 **Method:** `GET`
 
-**Description:**  Used to filter and display close calls based on several criteria, such as country, language requirement, and university name. Retrieves a list of closed calls based on the provided criteria.
+**Description:**  Used to filter and display close calls based on several criteria, such as country, language requirement, region and university name. Retrieves a list of closed calls based on the provided criteria.
 
 **Inputs:** These inputs(paramaters) are not mandatory, since they are only filters. That means that you can send no filter, one filter, some of them or all of them. 
 
-| Parameter         | Description                                                       | Type      | Required | Example                                        |   
-|-------------------|-------------------------------------------------------------------|-----------|----------|------------------------------------------------|
-| `country`         | Country of the university. First of each word in Capital letters. | String    | No       | country=Colombia                               |
-| `language `       | Language requirement for the call                                 | ArrayField| No       | language=es                                   |
-| `university_name` | Name of the university                                            | String    | No       | name_university=Universidad%20de%20los%20Andes |
+| Parameter         | Description                                                       | Type       | Required | Example                                        |   
+|-------------------|-------------------------------------------------------------------|------------|----------|------------------------------------------------|
+| `country`         | Country of the university. First of each word in Capital letters. | String     | No       | country=Colombia                               |
+| `language `       | Language requirement for the call                                 | ArrayField | No       | language=es                                    |
+| `university_name` | Name of the university                                            | String     | No       | name_university=Universidad%20de%20los%20Andes |
+| `region`          | Region of the university                                          | String     | No       | 'LA' for Latin America                         |
 
 **Outputs:**
 
