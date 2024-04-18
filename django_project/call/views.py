@@ -178,7 +178,7 @@ class CallView(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated, IsEmployee]
 
     def handle_exception(self, exc):
-        return JsonResponse({'error': str(exc)})
+        return JsonResponse({'error': str(exc)}, status=500)
 
     def get_queryset(self):
         return Call.objects.all()
