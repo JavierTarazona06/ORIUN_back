@@ -498,7 +498,7 @@ recognize the current user.
 
 **Method:** `GET`
 
-**Description:** Return calls filtered by if is active, university_id, university_name, deadline, format, study_level, year
+**Description:** Return calls filtered by call_id or if is active, university_id, university_name, deadline, format, study_level, year
         semester, region, country, language.
 
 * Priority is given to searches with an ID. This indicates that if an ID is specified, the system will exclusively search for the call associated with that ID.
@@ -507,7 +507,7 @@ recognize the current user.
 
 **Inputs:**
 
-All parameters are optional, but at least, an empty dictionary {} must be send.
+All parameters are optional.
 
 | Field Name        | Required      | Type                                | Description                                                                                     |
 |-------------------|---------------|-------------------------------------|-------------------------------------------------------------------------------------------------|
