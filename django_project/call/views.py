@@ -494,10 +494,10 @@ class CallsFilterSearch(APIView):
                 call.language = constants_dict_front["language"][str(call.language)]
 
             serializer = CallForUniSerializer(queryset, many=True)
-            return JsonResponse(serializer.data, safe=False)
+            return JsonResponse(serializer.data, safe=False, status=status.HTTP_200_OK)
 
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+            return JsonResponse({'error': str(e)}, status=status.HTTP_404_NOT_FOUND)
 
 
 class UniversityView(generics.ListCreateAPIView):
