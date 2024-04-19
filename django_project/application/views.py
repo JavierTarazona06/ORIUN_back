@@ -49,12 +49,12 @@ def create_forms(request):
             if 'contact' in attribute.name:
                 continue
 
-            elif attribute.choices is not None:
+            elif attribute.choices is not None:  # It is an enum
                 display_method_name = f'get_{attribute.name}_display'
                 attributes[attribute.name.upper()] = getattr(student, display_method_name)()
             else:
                 value = getattr(student, attribute.name)
-                if value is None:
+                if value is None:  # The value has not been set (like diseases)
                     value = 'No hay'
                 attributes[attribute.name.upper()] = value
         except AttributeError:  # It is like a many-to-one relation
