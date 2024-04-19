@@ -27,6 +27,7 @@ class Student(Person):
     date_banned_mobility = models.DateField(default=date(2000, 1, 1))
     is_banned_behave_un = models.BooleanField()
     num_semesters = models.SmallIntegerField()
+    # TODO: change to contact_person
     contact_id = models.ForeignKey(ContactPerson, on_delete=models.SET_NULL, null=True)
     diseases = models.TextField(null=True, blank=True)
     medication = models.TextField(null=True, blank=True)
