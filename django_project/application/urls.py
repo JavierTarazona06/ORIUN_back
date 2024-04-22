@@ -1,8 +1,9 @@
+from . import views
 from django.urls import path
-from .views import create_forms, get_region_call
 
 
 urlpatterns = [
-    path('region_call/', get_region_call, name='region_call'),
-    path('create_forms/', create_forms, name='create_forms'),
+    path('region_call/', views.get_region_call, name='region_call'),
+    path('create_forms/', views.create_forms, name='create_forms'),
+    path('download/', views.download_form, name='download_form'),
 ]

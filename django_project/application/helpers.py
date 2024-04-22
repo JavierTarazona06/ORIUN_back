@@ -5,10 +5,15 @@ from typing import Union
 from docx import Document
 from call.models import Call
 from datetime import datetime
+from datetime import timedelta
 from google.cloud import storage
 from student.models import Student
 from rest_framework.request import Request
 from django_project.constants import Constants
+
+
+CREDENTIALS = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
+STORAGE_CLIENT = storage.Client.from_service_account_json(CREDENTIALS)
 
 
 def set_variables(request: Request, student: Student) -> dict[str, Union[str, list]]:
@@ -84,6 +89,10 @@ def set_variables(request: Request, student: Student) -> dict[str, Union[str, li
 
 
 def fill_forms(attributes: dict[str, str], path_original_forms: str, path_save_forms: str) -> None:
+    """
+    Replaces the keys of the given dictionary with the values of that dictionary in each form and
+    saves them to the given path.
+    """
     if not os.path.exists(path_save_forms):
         os.mkdir(path_save_forms)
 
@@ -119,10 +128,7 @@ def upload_forms(path_save_forms: str) -> None:
     Uploads the forms of the student and call to GCP, and them removes those forms and the
     folder.
     """
-    credentials = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
-    storage_client = storage.Client.from_service_account_json(credentials)
-
-    bucket = storage_client.bucket('filled_documents')
+    bucket = STORAGE_CLIENT.bucket('filled_documents')
 
     list_forms = []
     for form in os.listdir(path_save_forms):
@@ -134,3 +140,20 @@ def upload_forms(path_save_forms: str) -> None:
     for form in list_forms:
         os.remove(form)
     os.rmdir(path_save_forms)
+
+
+def get_link_form(type_form: str, form_name: str) -> str:
+    """
+    Return a public link to an object in a bucket that can be used from 10 minutes. If the file
+    does not exist, a FileNotFoundError is raised.
+    """
+    bucket = STORAGE_CLIENT.bucket(type_form)
+    blob = bucket.blob(form_name)
+    if not blob.exists():
+        raise FileNotFoundError
+
+    # Set the expiration time for the signed URL
+    url_expiration = timedelta(minutes=10)
+    signed_url = blob.generate_signed_url(expiration=url_expiration, method='GET')
+
+    return signed_url

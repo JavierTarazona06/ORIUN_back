@@ -49,10 +49,33 @@ def create_forms(request: Request):
     # Create folder for saving the files (only for the initial creation)
     call = Call.objects.get(id=request.data['call'])
     path_original_forms = os.path.join('forms', 'original_forms')
-    path_save_forms = os.path.join('forms', f'{student.id}_{call.id}_b')
+    path_save_forms = os.path.join('forms', f'{student.id}_{call.id}')
 
     # Fill up forms, upload them to the cloud and remove them from system
     fill_forms(attributes, path_original_forms, path_save_forms)
     upload_forms(path_save_forms)
 
     return JsonResponse({'result': 'Formulario regio'}, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated, IsStudent])
+def download_form(request: Request):
+    """
+    Endpoint used to get a link to a form given a call, student and type of form (if it is a filled
+    one or the original).
+    """
+    student = request.user.student
+    call_id = request.query_params.get('call')
+    call = Call.objects.get(id=call_id)
+    name_form = request.query_params.get('name_form')
+    type_form = request.query_params.get('type_form')
+
+    short_name = Constants.NAME_FORMS[name_form]
+    name_object = f'{short_name}_{student.id}_{call.id}.docx'
+
+    try:
+        link_form = get_link_form(type_form, name_object)
+        return JsonResponse({'link': link_form}, status=status.HTTP_200_OK)
+    except FileNotFoundError:
+        return JsonResponse({'message': 'form not found'}, status=status.HTTP_404_NOT_FOUND)
