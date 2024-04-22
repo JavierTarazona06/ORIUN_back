@@ -1,21 +1,20 @@
-import os
-import re
-from docx import Document
-from call.models import Call
+from .helpers import *
 from rest_framework import status
 from .permissions import IsStudent
 from django.http import JsonResponse
 from rest_framework import permissions
 from rest_framework.response import Response
-from django_project.constants import Constants
-from rest_framework.decorators import api_view, permission_classes
-
 from student.views import ApplicationDataView
+from rest_framework.decorators import api_view, permission_classes
 
 
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated, IsStudent])
-def get_region_call(request):
+def get_region_call(request: Request):
+    """
+    Endpoint used to get the region (Uniandes, Nacional, Internacional) given a call. Lets the
+    front know which documents should be asked to the user.
+    """
     call_id = request.query_params.get('call')
     call = Call.objects.get(id=call_id)
     region = call.university_id.get_region_display()
@@ -28,8 +27,11 @@ def get_region_call(request):
 
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated, IsStudent])
-def create_forms(request):
-
+def create_forms(request: Request):
+    """
+    Endpoint used to save the student data such as contact person and health information,
+    fill out the forms accordingly to the body given in the request and save them in the cloud.
+    """
     # Set the contact person and health information of the student
     response = ApplicationDataView().put(request)
     if response.status_code != status.HTTP_200_OK:
@@ -41,52 +43,16 @@ def create_forms(request):
     if contact_person is None:
         return JsonResponse({'error': 'La persona de contacto no ha sido definida'}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Info student
-    attributes = dict()
-    for attribute in student._meta.get_fields():
-        try:
-            # TODO: add contact_info to list
-            if 'contact' in attribute.name:
-                continue
+    # Set up the attributes (from student model and the ones that came in the request)
+    attributes = set_variables(request, student)
 
-            elif attribute.choices is not None:  # It is an enum
-                display_method_name = f'get_{attribute.name}_display'
-                attributes[attribute.name.upper()] = getattr(student, display_method_name)()
-            else:
-                value = getattr(student, attribute.name)
-                if value is None:  # The value has not been set (like diseases)
-                    value = 'No hay'
-                attributes[attribute.name.upper()] = value
-        except AttributeError:  # It is like a many-to-one relation
-            continue
-
-    # Info coordinator
-    headquarter = student.get_headquarter_display()
-    faculty = student.get_faculty_display()
-    major = student.get_major_display()
-    info_coordinator = Constants.INFO_FACULTIES[headquarter][faculty][major]
-
+    # Create folder for saving the files (only for the initial creation)
+    call = Call.objects.get(id=request.data['call'])
     path_original_forms = os.path.join('forms', 'original_forms')
-    path_filled_forms = os.path.join('forms', 'filled_forms')
-    for name_form in os.listdir(path_original_forms):
-        path_doc = os.path.join(path_original_forms, name_form)
-        doc = Document(path_doc)
+    path_save_forms = os.path.join('forms', f'{student.id}_{call.id}_b')
 
-        # TODO: fix keep the original format
-        # TODO: make it more efficient
-        for table in doc.tables:
-            for row in table.rows:
-                for cell in row.cells:
-                    if cell.text in attributes:
-                        pattern = r'\b{}\b'.format(re.escape(cell.text))
-                        cell.text = re.sub(pattern, f'{attributes[cell.text]}', cell.text)
-
-        for paragraph in doc.paragraphs:
-            for word in paragraph.text.split():
-                if word in attributes:
-                    pattern = r'\b{}\b'.format(re.escape(word))
-                    paragraph.text = re.sub(pattern, f'{attributes[word]}', paragraph.text)
-
-        doc.save(os.path.join(path_filled_forms, name_form))
+    # Fill up forms, upload them to the cloud and remove them from system
+    fill_forms(attributes, path_original_forms, path_save_forms)
+    upload_forms(path_save_forms)
 
     return JsonResponse({'result': 'Formulario regio'}, status=status.HTTP_200_OK)

@@ -12,9 +12,9 @@ from .serializers import StudentApplicationSerializer
 
 class EligibilityView(APIView):
     """
-        API endpoint that allows to get and put data related to the contact info and medical information
-        of the student
-        """
+    API endpoint that allows to get and put data related to the contact info and medical information
+    of the student
+    """
     permission_classes = [permissions.IsAuthenticated, IsStudent]
 
     def get(self, request):
