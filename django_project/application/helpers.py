@@ -1,6 +1,7 @@
 import os
 import re
 from math import ceil
+from _io import BytesIO
 from typing import Union
 from docx import Document
 from call.models import Call
@@ -142,13 +143,13 @@ def upload_forms(path_save_forms: str) -> None:
     os.rmdir(path_save_forms)
 
 
-def get_link_form(type_form: str, form_name: str) -> str:
+def get_link_file(type_file: str, file_name: str) -> str:
     """
     Return a public link to an object in a bucket that can be used from 10 minutes. If the file
     does not exist, a FileNotFoundError is raised.
     """
-    bucket = STORAGE_CLIENT.bucket(type_form)
-    blob = bucket.blob(form_name)
+    bucket = STORAGE_CLIENT.bucket(type_file)
+    blob = bucket.blob(file_name)
     if not blob.exists():
         raise FileNotFoundError
 
@@ -157,3 +158,12 @@ def get_link_form(type_form: str, form_name: str) -> str:
     signed_url = blob.generate_signed_url(expiration=url_expiration, method='GET')
 
     return signed_url
+
+
+def upload_object(name_bucket: str, source_file: BytesIO, destination_blob_name: str) -> None:
+    """
+    Uploads a file-like object to a bucket
+    """
+    bucket = STORAGE_CLIENT.bucket(name_bucket)
+    blob = bucket.blob(destination_blob_name)
+    blob.upload_from_file(source_file)
