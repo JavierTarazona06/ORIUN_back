@@ -26,7 +26,7 @@ class EligibilityView(APIView):
 
         # Max applications in a semester
         year, month = datetime.now(timezone.utc).strftime('%Y %m').split(" ")
-        semester = '1' if int(month) <= 6 else '1'
+        semester = '1' if int(month) <= 6 else '2'
         if len(Application.objects.filter(student_id=student, year=int(year), semester=semester)) == 2:
             return JsonResponse({'eligibility': False, 'message': 'Ya tiene el máximo de postulaciones en 1 semestre'})
 
