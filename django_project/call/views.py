@@ -29,10 +29,6 @@ class OpenCallsStudent(APIView):
                 return JsonResponse({'error': 'Unauthenticated user'}, status=status.HTTP_401_UNAUTHORIZED)
             student = request.user.student
 
-            if student.is_banned_behave_un:
-                return JsonResponse({'error': 'You are banned from accessing open calls.'},
-                                    status=status.HTTP_403_FORBIDDEN)
-
             student_papa = request.user.student.PAPA
             student_study_level = request.user.student.study_level
             student_advance = request.user.student.advance
