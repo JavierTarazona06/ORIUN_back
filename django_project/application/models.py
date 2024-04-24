@@ -27,7 +27,6 @@ class Application(models.Model):
     national_name_docs = [
         'sigueme_form', 'payment_tuition', 'eps_certificate', 'economic_letter'
     ]
-    other_documents = models.JSONField(null=True)
 
     def __str__(self):
         return f"Student {self.student.id} at call {self.call.id}."
