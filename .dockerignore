@@ -166,5 +166,6 @@ test.py
 **/.DS_Store
 
 database/
+docs/
 README.md
 .gitignore

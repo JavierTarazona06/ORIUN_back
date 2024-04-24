@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Call, University
-from django_project.constants import Constants
+from data.constants import Constants
 
 class CallSerializerOpen(serializers.ModelSerializer):
     university_name = serializers.CharField(source='university_id.name')

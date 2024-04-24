@@ -152,7 +152,7 @@
         {"value": "xx", "display": "Otro"}
     ],
     "semester_en": [
-        {"value": "1", "display": "1"},
-        {"value": "2", "display": "2"}
+        {"value": "1", "display": "Primer"},
+        {"value": "2", "display": "Segundo"}
     ]
 }
