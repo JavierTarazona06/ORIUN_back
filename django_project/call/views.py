@@ -14,7 +14,7 @@ from rest_framework.response import Response
 from .permissions import IsEmployee
 from employee.models import Employee
 from django.contrib.auth.models import User
-from django_project.constants_dict_front import constants_dict_front
+from data.constants_dict_front import constants_dict_front
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime

@@ -1,6 +1,6 @@
-﻿username;password;email;type_user;type_document;name;lastname;birth;sex;birth_place;country;city;phone;address;ethnicity;headquarter;dependency
-maria_alvarez;Maria#1234;maria.alvarez@example.com;T;CC;Maria;García;1973-04-15;F;Bogota;Colombia;Bogota; 310 123 4567;Carrera 10 # 25-35;NA;BO;ORI
-juan_garcia;JuanGa2024;juan.garcia@example.com;T;CC;Juan;Rodríguez;1980-08-22;M;Bogota;Colombia;Bogota;320 987 6543;Calle 20 # 15-45;NA;BO;ORI
-sofia_martinez;MartinezSofia1!;sofia.martinez@example.com;T;CC;Sofia;Martínez;1976-08-22;F;Medellín;Colombia;Medellín;300 456 7890;Avenida 5 # 8-16;NA;ME;ORI
-carlos_ramirez;Pasword021;carlos.ramirez@example.com;T;CC;Carlos;Gonzalez;1988-05-18;M;Cartagena;Colombia;Cartagena; 315 876 5432;Diagonal 30 # 40-25;NA;BO;DRE
-laura_rodriguez;RodriguezL2024;laura.rodriguez@example.com;T;CC;Laura;Rodríguez;1988-05-19;F;Manizales;Colombia;Manizales; 316 876 5432;Diagonal 30 # 40-26;NA;MA;DRE
+﻿username;password;email;type_document;first_name;birth_date;last_name;sex;birth_place;country;city;phone;address;ethnicity;headquarter;dependency;id
+maria_alvarez;Maria#1234;maria.alvarez@example.com;CC;Maria;1973-04-15;García;F;Bogota;Colombia;Bogota;310 123 4567;Carrera 10 # 25-35;NA;BO;ORI;52199444
+juan_garcia;JuanGa2024;juan.garcia@example.com;CC;Juan;1980-08-22;Rodríguez;M;Bogota;Colombia;Bogota;320 987 6543;Calle 20 # 15-45;NA;BO;ORI;65983214
+sofia_martinez;MartinezSofia1!;sofia.martinez@example.com;CC;Sofia;1976-08-22;Martínez;F;Medellín;Colombia;Medellín;300 456 7890;Avenida 5 # 8-16;NA;ME;ORI;78946284
+carlos_ramirez;Pasword021;carlos.ramirez@example.com;CC;Carlos;1988-05-18;Gonzalez;M;Cartagena;Colombia;Cartagena;315 876 5432;Diagonal 30 # 40-25;NA;BO;DRE;16893257
+laura_rodriguez;RodriguezL2024;laura.rodriguez@example.com;CC;Laura;1988-05-19;Rodríguez;F;Manizales;Colombia;Manizales;316 876 5432;Diagonal 30 # 40-26;NA;MA;DRE;12459687

@@ -11,7 +11,7 @@ from google.cloud import storage
 from student.models import Student
 from rest_framework.request import Request
 from application.models import Application
-from django_project.constants import Constants
+from data.constants import Constants
 
 
 CREDENTIALS = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')

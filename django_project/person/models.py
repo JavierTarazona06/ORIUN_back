@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django_project.constants import Constants
+from data.constants import Constants
 from django.utils.translation import gettext_lazy as _
 
 
@@ -12,9 +12,7 @@ class Person(models.Model):
     city = models.CharField(max_length=100)
     phone = models.CharField(max_length=50)
     address = models.CharField(max_length=100)
-    name = models.CharField(max_length=150)
-    lastname = models.CharField(max_length=150)
-    birth = models.DateField()
+    birth_date = models.DateField()
 
     type_document_choices = [(choice['value'], _(choice['display'])) for choice in Constants.TYPE_DOC_CHOICES]
     type_document = models.CharField(max_length=10, choices=type_document_choices)

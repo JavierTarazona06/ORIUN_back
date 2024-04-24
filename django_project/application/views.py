@@ -51,8 +51,8 @@ def create_forms(request: Request):
 
     # Create folder for saving the files (only for the initial creation)
     call = Call.objects.get(id=request.data['call'])
-    path_original_forms = os.path.join('forms', 'original_doc')
-    path_save_forms = os.path.join('forms', f'{student.id}_{call.id}')
+    path_original_forms = os.path.join('data', 'forms', 'templates')
+    path_save_forms = os.path.join('data', 'forms', f'{student.id}_{call.id}')
 
     # Fill up forms, upload them to the cloud and remove them from system
     fill_forms(attributes, path_original_forms, path_save_forms)

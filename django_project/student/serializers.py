@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Student, ContactPerson
-from django_project.constants import Constants
+from data.constants import Constants
 
 
 class ContactPersonSerializer(serializers.ModelSerializer):

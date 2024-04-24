@@ -1,7 +1,7 @@
 from datetime import date
 from django.db import models
 from person.models import Person
-from django_project.constants import Constants
+from data.constants import Constants
 from django.utils.translation import gettext_lazy as _
 
 
@@ -41,4 +41,4 @@ class Student(Person):
     study_level = models.CharField(max_length=10, choices=study_level_choices)
 
     def __str__(self):
-        return f'Student: {self.name} with ID {self.id}.'
+        return f'Student: {self.user.first_name} with ID {self.id}.'

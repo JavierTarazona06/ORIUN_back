@@ -1,5 +1,5 @@
 from django.db import models
-from django_project.constants import Constants
+from data.constants import Constants
 from django.contrib.postgres.fields import ArrayField
 from django.utils.translation import gettext_lazy as _
 
