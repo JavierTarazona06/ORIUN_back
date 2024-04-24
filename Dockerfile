@@ -20,4 +20,5 @@ RUN pip3 install --no-cache-dir -r requirements.txt && pip3 cache purge
 EXPOSE 8080
 
 # Run the application.
-CMD python django_project/manage.py runserver 0.0.0.0:8080 --noreload
+WORKDIR django_project
+CMD python manage.py runserver 0.0.0.0:8080 --noreload
