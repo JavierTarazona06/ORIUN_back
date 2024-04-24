@@ -10,7 +10,7 @@ class ContactPersonSerializer(serializers.ModelSerializer):
 
 
 class StudentApplicationSerializer(serializers.ModelSerializer):
-    contact_id = ContactPersonSerializer(required=False)
+    contact_person = ContactPersonSerializer(required=False)
     info_coordinator = serializers.SerializerMethodField(read_only=True)
 
     def get_info_coordinator(self, obj):
@@ -21,19 +21,19 @@ class StudentApplicationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Student
-        fields = ['contact_id', 'diseases', 'medication', 'info_coordinator']
+        fields = ['contact_person', 'diseases', 'medication', 'info_coordinator']
 
     def update(self, instance, validated_data):
         instance.diseases = validated_data.get('diseases', instance.diseases)
         instance.medication = validated_data.get('medication', instance.medication)
 
-        contact_person_data = validated_data.get('contact_id')
+        contact_person_data = validated_data.get('contact_person')
         if contact_person_data:
-            if instance.contact_id:
-                ContactPerson.objects.filter(id=instance.contact_id.id).update(**contact_person_data)
+            if instance.contact_person:
+                ContactPerson.objects.filter(id=instance.contact_person.id).update(**contact_person_data)
             else:
                 contact_person = ContactPerson.objects.create(**contact_person_data)
-                instance.contact_id = contact_person
+                instance.contact_person = contact_person
 
         instance.save()
         return instance

@@ -16,10 +16,6 @@ class Person(models.Model):
     lastname = models.CharField(max_length=150)
     birth = models.DateField()
 
-    # TODO, delete this type_user. It is used nowhere
-    type_user_choices = [(choice['value'], _(choice['display'])) for choice in Constants.TYPE_USER_CHOICES]
-    type_user = models.CharField(max_length=10, choices=type_user_choices)
-
     type_document_choices = [(choice['value'], _(choice['display'])) for choice in Constants.TYPE_DOC_CHOICES]
     type_document = models.CharField(max_length=10, choices=type_document_choices)
 

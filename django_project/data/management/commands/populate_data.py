@@ -161,5 +161,5 @@ class Command(BaseCommand):
                 dependency=row['dependency']
             )
 
-            self.stdout.write(self.style.SUCCESS(f"Populated {len(student_df)} employees."))
+        self.stdout.write(self.style.SUCCESS(f"Populated {len(student_df)} employees."))
 
