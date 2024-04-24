@@ -31,7 +31,7 @@ class EligibilityView(APIView):
             return JsonResponse({'eligibility': False, 'message': 'Ya tiene el máximo de postulaciones en 1 semestre'})
 
         # Banned by UN or ORI
-        if student.is_banned_behave_un or datetime.utcnow().date() <= student.date_banned_mobility:
+        if datetime.utcnow().date() <= student.date_banned_mobility:
             return JsonResponse({'eligibility': False, 'message': 'No puede participar debido a la sanción que posee'})
 
         # Initial requirements: min PAPA, study level, advance, etc

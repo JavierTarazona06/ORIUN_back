@@ -102,7 +102,7 @@ def upload_file(request: Request):
 
     new_name = f'{name_file}_{student.id}_{call.id}.{file_extension}'
 
-    upload_object('complete_documents', source_file, new_name)
+    upload_object('complete_doc', source_file, new_name)
     return Response({'message': 'File uploaded successfully!'}, status=status.HTTP_200_OK)
 
 
@@ -113,6 +113,7 @@ def submit_application(request: Request):
     Endpoint used to make sure that all the documents have been submitted correctly, and for
     creating the application for the student.
     """
+    # TODO: add case when the deadline is over and the application can not be created
     student = request.user.student
     call = Call.objects.get(id=request.data['call'])
 
