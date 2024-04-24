@@ -1,12 +1,14 @@
-import json
 import os
+import json
 
 
 class Constants:
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    constants_file = os.path.join(base_dir, 'constants.json')
-    with open(constants_file, 'r', encoding='UTF-8') as file:
+    with open(os.path.join(base_dir, 'constants.json'), 'r', encoding='UTF-8') as file:
         constants_dict = json.load(file)
+
+    with open(os.path.join(base_dir, 'info_faculties.json'), 'r', encoding='UTF-8') as file:
+        INFO_FACULTIES = json.load(file)
 
     # Person
     SEX_CHOICES = constants_dict["sex_en"]

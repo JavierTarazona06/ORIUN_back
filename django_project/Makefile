@@ -19,3 +19,5 @@ runserver:
 populate_data:
 	python manage.py populate_data
 
+delete_migrations:
+	find . -path "./*/migrations/*.py" -not -name "__init__.py" -delete

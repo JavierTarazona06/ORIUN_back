@@ -168,3 +168,6 @@ test.py
 
 # Documentation
 docs/Deployment-back.md
+
+# GCP info
+django_project/credentials.json
