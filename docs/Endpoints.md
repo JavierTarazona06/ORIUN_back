@@ -693,3 +693,121 @@ recognize the current user.
 | `id`                 | YES - In Path | integer       | A unique integer value identifying this university.          |
 
 **Outputs:** None
+
+
+# REGISTER ENDPOINTS
+
+# . Post User Student
+<span style="color: green; font-weight: bold;"> NOT FINISHED </span>
+
+**URL:** `/call/university_api/<int:pk>/`.
+
+**Method:** `DELETE`
+
+**Description:** Delete a university according to the given ID.
+
+**Permissions:** Employee and Admin.
+
+**Inputs:** 
+
+| Field Name           | Required      | Type          | Description                                                  |
+|----------------------|---------------|---------------|--------------------------------------------------------------|
+| `id`                 | YES - In Path | integer       | A unique integer value identifying this university.          |
+
+**Outputs:** None
+
+# . Update User Student
+<span style="color: green; font-weight: bold;"> NOT FINISHED </span>
+
+**URL:** `/call/university_api/<int:pk>/`.
+
+**Method:** `DELETE`
+
+**Description:** Delete a university according to the given ID.
+
+**Permissions:** Employee and Admin.
+
+**Inputs:** 
+
+| Field Name           | Required      | Type          | Description                                                  |
+|----------------------|---------------|---------------|--------------------------------------------------------------|
+| `id`                 | YES - In Path | integer       | A unique integer value identifying this university.          |
+
+**Outputs:** None
+
+# . Read User Student
+<span style="color: green; font-weight: bold;"> NOT FINISHED </span>
+
+**URL:** `/call/university_api/<int:pk>/`.
+
+**Method:** `DELETE`
+
+**Description:** Delete a university according to the given ID.
+
+**Permissions:** Employee and Admin.
+
+**Inputs:** 
+
+| Field Name           | Required      | Type          | Description                                                  |
+|----------------------|---------------|---------------|--------------------------------------------------------------|
+| `id`                 | YES - In Path | integer       | A unique integer value identifying this university.          |
+
+**Outputs:** None
+
+
+# . Post User Employee
+<span style="color: green; font-weight: bold;"> NOT FINISHED </span>
+
+**URL:** `/call/university_api/<int:pk>/`.
+
+**Method:** `DELETE`
+
+**Description:** Delete a university according to the given ID.
+
+**Permissions:** Employee and Admin.
+
+**Inputs:** 
+
+| Field Name           | Required      | Type          | Description                                                  |
+|----------------------|---------------|---------------|--------------------------------------------------------------|
+| `id`                 | YES - In Path | integer       | A unique integer value identifying this university.          |
+
+**Outputs:** None
+
+# . Update User Employee
+<span style="color: green; font-weight: bold;"> NOT FINISHED </span>
+
+**URL:** `/call/university_api/<int:pk>/`.
+
+**Method:** `DELETE`
+
+**Description:** Delete a university according to the given ID.
+
+**Permissions:** Employee and Admin.
+
+**Inputs:** 
+
+| Field Name           | Required      | Type          | Description                                                  |
+|----------------------|---------------|---------------|--------------------------------------------------------------|
+| `id`                 | YES - In Path | integer       | A unique integer value identifying this university.          |
+
+**Outputs:** None
+
+# . Read User Employee
+<span style="color: green; font-weight: bold;"> NOT FINISHED </span>
+
+**URL:** `/call/university_api/<int:pk>/`.
+
+**Method:** `DELETE`
+
+**Description:** Delete a university according to the given ID.
+
+**Permissions:** Employee and Admin.
+
+**Inputs:** 
+
+| Field Name           | Required      | Type          | Description                                                  |
+|----------------------|---------------|---------------|--------------------------------------------------------------|
+| `id`                 | YES - In Path | integer       | A unique integer value identifying this university.          |
+
+**Outputs:** None

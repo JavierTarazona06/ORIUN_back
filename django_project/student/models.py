@@ -18,8 +18,6 @@ class ContactPerson(models.Model):
 class Student(Person):
 
     PAPA = models.FloatField()
-    PAPI = models.FloatField()
-    PA = models.FloatField()
     PBM = models.SmallIntegerField()
     advance = models.FloatField()
 
@@ -33,7 +31,6 @@ class Student(Person):
     calls_done = models.ManyToManyField('call.Call')
     is_enrolled = models.BooleanField()
     date_banned_mobility = models.DateField(default=date(2000, 1, 1))
-    is_banned_behave_un = models.BooleanField()
 
     admission_choices = [(choice['value'], _(choice['display'])) for choice in Constants.ADMISSION_CHOICES]
     admission = models.CharField(max_length=10, choices=admission_choices, default=admission_choices[0])
@@ -44,6 +41,8 @@ class Student(Person):
 
     num_semesters = models.SmallIntegerField()
     contact_id = models.ForeignKey(ContactPerson, on_delete=models.CASCADE, null=True)
+
+    certificates = ['certificate_grades', 'certificate_student', 'payment_receipt']
 
     def __str__(self):
         return f'Student: {self.name} with ID {self.id}.'
