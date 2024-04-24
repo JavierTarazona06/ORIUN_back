@@ -174,6 +174,10 @@ class ClosedCallDetailStudent(APIView):
 # Javi
 
 class CallView(generics.ListCreateAPIView):
+    """
+    Calls (POST and GET all).
+    From Employee.
+    """
     serializer_class = CallSerializerPost
     permission_classes = [permissions.IsAuthenticated, IsEmployee]
 
@@ -181,6 +185,9 @@ class CallView(generics.ListCreateAPIView):
         return JsonResponse({'error': str(exc)}, status=500)
 
     def get_queryset(self):
+        """
+        Return all calls.
+        """
         return Call.objects.all()
 
     def list(self, request, *args, **kwargs):
@@ -195,6 +202,10 @@ class CallView(generics.ListCreateAPIView):
         return JsonResponse(serializer.data, safe=False)
 
     def post(self, request, *args, **kwargs):
+        """
+        Post call.
+        From Employee
+        """
         data = json.loads(request.body)
 
         serializer = CallSerializerPost(data=data)
@@ -208,9 +219,17 @@ class CallView(generics.ListCreateAPIView):
 
 
 class CallWithUniversityView(View):
+    """
+    Return all calls with university info.
+    From Employee.
+    """
     permission_classes = [permissions.IsAuthenticated, IsEmployee]
 
     def get(self, request):
+        """
+        Return all calls with university info.
+        From Employee.
+        """
         try:
             calls_with_universities = Call.objects.select_related('university_id').all()
 
@@ -228,6 +247,10 @@ class CallWithUniversityView(View):
 
 
 class CallDetails(generics.RetrieveUpdateDestroyAPIView):
+    """
+    GET and PUT a call according to the giving ID.
+    From Employee.
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         try:
@@ -241,6 +264,10 @@ class CallDetails(generics.RetrieveUpdateDestroyAPIView):
         return JsonResponse({'error': str(exc)}, status=500)
 
     def retrieve(self, request, *args, **kwargs):
+        """
+        GET call according to the giving ID.
+        From Employee.
+        """
         instance = self.get_object()
 
         instance.format = constants_dict_front["format"][str(instance.format)]
@@ -251,6 +278,10 @@ class CallDetails(generics.RetrieveUpdateDestroyAPIView):
         return JsonResponse(serializer.data)
 
     def put(self, request, pk):
+        """
+        PUT a call according to the giving ID.
+        From Employee.
+        """
         try:
             call = Call.objects.get(pk=pk)
         except Call.DoesNotExist:

@@ -210,7 +210,7 @@ recognize the current user.
 # 7.1  Get Call: Employee
 <span style="color: green; font-weight: bold;"> FINISHED </span>
 
-**URL:** `/call/apiu/`.
+**URL:** `/call/api/`.
 
 **Method:** `GET`
 
