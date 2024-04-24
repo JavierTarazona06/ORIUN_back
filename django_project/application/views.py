@@ -3,8 +3,10 @@ from rest_framework import status
 from .permissions import IsStudent
 from django.http import JsonResponse
 from rest_framework import permissions
+from datetime import datetime, timezone
 from rest_framework.response import Response
 from student.views import ApplicationDataView
+from .serializers import ApplicationSerializer
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.decorators import api_view, permission_classes, parser_classes
 
@@ -38,9 +40,9 @@ def create_forms(request: Request):
     if response.status_code != status.HTTP_200_OK:
         return Response(response.data, status=status.HTTP_400_BAD_REQUEST)
 
-    # Check student has a contact_id
+    # Check student has a contact_person
     student = request.user.student
-    contact_person = student.contact_id
+    contact_person = student.contact_person
     if contact_person is None:
         return JsonResponse({'error': 'La persona de contacto no ha sido definida'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -49,7 +51,7 @@ def create_forms(request: Request):
 
     # Create folder for saving the files (only for the initial creation)
     call = Call.objects.get(id=request.data['call'])
-    path_original_forms = os.path.join('forms', 'original_forms')
+    path_original_forms = os.path.join('forms', 'original_doc')
     path_save_forms = os.path.join('forms', f'{student.id}_{call.id}')
 
     # Fill up forms, upload them to the cloud and remove them from system
@@ -72,8 +74,10 @@ def download_file(request: Request):
     name_file = request.query_params['name_file']
     type_file = request.query_params['type_file']
 
-    short_name = Constants.NAME_FORMS[name_file]
-    name_object = f'{short_name}_{student.id}_{call.id}.docx'
+    if type_file == 'original_doc':
+        name_object = f'{name_file}'
+    else:
+        name_object = f'{name_file}_{student.id}_{call.id}'
 
     try:
         link_form = get_link_file(type_file, name_object)
@@ -92,11 +96,40 @@ def upload_file(request: Request):
     """
     student = request.user.student
     call = Call.objects.get(id=request.data['call'])
-    source_file = request.data['file'].file
-    source_extension = request.data['file'].name.split('.')[-1]
+    source_file = request.data['document'].file
+    file_extension = request.data['document'].name.split('.')[-1]
     name_file = request.data['name']
 
-    new_name = f'{name_file}_{student.id}_{call.id}.{source_extension}'
+    new_name = f'{name_file}_{student.id}_{call.id}.{file_extension}'
 
     upload_object('complete_documents', source_file, new_name)
     return Response({'message': 'File uploaded successfully!'}, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated, IsStudent])
+def submit_application(request: Request):
+    """
+    Endpoint used to make sure that all the documents have been submitted correctly, and for
+    creating the application for the student.
+    """
+    student = request.user.student
+    call = Call.objects.get(id=request.data['call'])
+
+    is_complete, missing_docs = check_docs(student, call)
+    if not is_complete:
+        name_missing_docs = ' '.join(str(i) for i in missing_docs)
+        return Response({'message': f'Missing uploading {name_missing_docs}'}, status=status.HTTP_404_NOT_FOUND)
+
+    # Add missing data for serializer
+    data = request.data.copy()
+    data['student'] = student.id
+    data['year'], month = datetime.now(timezone.utc).strftime('%Y %m').split(" ")
+    data['semester'] = '1' if int(month) <= 6 else '2'
+
+    # Create application
+    serializer = ApplicationSerializer(data=data)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+
+    return Response({'message': 'Application created'}, status=status.HTTP_200_OK)

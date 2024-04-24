@@ -29,11 +29,3 @@ class Constants:
     FORMAT_CHOICES = constants_dict["format_en"]
     LANGUAGE_CHOICES = constants_dict["language_en"]
     SEMESTER_CHOICES = constants_dict["semester_en"]
-
-    # Names of forms
-    NAME_FORMS = {
-        'autorización_tratamiento_datos_personales': 'ATDP',
-        'formato_corresponsabilidad_saliente_nacional': 'FCSN',
-        'formato_movilidad_saliente_cursar_asignaturas': 'FMSCA',
-        'formulario_pregrado_sígueme': 'FPS'
-    }

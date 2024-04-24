@@ -10,6 +10,7 @@ from datetime import timedelta
 from google.cloud import storage
 from student.models import Student
 from rest_framework.request import Request
+from application.models import Application
 from django_project.constants import Constants
 
 
@@ -119,8 +120,7 @@ def fill_forms(attributes: dict[str, str], path_original_forms: str, path_save_f
                     paragraph.text = re.sub(pattern, f'{attributes[word]}', paragraph.text)
 
         name, extension = name_form.split('.')
-        short_name = Constants.NAME_FORMS[name]
-        new_name = f'{short_name}_{os.path.basename(path_save_forms)}.{extension}'
+        new_name = f'{name}_{os.path.basename(path_save_forms)}.{extension}'
         doc.save(os.path.join(path_save_forms, new_name))
 
 
@@ -129,7 +129,7 @@ def upload_forms(path_save_forms: str) -> None:
     Uploads the forms of the student and call to GCP, and them removes those forms and the
     folder.
     """
-    bucket = STORAGE_CLIENT.bucket('filled_documents')
+    bucket = STORAGE_CLIENT.bucket('filled_doc')
 
     list_forms = []
     for form in os.listdir(path_save_forms):
@@ -146,11 +146,14 @@ def upload_forms(path_save_forms: str) -> None:
 def get_link_file(type_file: str, file_name: str) -> str:
     """
     Return a public link to an object in a bucket that can be used from 10 minutes. If the file
-    does not exist, a FileNotFoundError is raised.
+    does not exist, a FileNotFoundError is raised. No need to send the extension of the file in
+    its name.
     """
     bucket = STORAGE_CLIENT.bucket(type_file)
-    blob = bucket.blob(file_name)
-    if not blob.exists():
+    blobs = bucket.list_blobs(prefix=file_name)
+    try:
+        blob = next(blobs)
+    except StopIteration:
         raise FileNotFoundError
 
     # Set the expiration time for the signed URL
@@ -167,3 +170,45 @@ def upload_object(name_bucket: str, source_file: BytesIO, destination_blob_name:
     bucket = STORAGE_CLIENT.bucket(name_bucket)
     blob = bucket.blob(destination_blob_name)
     blob.upload_from_file(source_file)
+
+
+def check_docs(student: Student, call: Call) -> tuple[bool, list[str]]:
+    """
+    Used to make sure all the documents (depending on the region of the call) have been uploaded.
+    Returns True if the document has been uploaded, False otherwise. If the return is True then it
+    also returns the name of the missing documents.
+    """
+    # Name of the documents that should be found on GCP
+    name_documents = Application.name_docs
+
+    # Check national or international documents, if needed
+    region = call.university_id.get_region_display()
+    if region == 'Convenio Sigueme/Nacional':
+        name_documents.append(Application.national_name_docs)
+
+    elif region != 'Uniandes':  # It is an international call
+        name_documents.append(Application.international_name_docs)
+
+    # Check each possible file
+    missing_docs = []
+    for name_doc in name_documents:
+        complete_name = f'{name_doc}_{student.id}_{call.id}'
+        if not exists(complete_name):
+            missing_docs.append(name_doc)
+
+    if len(missing_docs) > 0:
+        return False, missing_docs
+    return True, missing_docs
+
+
+def exists(file_name: str) -> bool:
+    """
+    Returns True if the given file exists in the complete_doc bucket, False otherwise.
+    """
+    bucket = STORAGE_CLIENT.bucket('complete_doc')
+    blobs = bucket.list_blobs(prefix=file_name)
+    try:
+        _ = next(blobs)
+        return True
+    except StopIteration:
+        return False

@@ -7,4 +7,5 @@ urlpatterns = [
     path('create_forms/', views.create_forms, name='create_forms'),
     path('download/', views.download_file, name='download_file'),
     path('upload/', views.upload_file, name='upload_file'),
+    path('submit/', views.submit_application, name='submit_application'),
 ]
