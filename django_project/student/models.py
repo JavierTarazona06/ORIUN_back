@@ -34,20 +34,11 @@ class Student(Person):
     major_choices = [(choice['value'], _(choice['display'])) for choice in Constants.MAJOR_CHOICES]
     major = models.CharField(max_length=50, choices=major_choices)
 
-
-    calls_done = models.ManyToManyField('call.Call')
-    is_enrolled = models.BooleanField()
-    date_banned_mobility = models.DateField(default=date(2000, 1, 1))
-
-
     admission_choices = [(choice['value'], _(choice['display'])) for choice in Constants.ADMISSION_CHOICES]
     admission = models.CharField(max_length=10, choices=admission_choices)
 
     study_level_choices = [(choice['value'], _(choice['display'])) for choice in Constants.STUDY_LEVEL_CHOICES]
     study_level = models.CharField(max_length=10, choices=study_level_choices)
-
-    num_semesters = models.SmallIntegerField()
-    contact_id = models.ForeignKey(ContactPerson, on_delete=models.CASCADE, null=True)
 
     certificates = ['certificate_grades', 'certificate_student', 'payment_receipt']
 

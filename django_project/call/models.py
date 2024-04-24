@@ -44,7 +44,6 @@ class Call(models.Model):
     study_level_choices = [(choice['value'], _(choice['display'])) for choice in Constants.STUDY_LEVEL_CHOICES]
     study_level = models.CharField(max_length=10, choices=study_level_choices)
 
-
     year = models.SmallIntegerField()
 
     semester_choices = [(choice['value'], _(choice['display'])) for choice in Constants.SEMESTER_CHOICES]
