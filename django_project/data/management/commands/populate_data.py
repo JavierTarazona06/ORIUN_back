@@ -71,7 +71,7 @@ class Command(BaseCommand):
         # Populate calls
         data_calls = self.open_csv(csv_abs_path, 'call_data.csv')
         for info in data_calls:
-            info['university'] = University.objects.get(id=info['university_id'])
+            info['university'] = University.objects.get(id=info['university'])
             Call.objects.create(**info)
         self.stdout.write(self.style.SUCCESS(f"Populated {len(data_calls)} calls."))
 
