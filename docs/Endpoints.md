@@ -696,7 +696,7 @@ recognize the current user.
 
 
 
-# REGISTER ENDPOINTS
+# Case 13: Registro de Usuarios
 
 # 20. Post User Student
 <span style="color: green; font-weight: bold;"> NOT FINISHED </span>
@@ -711,35 +711,35 @@ recognize the current user.
 
 **Inputs:** 
 
-| Field Name              | Required  | Type                | Description                                                    |
-|-------------------------|-----------|---------------------|----------------------------------------------------------------|
-| `email`                 | YES       | string              | Email with @unal.edu.co domain.                                |
-| `password`              | YES       | string              | It must go encrypted                                           |
-| `ID`                    | YES       | integer             | Cédula del estudiante.                                         |
-| `type_document`         | YES       | enum                | Tipo del documento (CC, CE, PA).                               |
-| `birth_place`           | YES       | string              | Ciudad de nacimiento.                                          |
-| `birth_date`            | YES       | date (YYY-MM-DD)    | Fecha de nacimiento del estudiante.                            |
-| `country`               | YES       | string              | País de residencia.                                            |
-| `city`                  | YES       | string              | Ciudad de residencia.                                          |
-| `phone`                 | YES       | string              | Teléfono de longitud de 3 a 12 carácteres numéricos.           |
-| `address`               | YES       | string              | Dirección de residencia del estudiante.                        |
-| `sex`                   | YES       | enum                | Sexo del estudiante (M, F).                                    |
-| `ethnicity`             | YES       | enum                | Etnia del estudiante (IN, AF, RG, NA).                         |
-| `headquarter`           | YES       | enum                | Sede del estudiante (BO, AM, CA, MA, ME, OR, PA, TU, LP).      |
-| `PAPA`                  | YES       | float               | Promedio estudiante [0, 5.0]                                   |
-| `PBM`                   | YES       | smallInt            | Puntaje matrícula estudiante [0,100]                           |
-| `advance`               | YES       | float               | Porcentaje avance estudiante [0,100]                           |
-| `is_enrolled`           | YES       | bool                | ¿Está matriculado a la Universidad? True or False              |
-| `num_semesters`         | YES       | smallInt            | Número de semestre/matrícula actual                            |
-| `diseases`              | YES       | TextField           | Detalle enfermedades del estudiante.                           |
-| `medication`            | YES       | TextField           | Detalle medicamentos que toma el estudiante.                   |
-| `faculty`               | YES       | enum                | Facultad: Ver opciones en el link de constantes.*              |
-| `major`                 | YES       | enum                | Programa: Ver opciones en el link de constantes.*              |
-| `admission`             | YES       | enum                | Tipo de admisión: Ver opciones en el link de constantes.*      |
-| `study_level`           | YES       | enum                | Nivel de estudio: Ver opciones en el link de constantes.*      |
-| `certificate_grades`    | YES       | document            | Documento pdf del certificado de notas expedido por el SIA     |
-| `certificate_student`   | YES       | document            | Documento pdf del certificado de matricula expedido por el SIA |
-| `payment_receipt`       | YES       | document            | Documento pdf del recibo de pago por el SIA                    |
+| Field Name              | Required  | Type             | Description                                                    |
+|-------------------------|-----------|------------------|----------------------------------------------------------------|
+| `email`                 | YES       | string           | Email with @unal.edu.co domain.                                |
+| `password`              | YES       | string           | It must go encrypted                                           |
+| `ID`                    | YES       | integer          | Cédula del estudiante.                                         |
+| `type_document`         | YES       | enum             | Tipo del documento (CC, CE, PA).                               |
+| `birth_place`           | YES       | string           | Ciudad de nacimiento.                                          |
+| `birth_date`            | YES       | date (YYY-MM-DD) | Fecha de nacimiento del estudiante.                            |
+| `country`               | YES       | string           | País de residencia.                                            |
+| `city`                  | YES       | string           | Ciudad de residencia.                                          |
+| `phone`                 | YES       | string           | Teléfono de longitud de 3 a 12 carácteres numéricos.           |
+| `address`               | YES       | string           | Dirección de residencia del estudiante.                        |
+| `sex`                   | YES       | enum             | Sexo del estudiante (M, F).                                    |
+| `ethnicity`             | YES       | enum             | Etnia del estudiante (IN, AF, RG, NA).                         |
+| `headquarter`           | YES       | enum             | Sede del estudiante (BO, AM, CA, MA, ME, OR, PA, TU, LP).      |
+| `PAPA`                  | YES       | float            | Promedio estudiante [0, 5.0]                                   |
+| `PBM`                   | YES       | smallInt         | Puntaje matrícula estudiante [0,100]                           |
+| `advance`               | YES       | float            | Porcentaje avance estudiante [0,100]                           |
+| `is_enrolled`           | YES       | bool             | ¿Está matriculado a la Universidad? true or false              |
+| `num_semesters`         | YES       | smallInt         | Número de semestre/matrícula actual                            |
+| `diseases`              | YES       | String           | Detalle enfermedades del estudiante.                           |
+| `medication`            | YES       | String           | Detalle medicamentos que toma el estudiante.                   |
+| `faculty`               | YES       | enum             | Facultad: Ver opciones en el link de constantes.*              |
+| `major`                 | YES       | enum             | Programa: Ver opciones en el link de constantes.*              |
+| `admission`             | YES       | enum             | Tipo de admisión: Ver opciones en el link de constantes.*      |
+| `study_level`           | YES       | enum             | Nivel de estudio: Ver opciones en el link de constantes.*      |
+| `certificate_grades`    | YES       | document         | Documento pdf del certificado de notas expedido por el SIA     |
+| `certificate_student`   | YES       | document         | Documento pdf del certificado de matricula expedido por el SIA |
+| `payment_receipt`       | YES       | document         | Documento pdf del recibo de pago por el SIA                    |
 
 * Vea más info de los enums en el archivo de constantes del repo de Back (https://github.com/JavierTarazona06/ORIUN_back/blob/main/django_project/data/constants.json)
 
@@ -762,23 +762,23 @@ recognize the current user.
 
 **Inputs:** 
 
-| Field Name              | Required         | Type                | Description                                                    |
-|-------------------------|------------------|---------------------|----------------------------------------------------------------|
-| `password`              | NO               | string              | It must go encrypted                                           |
-| `country`               | NO               | string              | País de residencia.                                            |
-| `city`                  | NO               | string              | Ciudad de residencia.                                          |
-| `phone`                 | NO               | string              | Teléfono de longitud de 3 a 12 carácteres numéricos.           |
-| `address`               | NO               | string              | Dirección de residencia del estudiante.                        |
-| `PAPA`                  | NO or YES - 1    | float               | Promedio estudiante [0, 5.0]                                   |
-| `PBM`                   | NO or YES - 2    | smallInt            | Puntaje matrícula estudiante [0,100]                           |
-| `advance`               | NO or YES - 3    | float               | Porcentaje avance estudiante [0,100]                           |
-| `is_enrolled`           | NO               | bool                | ¿Está matriculado a la Universidad? True or False              |
-| `num_semesters`         | NO               | smallInt            | Número de semestre/matrícula actual                            |
-| `diseases`              | NO               | TextField           | Detalle enfermedades del estudiante.                           |
-| `medication`            | NO               | TextField           | Detalle medicamentos que toma el estudiante.                   |
-| `certificate_grades`    | NO or YES - 1    | document            | Documento pdf del certificado de notas expedido por el SIA     |
-| `payment_receipt`       | NO or YES - 2    | document            | Documento pdf del recibo de pago por el SIA                    |
-| `certificate_student`   | NO or YES - 3    | document            | Documento pdf del certificado de matricula expedido por el SIA |
+| Field Name              | Required         | Type     | Description                                                    |
+|-------------------------|------------------|----------|----------------------------------------------------------------|
+| `password`              | NO               | string   | It must go encrypted                                           |
+| `country`               | NO               | string   | País de residencia.                                            |
+| `city`                  | NO               | string   | Ciudad de residencia.                                          |
+| `phone`                 | NO               | string   | Teléfono de longitud de 3 a 12 carácteres numéricos.           |
+| `address`               | NO               | string   | Dirección de residencia del estudiante.                        |
+| `PAPA`                  | NO or YES - 1    | float    | Promedio estudiante [0, 5.0]                                   |
+| `PBM`                   | NO or YES - 2    | Int      | Puntaje matrícula estudiante [0,100]                           |
+| `advance`               | NO or YES - 3    | float    | Porcentaje avance estudiante [0,100]                           |
+| `is_enrolled`           | NO               | bool     | ¿Está matriculado a la Universidad? true or false              |
+| `num_semesters`         | NO               | Int      | Número de semestre/matrícula actual                            |
+| `diseases`              | NO               | String   | Detalle enfermedades del estudiante.                           |
+| `medication`            | NO               | String   | Detalle medicamentos que toma el estudiante.                   |
+| `certificate_grades`    | NO or YES - 1    | document | Documento pdf del certificado de notas expedido por el SIA     |
+| `payment_receipt`       | NO or YES - 2    | document | Documento pdf del recibo de pago por el SIA                    |
+| `certificate_student`   | NO or YES - 3    | document | Documento pdf del certificado de matricula expedido por el SIA |
 
 Yes - Required Together (N): This indicates that if at least one of these fields is provided, all other fields of the same type become mandatory.
 
@@ -799,7 +799,7 @@ Yes - Required Together (N): This indicates that if at least one of these fields
 
 **Permissions:** Student which ID is in the path.
 
-**Inputs:** None
+**Inputs:**
 
 | Field Name           | Required      | Type          | Description                                      |
 |----------------------|---------------|---------------|--------------------------------------------------|
@@ -822,7 +822,7 @@ Yes - Required Together (N): This indicates that if at least one of these fields
 | `ethnicity`             | enum                     | Etnia del estudiante (IN, AF, RG, NA).                                       |
 | `headquarter`           | enum                     | Sede del estudiante (BO, AM, CA, MA, ME, OR, PA, TU, LP).                    |
 | `PAPA`                  | float                    | Promedio estudiante [0, 5.0]                                                 |
-| `PBM`                   | smallInt                 | Puntaje matrícula estudiante [0,100]                                         |
+| `PBM`                   | Int                      | Puntaje matrícula estudiante [0,100]                                         |
 | `advance`               | float                    | Porcentaje avance estudiante [0,100]                                         |
 | `calls_done`            | list of dict [{}, {}...] | Convocatorias realizadas por el estudiante                                   |
 | {`call_id`              | int                      | ID de la convocatoria                                                        |
@@ -831,11 +831,11 @@ Yes - Required Together (N): This indicates that if at least one of these fields
 | `year`                  | int                      | Año de la convocatoria                                                       |
 | `semester`              | int                      | Semestre de la convocatoria                                                  |
 | `description`}          | string                   | Descripción de la convocatoria                                               |
-| `is_enrolled`           | bool                     | ¿Está matriculado a la Universidad? True or False                            |
+| `is_enrolled`           | bool                     | ¿Está matriculado a la Universidad? true or false                            |
 | `date_banned_mobility`  | date                     | Si fue vetado, fecha del último veto                                         |
-| `num_semesters`         | smallInt                 | Número de semestre/matrícula actual                                          |
-| `diseases`              | TextField                | Detalle enfermedades del estudiante.                                         |
-| `medication`            | TextField                | Detalle medicamentos que toma el estudiante.                                 |
+| `num_semesters`         | Int                      | Número de semestre/matrícula actual                                          |
+| `diseases`              | String                   | Detalle enfermedades del estudiante.                                         |
+| `medication`            | String                   | Detalle medicamentos que toma el estudiante.                                 |
 | `faculty`               | enum                     | Facultad: Ver opciones en el link de constantes.*                            |
 | `major`                 | enum                     | Programa: Ver opciones en el link de constantes.*                            |
 | `admission`             | enum                     | Tipo de admisión: Ver opciones en el link de constantes.*                    |
@@ -952,6 +952,10 @@ Yes - Required Together (N): This indicates that if at least one of these fields
 
 
 * Vea más info de los enums en el archivo de constantes del repo de Back (https://github.com/JavierTarazona06/ORIUN_back/blob/main/django_project/data/constants.json)
+
+
+
+# Case 4: Postularse a una convocatoria
 
 # 26. Check if student is eligible for an application
 **URL:** `student/eligible/`
@@ -1101,3 +1105,246 @@ Which documents can only have a submit button?
 - Carta demostrando suficiencia economica
 - Certificado de matricula
 - Certificado afiliacion EPS
+
+
+# Case 7: Elegir ganadores de una convocatoria
+
+# 29. Ver pre-resultados de los postulantes, Orden General
+<span style="color: green; font-weight: bold;"> NOT FINISHED </span>
+
+**URL:** `/call/applications/order/<int:pk>/`.
+
+**Method:** `GET`
+
+**Description:** Returns students applications (pre-results) in general order according to the given call ID.
+
+**Permissions:** Employee.
+
+**Inputs:** 
+
+| Field Name | Required      | Type          | Description                                   |
+|------------|---------------|---------------|-----------------------------------------------|
+| `call_id`  | YES - In Path | integer       | A unique integer value identifying this call. |
+
+**Outputs:**
+
+| Field Name            | Type   | Description                                                                                     |
+|-----------------------|--------|-------------------------------------------------------------------------------------------------|
+| `id`                  | int    | Application unique ID                                                                           |
+| `student_id`          | int    | Students unique ID                                                                              |
+| `student_name`        | string | Nombre del estudiante.                                                                          |
+| `state_documents `    | int    | Estado de la documentación (0: no revisados 1: modificación solicitada 2: documentos aprobados) |
+| `student_PAPA`        | float  | PAPA del estudiante                                                                             |
+| `student_advance`     | float  | Avance en porcentaje del estudiante.                                                            |
+| `student_headquarter` | string | Sede del estudiante.                                                                            |
+| `language`            | bool   | ¿Cumple con el requisito de idioma? true / false                                                |
+| `student_PBM`         | int    | PBM del estudiante                                                                              |
+
+
+# 30. Ver pre-resultados de los postulantes, Orden Documentos
+<span style="color: green; font-weight: bold;"> NOT FINISHED </span>
+
+**URL:** `/call/applications/order_docs/<int:pk>/`.
+
+**Method:** `GET`
+
+**Description:** Returns students applications (pre-results) in docs order according to the given call ID.
+
+**Permissions:** Employee.
+
+**Inputs:**
+
+| Field Name | Required      | Type          | Description                                   |
+|------------|---------------|---------------|-----------------------------------------------|
+| `call_id`  | YES - In Path | integer       | A unique integer value identifying this call. |
+
+**Outputs:**
+
+| Field Name            | Type   | Description                                                                                     |
+|-----------------------|--------|-------------------------------------------------------------------------------------------------|
+| `id`                  | int    | Application unique ID                                                                           |
+| `student_id`          | int    | Students unique ID                                                                              |
+| `student_name`        | string | Nombre del estudiante.                                                                          |
+| `state_documents `    | int    | Estado de la documentación (0: no revisados 1: modificación solicitada 2: documentos aprobados) |
+| `student_PAPA`        | float  | PAPA del estudiante                                                                             |
+| `student_advance`     | float  | Avance en porcentaje del estudiante.                                                            |
+| `student_headquarter` | string | Sede del estudiante.                                                                            |
+| `language`            | bool   | ¿Cumple con el requisito de idioma? true / false                                                |
+| `student_PBM`         | int    | PBM del estudiante                                                                              |
+
+
+# 31. Ver pre-resultados de los postulantes, Orden PAPA
+<span style="color: green; font-weight: bold;"> NOT FINISHED </span>
+
+**URL:** `/call/applications/order_papa/<int:pk>/`.
+
+**Method:** `GET`
+
+**Description:** Returns students applications (pre-results) in PAPA order according to the given call ID.
+
+**Permissions:** Employee.
+
+**Inputs:**
+
+| Field Name | Required      | Type          | Description                                   |
+|------------|---------------|---------------|-----------------------------------------------|
+| `call_id`  | YES - In Path | integer       | A unique integer value identifying this call. |
+
+**Outputs:**
+
+| Field Name            | Type   | Description                                                                                     |
+|-----------------------|--------|-------------------------------------------------------------------------------------------------|
+| `id`                  | int    | Application unique ID                                                                           |
+| `student_id`          | int    | Students unique ID                                                                              |
+| `student_name`        | string | Nombre del estudiante.                                                                          |
+| `state_documents `    | int    | Estado de la documentación (0: no revisados 1: modificación solicitada 2: documentos aprobados) |
+| `student_PAPA`        | float  | PAPA del estudiante                                                                             |
+| `student_advance`     | float  | Avance en porcentaje del estudiante.                                                            |
+| `student_headquarter` | string | Sede del estudiante.                                                                            |
+| `language`            | bool   | ¿Cumple con el requisito de idioma? true / false                                                |
+| `student_PBM`         | int    | PBM del estudiante                                                                              |
+
+
+# 32. Ver pre-resultados de los postulantes, Orden Avance
+<span style="color: green; font-weight: bold;"> NOT FINISHED </span>
+
+**URL:** `/call/applications/order_adva/<int:pk>/`.
+
+**Method:** `GET`
+
+**Description:** Returns students applications (pre-results) in advance order according to the given call ID.
+
+**Permissions:** Employee.
+
+**Inputs:**
+
+| Field Name | Required      | Type          | Description                                   |
+|------------|---------------|---------------|-----------------------------------------------|
+| `call_id`  | YES - In Path | integer       | A unique integer value identifying this call. |
+
+**Outputs:**
+
+| Field Name            | Type   | Description                                                                                     |
+|-----------------------|--------|-------------------------------------------------------------------------------------------------|
+| `id`                  | int    | Application unique ID                                                                           |
+| `student_id`          | int    | Students unique ID                                                                              |
+| `student_name`        | string | Nombre del estudiante.                                                                          |
+| `state_documents `    | int    | Estado de la documentación (0: no revisados 1: modificación solicitada 2: documentos aprobados) |
+| `student_PAPA`        | float  | PAPA del estudiante                                                                             |
+| `student_advance`     | float  | Avance en porcentaje del estudiante.                                                            |
+| `student_headquarter` | string | Sede del estudiante.                                                                            |
+| `language`            | bool   | ¿Cumple con el requisito de idioma? true / false                                                |
+| `student_PBM`         | int    | PBM del estudiante                                                                              |
+
+
+
+# 33. Ver pre-resultados de los postulantes, Orden Idioma
+<span style="color: green; font-weight: bold;"> NOT FINISHED </span>
+
+**URL:** `/call/applications/order_lang/<int:pk>/`.
+
+**Method:** `GET`
+
+**Description:** Returns students applications (pre-results) in language order according to the given call ID.
+
+**Permissions:** Employee.
+
+**Inputs:** 
+
+| Field Name | Required      | Type          | Description                                   |
+|------------|---------------|---------------|-----------------------------------------------|
+| `call_id`  | YES - In Path | integer       | A unique integer value identifying this call. |
+
+**Outputs:**
+
+| Field Name            | Type   | Description                                                                                     |
+|-----------------------|--------|-------------------------------------------------------------------------------------------------|
+| `id`                  | int    | Application unique ID                                                                           |
+| `student_id`          | int    | Students unique ID                                                                              |
+| `student_name`        | string | Nombre del estudiante.                                                                          |
+| `state_documents `    | int    | Estado de la documentación (0: no revisados 1: modificación solicitada 2: documentos aprobados) |
+| `student_PAPA`        | float  | PAPA del estudiante                                                                             |
+| `student_advance`     | float  | Avance en porcentaje del estudiante.                                                            |
+| `student_headquarter` | string | Sede del estudiante.                                                                            |
+| `language`            | bool   | ¿Cumple con el requisito de idioma? true / false                                                |
+| `student_PBM`         | int    | PBM del estudiante                                                                              |
+
+
+# 34. Ver pre-resultados de los postulantes, Orden PBM
+<span style="color: green; font-weight: bold;"> NOT FINISHED </span>
+
+**URL:** `/call/applications/order_pbm/<int:pk>/`.
+
+**Method:** `GET`
+
+**Description:** Returns students applications (pre-results) in PBM order according to the given call ID.
+
+**Permissions:** Employee.
+
+**Inputs:**
+
+| Field Name | Required      | Type          | Description                                   |
+|------------|---------------|---------------|-----------------------------------------------|
+| `call_id`  | YES - In Path | integer       | A unique integer value identifying this call. |
+
+**Outputs:**
+
+| Field Name            | Type   | Description                                                                                     |
+|-----------------------|--------|-------------------------------------------------------------------------------------------------|
+| `id`                  | int    | Application unique ID                                                                           |
+| `student_id`          | int    | Students unique ID                                                                              |
+| `student_name`        | string | Nombre del estudiante.                                                                          |
+| `state_documents `    | int    | Estado de la documentación (0: no revisados 1: modificación solicitada 2: documentos aprobados) |
+| `student_PAPA`        | float  | PAPA del estudiante                                                                             |
+| `student_advance`     | float  | Avance en porcentaje del estudiante.                                                            |
+| `student_headquarter` | string | Sede del estudiante.                                                                            |
+| `language`            | bool   | ¿Cumple con el requisito de idioma? true / false                                                |
+| `student_PBM`         | int    | PBM del estudiante                                                                              |
+
+
+# 35. Asignar Ganador
+<span style="color: green; font-weight: bold;"> NOT FINISHED </span>
+
+**URL:** `/application/winner/<int:pk>/`.
+
+**Method:** `POST`
+
+**Description:** Set as winner the student with application ID that equals to the given ID.
+
+**Permissions:** Employee.
+
+**Inputs:**
+
+| Field Name       | Required      | Type          | Description                                          |
+|------------------|---------------|---------------|------------------------------------------------------|
+| `application_id` | YES - In Path | integer       | A unique integer value identifying this application. |
+
+**Outputs:**
+
+| Field Name | Type   | Description                                   |
+|------------|--------|-----------------------------------------------|
+| `message`  | string | "El estudiante fue seleccionado" or EXCEPTION |
+
+
+# 35. Remover Ganador
+<span style="color: green; font-weight: bold;"> NOT FINISHED </span>
+
+**URL:** `/application/not_winner/<int:pk>/`.
+
+**Method:** `POST`
+
+**Description:** Remove as winner the student with application ID that equals to the given ID.
+
+**Permissions:** Employee.
+
+**Inputs:**
+
+| Field Name       | Required      | Type          | Description                                          |
+|------------------|---------------|---------------|------------------------------------------------------|
+| `application_id` | YES - In Path | integer       | A unique integer value identifying this application. |
+
+**Outputs:**
+
+| Field Name | Type   | Description                                         |
+|------------|--------|-----------------------------------------------------|
+| `message`  | string | "El estudiante ha sido deseleccionado" or EXCEPTION |
