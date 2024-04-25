@@ -14,6 +14,7 @@ class Application(models.Model):
     comment_docs = models.TextField(null=True)
     approve_documents = models.BooleanField(null=True)
     comment_approved = models.TextField(null=True)
+    modified = models.BooleanField(default=False)
     approved = models.BooleanField(null=True)
     training_session = ArrayField(models.DateTimeField(), null=True)
 

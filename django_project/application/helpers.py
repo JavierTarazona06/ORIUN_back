@@ -172,6 +172,19 @@ def upload_object(name_bucket: str, source_file: BytesIO, destination_blob_name:
     blob.upload_from_file(source_file)
 
 
+def delete_object(name_bucket: str, name_file: str):
+    """
+    Deletes a document from a bucket.
+    """
+    bucket = STORAGE_CLIENT.bucket(name_bucket)
+    blobs = bucket.list_blobs(prefix=name_file)
+    try:
+        blob = next(blobs)
+        blob.delete()
+    except StopIteration:
+        return
+
+
 def check_docs(student: Student, call: Call) -> tuple[bool, list[str]]:
     """
     Used to make sure all the documents (depending on the region of the call) have been uploaded.
