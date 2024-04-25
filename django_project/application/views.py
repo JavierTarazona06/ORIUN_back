@@ -1,12 +1,12 @@
 from .helpers import *
-from rest_framework import status
+from . import serializers
 from .permissions import IsStudent
 from django.http import JsonResponse
 from rest_framework import permissions
 from datetime import datetime, timezone
+from rest_framework import status, generics
 from rest_framework.response import Response
 from student.views import ApplicationDataView
-from .serializers import ApplicationSerializer
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.decorators import api_view, permission_classes, parser_classes
 
@@ -94,11 +94,17 @@ def upload_file(request: Request):
     Endpoint used to upload a file to GCP. The new name is composed of the name parameter (in query),
     the id of the student, the id of the call and the original extension of the file.
     """
+    # Check size of document
+    if request.data['document'].size > 9_000_000:
+        return Response(
+            {'error': 'File is too big. It must be smaller than 9 MB'}, status=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE
+        )
+
     student = request.user.student
     call = Call.objects.get(id=request.data['call'])
     source_file = request.data['document'].file
     file_extension = request.data['document'].name.split('.')[-1]
-    name_file = request.data['name']
+    name_file = request.data['name_file']
 
     new_name = f'{name_file}_{student.id}_{call.id}.{file_extension}'
 
@@ -129,8 +135,66 @@ def submit_application(request: Request):
     data['semester'] = '1' if int(month) <= 6 else '2'
 
     # Create application
-    serializer = ApplicationSerializer(data=data)
+    serializer = serializers.ApplicationSerializer(data=data)
     serializer.is_valid(raise_exception=True)
     serializer.save()
 
     return Response({'message': 'Application created'}, status=status.HTTP_200_OK)
+
+
+class ApplicationsStudent(generics.ListAPIView):
+    """
+    Endpoint used to return the student's applications in reverse chronological order and with general
+    information about the application.
+    """
+    permission_classes = [permissions.IsAuthenticated, IsStudent]
+    serializer_class = serializers.ApplicationDetailSerializer
+
+    def get_queryset(self):
+        student = self.request.user.student
+        return Application.objects.filter(student=student).order_by('-year', '-semester')
+
+
+class ApplicationComments(generics.ListAPIView):
+    """
+    Endpoint used to return the comments made from an employee for a specific application.
+    """
+    permission_classes = [permissions.IsAuthenticated, IsStudent]
+
+    def get(self, request, *args, **kwargs):
+        student = self.request.user.student
+        call = self.request.query_params['call']
+        application = Application.objects.get(student=student, call=call)
+        serializer = serializers.ApplicationComments(application)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['PUT'])
+@permission_classes([permissions.IsAuthenticated, IsStudent])
+def edit_application(request: Request):
+    """
+    Endpoint used to replace a document on GCP with the given document.
+    """
+    # Check size of document
+    if request.data['document'].size > 9_000_000:
+        return Response(
+            {'error': 'File is too big. It must be smaller than 9 MB'}, status=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE
+        )
+
+    student = request.user.student
+    call = Call.objects.get(id=request.data['call'])
+    Application.objects.filter(student=student, call=call).update(modified=True)
+
+    # Delete previous document
+    source_file = request.data['document'].file
+    file_extension = request.data['document'].name.split('.')[-1]
+    name_file = request.data['name_file']
+    name = f'{name_file}_{student.id}_{call.id}'
+    delete_object('complete_doc', name)
+
+    # Upload new document
+    new_name = f'{name_file}_{student.id}_{call.id}.{file_extension}'
+    upload_object('complete_doc', source_file, new_name)
+
+    return Response({'message': 'Document updated'}, status=status.HTTP_200_OK)
