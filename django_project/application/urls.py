@@ -8,4 +8,7 @@ urlpatterns = [
     path('download/', views.download_file, name='download_file'),
     path('upload/', views.upload_file, name='upload_file'),
     path('submit/', views.submit_application, name='submit_application'),
+    path('student/', views.ApplicationsStudent.as_view(), name='student_applications'),
+    path('comments/', views.ApplicationComments.as_view(), name='application_comments'),
+    path('edit/', views.edit_application, name='edit_application')
 ]

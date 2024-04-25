@@ -1,5 +1,5 @@
 ﻿username;password;email;type_document;first_name;last_name;birth_date;sex;birth_place;country;city;phone;address;ethnicity;headquarter;PAPA;PBM;advance;faculty;major;is_enrolled;admission;study_level;num_semesters;contact_person;id
-santiago_garcia;Password123;santiago.garcia@example.com;CC;Santiago;García;1995-04-15;M;Bogota;Colombia;Bogota;310 123 4567;Carrera 10 # 25-35;NA;BO;4.8;2;92;Ciencias Agrarias;VETE;t;REGUL;PRE;1;;5596848490
+santiago_garcia;Password123;santiago.garcia@example.com;CC;Santiago;García;1995-04-15;M;Bogota;Colombia;Bogota;310 123 4567;Carrera 10 # 25-35;NA;BO;4.8;2;92;Ciencias Agrarias;VETE;t;REGUL;PRE;5;;5596848490
 valentina_rodriguez;TestPassword;valentina.rodriguez@example.com;CC;Valentina;Rodríguez;1996-08-22;F;Bogota;Colombia;Bogota;320 987 6543;Calle 20 # 15-45;NA;BO;4.8;9;86;Ciencias Económicas;ECON;t;REGUL;PRE;1;;1196989870
 mateo_martinez;123456Abc;mateo.martinez@example.com;CC;Mateo;Martínez;1996-08-22;M;Medellín;Colombia;Medellín;300 456 7890;Avenida 5 # 8-16;NA;ME;3.5;17;50;Minas;IMIN;t;REGUL;PRE;1;;106398477
 isabella_gonzalez;Pasword021;isabella.gonzalez@example.com;CC;Isabella;Gonzalez;1998-05-18;F;Cartagena;Colombia;Cartagena;315 876 5432;Diagonal 30 # 40-25;NA;BO;3.0;50;10;Ciencias;ESTA;t;REGUL;PRE;1;;106985477

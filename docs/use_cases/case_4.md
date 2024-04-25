@@ -211,6 +211,10 @@ If the file is not found you will get a 404 status and a message "form not found
 |-----------|--------|---------------------------------------------------------------------------------------------------|
 | `message` | String | Let's you know the documents has been uploaded with a message like "File uploaded successfully!". |
 
+**Exceptions:**
+
+If the file is greater than 9MB, the API returns a 403 and message indicating that the file is too big.
+
 **Example:** These are some examples in different languages:
 
 ```javascript
