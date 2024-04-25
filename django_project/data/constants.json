@@ -154,5 +154,10 @@
     "semester_en": [
         {"value": "1", "display": "Primer"},
         {"value": "2", "display": "Segundo"}
+    ],
+    "state_documents_en": [
+        {"value": 0, "display": "Documentos no revisados"},
+        {"value": 1, "display": "Modificación de los documentos solicitada"},
+        {"value": 2, "display": "Documentos aprobados"}
     ]
 }

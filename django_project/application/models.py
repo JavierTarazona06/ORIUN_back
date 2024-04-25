@@ -9,11 +9,16 @@ class Application(models.Model):
     call = models.ForeignKey('call.Call', on_delete=models.CASCADE)
     student = models.ForeignKey('student.Student', on_delete=models.CASCADE)
     year = models.SmallIntegerField()
+
     semester_choices = [(choice['value'], _(choice['display'])) for choice in Constants.SEMESTER_CHOICES]
     semester = models.CharField(max_length=10, choices=semester_choices)
+
     is_extension = models.BooleanField()
     comment_docs = models.TextField(null=True)
-    state_documents = models.SmallIntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(2)])
+
+    state_documents_choices = [(choice['value'], _(choice['display'])) for choice in Constants.STATE_DOCS_CHOICES]
+    state_documents = models.SmallIntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(2)], choices=state_documents_choices)
+
     comment_approved = models.TextField(null=True)
     modified = models.BooleanField(default=False)
     approved = models.BooleanField(null=True)
