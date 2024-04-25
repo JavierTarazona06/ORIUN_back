@@ -3,8 +3,8 @@ from .models import Call, University
 from data.constants import Constants
 
 class CallSerializerOpen(serializers.ModelSerializer):
-    university_name = serializers.CharField(source='university_id.name')
-    country = serializers.CharField(source='university_id.country')
+    university_name = serializers.CharField(source='university.name')
+    country = serializers.CharField(source='university.country')
     language = serializers.CharField()
     deadline = serializers.DateField(format='%Y-%m-%d')
 
@@ -19,8 +19,8 @@ class CallSerializerClosed(CallSerializerOpen):
 
 
 class CallDetailsSerializerOpenStudent(serializers.ModelSerializer):
-    university_name = serializers.CharField(source='university_id.name')
-    country = serializers.CharField(source='university_id.country')
+    university_name = serializers.CharField(source='university.name')
+    country = serializers.CharField(source='university.country')
     #language = serializers.ChoiceField(choices=Call.language_choices)
     deadline = serializers.DateField(format='%Y-%m-%d')
     min_advance = serializers.FloatField()

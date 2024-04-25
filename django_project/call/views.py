@@ -44,11 +44,11 @@ class OpenCallsStudent(APIView):
             open_calls = Call.objects.filter(active=True)
 
             if countries:
-                open_calls = open_calls.filter(university_id__country__in=countries.split(','))
+                open_calls = open_calls.filter(university__country__in=countries.split(','))
             if languages:
                 open_calls = open_calls.filter(language__in=languages.split(','))
             if university_name:
-                open_calls = open_calls.filter(university_id__name__icontains=university_name)
+                open_calls = open_calls.filter(university__name__icontains=university_name)
 
             open_calls = open_calls.filter(min_papa__lte=student_papa)
             open_calls = open_calls.filter(study_level=student_study_level)
@@ -83,13 +83,13 @@ class ClosedCallsStudent(APIView):
             closed_calls = Call.objects.filter(active=False)
 
             if country:
-                closed_calls = closed_calls.filter(university_id__country=country)
+                closed_calls = closed_calls.filter(university__country=country)
 
             if language:
                 closed_calls = closed_calls.filter(language=language)
 
             if name_university:
-                closed_calls = closed_calls.filter(university_id__name__icontains=name_university)
+                closed_calls = closed_calls.filter(university__name__icontains=name_university)
 
             if min_papa_winner:
                 closed_calls = closed_calls.filter(minimum_papa_winner__gte=float(min_papa_winner))
@@ -236,7 +236,7 @@ class UpdateCallsView(View):
                     university_instance = University.objects.get(pk=university_id)
                 except University.DoesNotExist:
                     return JsonResponse({'error': 'La universidad especificada no existe'}, status=400)
-                call.university_id  = university_instance
+                call.university = university_instance
             if 'active' in data:
                 call.active = data['active']
             if 'begin_date' in data:
@@ -358,7 +358,7 @@ class CallsFilterSearch(APIView):
                     active = "F" + active[1:]
                 queryset = queryset.filter(active=active)
             if university_id:
-                queryset = queryset.filter(university_id__id=university_id)
+                queryset = queryset.filter(university__id=university_id)
             if deadline:
                 queryset = queryset.filter(deadline__lte=deadline)
             if format:
@@ -376,13 +376,13 @@ class CallsFilterSearch(APIView):
             if semester:
                 queryset = queryset.filter(semester=semester)
             if region:
-                queryset = queryset.filter(university_id__region=region)
+                queryset = queryset.filter(university__region=region)
             if country:
-                queryset = queryset.filter(university_id__country__icontains=country)
+                queryset = queryset.filter(university__country__icontains=country)
             if language:
                 queryset = queryset.filter(language=language)
             if university_name:
-                queryset = queryset.filter(university_id__name__icontains=university_name)
+                queryset = queryset.filter(university__name__icontains=university_name)
 
             if not queryset.exists():
                 return JsonResponse({'message': 'No calls match the provided criteria'},

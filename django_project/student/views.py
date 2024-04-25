@@ -41,7 +41,7 @@ class EligibilityView(APIView):
         if student.study_level != call.study_level:
             return JsonResponse({'eligibility': False, 'message': 'Usted pertenece al nivel de estudios necesario'})
 
-        if call.university_id.get_region_display() == 'Uniandes':
+        if call.university.get_region_display() == 'Uniandes':
             if student.num_semesters < 2:
                 return JsonResponse(
                     {'eligibility': False, 'message': 'Para esta convocatoria necesita minimo 2 semestres cursados'}
