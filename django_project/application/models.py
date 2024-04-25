@@ -2,6 +2,7 @@ from django.db import models
 from data.constants import Constants
 from django.contrib.postgres.fields import ArrayField
 from django.utils.translation import gettext_lazy as _
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class Application(models.Model):
@@ -12,7 +13,7 @@ class Application(models.Model):
     semester = models.CharField(max_length=10, choices=semester_choices)
     is_extension = models.BooleanField()
     comment_docs = models.TextField(null=True)
-    approve_documents = models.BooleanField(null=True)
+    state_documents = models.SmallIntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(2)])
     comment_approved = models.TextField(null=True)
     approved = models.BooleanField(null=True)
     training_session = ArrayField(models.DateTimeField(), null=True)
