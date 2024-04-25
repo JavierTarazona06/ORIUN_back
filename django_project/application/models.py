@@ -17,7 +17,7 @@ class Application(models.Model):
     comment_docs = models.TextField(null=True)
 
     state_documents_choices = [(choice['value'], _(choice['display'])) for choice in Constants.STATE_DOCS_CHOICES]
-    state_documents = models.SmallIntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(2)], choices=state_documents_choices)
+    state_documents = models.SmallIntegerField(default=0, choices=state_documents_choices)
 
     comment_approved = models.TextField(null=True)
     modified = models.BooleanField(default=False)
