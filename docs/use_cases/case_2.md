@@ -98,7 +98,7 @@
 
 **URL:** `/call/api/<int:pk>/`.
 
-**Method:** `PUT`
+**Method:** `GET`
 
 **Description:** Get a call according to the giving ID.
 

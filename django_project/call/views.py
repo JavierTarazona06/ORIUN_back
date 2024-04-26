@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 from .models import Call, University
 from .serializers import CallSerializerOpen, CallSerializerClosed, CallDetailsSerializerOpenStudent, \
-    CallDetailsSerializerClosedStudent, CallSerializer, UniversitySerializer
+    CallDetailsSerializerClosedStudent, CallSerializer, UniversitySerializer, CallSerializerPost
 from rest_framework.views import APIView
 from rest_framework import status, generics, permissions
 import json
@@ -165,13 +165,24 @@ class CallView(generics.ListCreateAPIView):
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
 
-        for call in queryset:
-            call.format = constants_dict_front["format"][str(call.format)]
-            call.study_level = constants_dict_front["study_level"][str(call.study_level)]
-            call.language = constants_dict_front["language"][str(call.language)]
-
         serializer = self.get_serializer(queryset, many=True)
         return JsonResponse(serializer.data, safe=False)
+
+    def post(self, request, *args, **kwargs):
+        """
+        Post call.
+        From Employee
+        """
+        data = json.loads(request.body)
+
+        serializer = CallSerializerPost(data=data)
+
+        if serializer.is_valid():
+            call_instance = serializer.save()
+
+            return JsonResponse({'mensaje': 'Convocatoria creada exitosamente', 'id': call_instance.id}, status=201)
+        else:
+            return JsonResponse({'mensaje': str(serializer.errors)}, status=400)
 
 
 class CallDetails(generics.RetrieveUpdateDestroyAPIView):
@@ -209,6 +220,14 @@ class CallDetails(generics.RetrieveUpdateDestroyAPIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def delete(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            self.perform_destroy(instance)
+            return JsonResponse({'mensaje': 'Convocatoria eliminada satisfactoriamente'}, status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 class UpdateCallsView(View):
     permission_classes = [permissions.IsAuthenticated, IsEmployee]
@@ -230,8 +249,8 @@ class UpdateCallsView(View):
         try:
             data = json.loads(request.body.decode('utf-8'))
 
-            if 'university_id' in data:
-                university_id = int(data['university_id'])
+            if 'university' in data:
+                university_id = int(data['university'])
                 try:
                     university_instance = University.objects.get(pk=university_id)
                 except University.DoesNotExist:
@@ -271,7 +290,7 @@ class UpdateCallsView(View):
                 call.selected = data['selected']
 
             call.save()
-            return JsonResponse({'mensaje': 'Convocatoria actualizada exitosamente'})
+            return JsonResponse({'mensaje': 'Convocatoria actualizada exitosamente'}, status=200)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Solicitud JSON no válida'}, status=400)
         except Exception as e:
