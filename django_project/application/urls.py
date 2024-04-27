@@ -10,5 +10,6 @@ urlpatterns = [
     path('submit/', views.submit_application, name='submit_application'),
     path('student/', views.ApplicationsStudent.as_view(), name='student_applications'),
     path('comments/', views.ApplicationComments.as_view(), name='application_comments'),
-    path('edit/', views.edit_application, name='edit_application')
+    path('edit/', views.edit_application, name='edit_application'),
+    path('applicants/<int:call_id>/', views.applicants, name='applicants'),
 ]

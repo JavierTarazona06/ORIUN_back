@@ -1,14 +1,20 @@
 from .helpers import *
 from . import serializers
-from .permissions import IsStudent
+from call.models import Call
+from .models import Application
+from rest_framework import status
+from .serializers import Applicants
 from django.http import JsonResponse
 from rest_framework import permissions
 from datetime import datetime, timezone
 from rest_framework import status, generics
 from rest_framework.response import Response
 from student.views import ApplicationDataView
+from .serializers import ApplicationSerializer
+from .permissions import IsStudent, IsEmployee
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.decorators import api_view, permission_classes, parser_classes
+
 
 
 @api_view(['GET'])
@@ -198,3 +204,33 @@ def edit_application(request: Request):
     upload_object('complete_doc', source_file, new_name)
 
     return Response({'message': 'Document updated'}, status=status.HTTP_200_OK)
+
+#case10
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated, IsEmployee])
+def applicants(request, call_id):
+    """
+    Endpoint used to retrieve applicants for a specific call based on provided filters.
+    Filters can be applied to narrow down the search criteria.
+    """
+    serializer = Applicants(data=request.query_params)
+    serializer.is_valid(raise_exception=True)
+
+    try:
+        applications = Application.objects.filter(call_id=call_id)
+        # Check if any applications are found for the given call ID
+        if not applications.exists():
+            return Response({"error": "No applications found for the provided call ID"},
+                            status=status.HTTP_404_NOT_FOUND)
+
+        # Apply filters from query parameters:)
+        filters = request.query_params.dict()
+        print(filters)
+        applications = applications.filter(**filters)
+
+        serializer = Applicants(applications, many=True)
+        return Response(serializer.data)
+
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
