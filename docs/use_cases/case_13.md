@@ -13,35 +13,36 @@
 
 **Inputs:** 
 
-| Field Name              | Required  | Type             | Description                                                    |
-|-------------------------|-----------|------------------|----------------------------------------------------------------|
-| `email`                 | YES       | string           | Email with @unal.edu.co domain.                                |
-| `password`              | YES       | string           | It must go encrypted                                           |
-| `ID`                    | YES       | integer          | Cédula del estudiante.                                         |
-| `type_document`         | YES       | enum             | Tipo del documento (CC, CE, PA).                               |
-| `birth_place`           | YES       | string           | Ciudad de nacimiento.                                          |
-| `birth_date`            | YES       | date (YYY-MM-DD) | Fecha de nacimiento del estudiante.                            |
-| `country`               | YES       | string           | País de residencia.                                            |
-| `city`                  | YES       | string           | Ciudad de residencia.                                          |
-| `phone`                 | YES       | string           | Teléfono de longitud de 3 a 12 carácteres numéricos.           |
-| `address`               | YES       | string           | Dirección de residencia del estudiante.                        |
-| `sex`                   | YES       | enum             | Sexo del estudiante (M, F).                                    |
-| `ethnicity`             | YES       | enum             | Etnia del estudiante (IN, AF, RG, NA).                         |
-| `headquarter`           | YES       | enum             | Sede del estudiante (BO, AM, CA, MA, ME, OR, PA, TU, LP).      |
-| `PAPA`                  | YES       | float            | Promedio estudiante [0, 5.0]                                   |
-| `PBM`                   | YES       | smallInt         | Puntaje matrícula estudiante [0,100]                           |
-| `advance`               | YES       | float            | Porcentaje avance estudiante [0,100]                           |
-| `is_enrolled`           | YES       | bool             | ¿Está matriculado a la Universidad? true or false              |
-| `num_semesters`         | YES       | smallInt         | Número de semestre/matrícula actual                            |
-| `diseases`              | YES       | String           | Detalle enfermedades del estudiante.                           |
-| `medication`            | YES       | String           | Detalle medicamentos que toma el estudiante.                   |
-| `faculty`               | YES       | enum             | Facultad: Ver opciones en el link de constantes.*              |
-| `major`                 | YES       | enum             | Programa: Ver opciones en el link de constantes.*              |
-| `admission`             | YES       | enum             | Tipo de admisión: Ver opciones en el link de constantes.*      |
-| `study_level`           | YES       | enum             | Nivel de estudio: Ver opciones en el link de constantes.*      |
-| `certificate_grades`    | YES       | document         | Documento pdf del certificado de notas expedido por el SIA     |
-| `certificate_student`   | YES       | document         | Documento pdf del certificado de matricula expedido por el SIA |
-| `payment_receipt`       | YES       | document         | Documento pdf del recibo de pago por el SIA                    |
+| Field Name            | Required | Type             | Description                                                    |
+|-----------------------|----------|------------------|----------------------------------------------------------------|
+| `email`               | YES      | string           | Email with @unal.edu.co domain.                                |
+| `password`            | YES      | Bytea            | It must go encrypted                                           |
+| `verif_code`          | NOT YET  | string           | Verification code that is sent to user email                   |
+| `ID`                  | YES      | integer          | Cédula del estudiante.                                         |
+| `type_document`       | YES      | enum             | Tipo del documento (CC, CE, PA).                               |
+| `birth_place`         | YES      | string           | Ciudad de nacimiento.                                          |
+| `birth_date`          | YES      | date (YYY-MM-DD) | Fecha de nacimiento del estudiante.                            |
+| `country`             | YES      | string           | País de residencia.                                            |
+| `city`                | YES      | string           | Ciudad de residencia.                                          |
+| `phone`               | YES      | string           | Teléfono de longitud de 3 a 12 carácteres numéricos.           |
+| `address`             | YES      | string           | Dirección de residencia del estudiante.                        |
+| `sex`                 | YES      | enum             | Sexo del estudiante (M, F).                                    |
+| `ethnicity`           | YES      | enum             | Etnia del estudiante (IN, AF, RG, NA).                         |
+| `headquarter`         | YES      | enum             | Sede del estudiante (BO, AM, CA, MA, ME, OR, PA, TU, LP).      |
+| `PAPA`                | YES      | float            | Promedio estudiante [0, 5.0]                                   |
+| `PBM`                 | YES      | smallInt         | Puntaje matrícula estudiante [0,100]                           |
+| `advance`             | YES      | float            | Porcentaje avance estudiante [0,100]                           |
+| `is_enrolled`         | YES      | bool             | ¿Está matriculado a la Universidad? true or false              |
+| `num_semesters`       | YES      | smallInt         | Número de semestre/matrícula actual                            |
+| `diseases`            | YES      | String           | Detalle enfermedades del estudiante.                           |
+| `medication`          | YES      | String           | Detalle medicamentos que toma el estudiante.                   |
+| `faculty`             | YES      | enum             | Facultad: Ver opciones en el link de constantes.*              |
+| `major`               | YES      | enum             | Programa: Ver opciones en el link de constantes.*              |
+| `admission`           | YES      | enum             | Tipo de admisión: Ver opciones en el link de constantes.*      |
+| `study_level`         | YES      | enum             | Nivel de estudio: Ver opciones en el link de constantes.*      |
+| `certificate_grades`  | YES      | document         | Documento pdf del certificado de notas expedido por el SIA     |
+| `certificate_student` | YES      | document         | Documento pdf del certificado de matricula expedido por el SIA |
+| `payment_receipt`     | YES      | document         | Documento pdf del recibo de pago por el SIA                    |
 
 * Vea más info de los enums en el archivo de constantes del repo de Back (https://github.com/JavierTarazona06/ORIUN_back/blob/main/django_project/data/constants.json)
 
@@ -148,6 +149,7 @@ Yes - Required Together (N): This indicates that if at least one of these fields
 
 * Vea más info de los enums en el archivo de constantes del repo de Back (https://github.com/JavierTarazona06/ORIUN_back/blob/main/django_project/data/constants.json)
 
+
 # 4. Post User Employee
 <span style="color: green; font-weight: bold;"> NOT FINISHED </span>
 
@@ -159,26 +161,27 @@ Yes - Required Together (N): This indicates that if at least one of these fields
 
 **Permissions:** Public that have an email with domain @unal.edu.co
 
-**Condition:** Email must be in the the DB of the program, that means the staff must be previously in the DB.
+**Condition:** Email must be in the DB of the program, that means the staff must be previously in the DB.
 
 **Inputs:** 
 
-| Field Name      | Required  | Type                | Description                                                |
-|-----------------|-----------|---------------------|------------------------------------------------------------|
-| `email`         | YES       | string              | Email with @unal.edu.co domain.                            |
-| `password`      | YES       | string              | It must go encrypted                                       |
-| `ID`            | YES       | integer             | Cédula del funcionario.                                    |
-| `type_document` | YES       | enum                | Tipo del documento (CC, CE, PA).                           |
-| `birth_place`   | YES       | string              | Ciudad de nacimiento.                                      |
-| `birth_date`    | YES       | date (YYY-MM-DD)    | Fecha de nacimiento del estudiante.                        |
-| `country`       | YES       | string              | País de residencia.                                        |
-| `city`          | YES       | string              | Ciudad de residencia.                                      |
-| `phone`         | YES       | string              | Teléfono de longitud de 3 a 12 carácteres numéricos.       |
-| `address`       | YES       | string              | Dirección de residencia del funcionario.                   |
-| `sex`           | YES       | enum                | Sexo del funcionario (M, F).                               |
-| `ethnicity`     | YES       | enum                | Etnia del funcionario (IN, AF, RG, NA).                    |
-| `headquarter`   | YES       | enum                | Sede del funcionario (BO, AM, CA, MA, ME, OR, PA, TU, LP). |
-| `dependency`    | YES       | enum                | Dependencia del funcionario (ORI, DRE).                    |
+| Field Name      | Required | Type             | Description                                                |
+|-----------------|----------|------------------|------------------------------------------------------------|
+| `email`         | YES      | string           | Email with @unal.edu.co domain.                            |
+| `password`      | YES      | Bytea            | It must go encrypted                                       |
+| `verif_code`    | NOT YET  | string           | Verification code that is sent to user email               |
+| `ID`            | YES      | integer          | Cédula del funcionario.                                    |
+| `type_document` | YES      | enum             | Tipo del documento (CC, CE, PA).                           |
+| `birth_place`   | YES      | string           | Ciudad de nacimiento.                                      |
+| `birth_date`    | YES      | date (YYY-MM-DD) | Fecha de nacimiento del estudiante.                        |
+| `country`       | YES      | string           | País de residencia.                                        |
+| `city`          | YES      | string           | Ciudad de residencia.                                      |
+| `phone`         | YES      | string           | Teléfono de longitud de 3 a 12 carácteres numéricos.       |
+| `address`       | YES      | string           | Dirección de residencia del funcionario.                   |
+| `sex`           | YES      | enum             | Sexo del funcionario (M, F).                               |
+| `ethnicity`     | YES      | enum             | Etnia del funcionario (IN, AF, RG, NA).                    |
+| `headquarter`   | YES      | enum             | Sede del funcionario (BO, AM, CA, MA, ME, OR, PA, TU, LP). |
+| `dependency`    | YES      | enum             | Dependencia del funcionario (ORI, DRE).                    |
 
 * Vea más info de los enums en el archivo de constantes del repo de Back (https://github.com/JavierTarazona06/ORIUN_back/blob/main/django_project/data/constants.json)
 
