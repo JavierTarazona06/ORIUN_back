@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 from .models import Call, University
 from .serializers import CallSerializerOpen, CallSerializerClosed, CallDetailsSerializerOpenStudent, \
-    CallDetailsSerializerClosedStudent, CallSerializer, UniversitySerializer, CallSerializerPost
+    CallDetailsSerializerClosedStudent, CallSerializer, UniversitySerializer, CallSerializerPost, UniversitySerializerPost
 from rest_framework.views import APIView
 from rest_framework import status, generics, permissions
 import json
@@ -224,7 +224,7 @@ class CallDetails(generics.RetrieveUpdateDestroyAPIView):
         try:
             instance = self.get_object()
             self.perform_destroy(instance)
-            return JsonResponse({'mensaje': 'Convocatoria eliminada satisfactoriamente'}, status=status.HTTP_204_NO_CONTENT)
+            return JsonResponse({'mensaje': 'Convocatoria eliminada satisfactoriamente'}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -352,6 +352,7 @@ class CallsFilterSearch(APIView):
 
     def get(self, request):
         try:
+            call_id = request.GET.get('call_id')
             active = request.GET.get('active')
             university_id = request.GET.get('university_id')
             university_name = request.GET.get('university_name')
@@ -376,10 +377,13 @@ class CallsFilterSearch(APIView):
                 if (active == "false"):
                     active = "F" + active[1:]
                 queryset = queryset.filter(active=active)
+            if call_id:
+                queryset = queryset.filter(id=2)
             if university_id:
                 queryset = queryset.filter(university__id=university_id)
             if deadline:
                 queryset = queryset.filter(deadline__lte=deadline)
+                queryset = queryset.filter(deadline__gte=timezone.now().date())
             if format:
                 if format == "P":
                     queryset = queryset.filter(format='P')
@@ -420,7 +424,7 @@ class CallsFilterSearch(APIView):
 
 
 class UniversityView(generics.ListCreateAPIView):
-    serializer_class = UniversitySerializer
+    serializer_class = UniversitySerializerPost
     permission_classes = [permissions.IsAuthenticated, IsEmployee]
 
     def handle_exception(self, exc):
@@ -437,6 +441,18 @@ class UniversityView(generics.ListCreateAPIView):
 
         serializer = self.get_serializer(queryset, many=True)
         return JsonResponse(serializer.data, safe=False)
+
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+
+        serializer = UniversitySerializerPost(data=data)
+
+        if serializer.is_valid():
+            uni_instance = serializer.save()
+
+            return JsonResponse({'mensaje': 'Universidad creada exitosamente', 'id': uni_instance.id}, status=201)
+        else:
+            return JsonResponse(serializer.errors, status=400)
 
 
 class UniversityDetails(generics.RetrieveUpdateDestroyAPIView):
@@ -471,6 +487,14 @@ class UniversityDetails(generics.RetrieveUpdateDestroyAPIView):
 
         serializer = self.get_serializer(instance)
         return JsonResponse(serializer.data)
+
+    def delete(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            self.perform_destroy(instance)
+            return JsonResponse({'mensaje': 'Universidad eliminada satisfactoriamente'}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class UpdateUniversityView(View):
