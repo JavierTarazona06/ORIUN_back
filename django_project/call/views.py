@@ -182,7 +182,7 @@ class CallView(generics.ListCreateAPIView):
 
             return JsonResponse({'mensaje': 'Convocatoria creada exitosamente', 'id': call_instance.id}, status=201)
         else:
-            return JsonResponse({'mensaje': str(serializer.errors)}, status=400)
+            return JsonResponse({'error': str(serializer.errors)}, status=400)
 
 
 class CallDetails(generics.RetrieveUpdateDestroyAPIView):

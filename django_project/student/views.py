@@ -1,5 +1,9 @@
+import json
+
 from call.models import Call
 from rest_framework import status
+
+from .models import Student
 from .permissions import IsStudent
 from django.http import JsonResponse
 from rest_framework import permissions
@@ -7,7 +11,8 @@ from datetime import datetime, timezone
 from rest_framework.views import APIView
 from application.models import Application
 from rest_framework.response import Response
-from .serializers import StudentApplicationSerializer
+from .serializers import StudentApplicationSerializer, StudentSerializer, StudentSerializerGeneral
+from django.contrib.auth.models import User
 
 
 class EligibilityView(APIView):
@@ -72,3 +77,52 @@ class ApplicationDataView(APIView):
             serializer.save()
             return JsonResponse({'message': 'Data has been updated'}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class post_user_student(APIView):
+    permission_classes = []
+    serializer = StudentSerializer()
+
+    def post(self, request):
+        input_params = json.loads(request.body)
+        input_params['username'] = input_params["email"]
+
+        user = User.objects.create_user(
+            username=input_params['username'],
+            email=input_params['email'],
+            password=input_params['password'],
+            first_name=input_params['first_name'],
+            last_name=input_params['last_name'],
+        )
+        input_params["user"] = user
+        del input_params["username"]
+        del input_params["email"]
+        del input_params["password"]
+        del input_params["first_name"]
+        del input_params["last_name"]
+
+        certificates = [input_params["certificate_grades"], input_params["certificate_student"],
+                        input_params["payment_receipt"]]
+        del input_params["certificate_grades"]
+        del input_params["certificate_student"]
+        del input_params["payment_receipt"]
+
+        verif_code = input_params["verif_code"]
+        del input_params["verif_code"]
+
+        input_params['birth_date'] = datetime.strptime(input_params['birth_date'], '%Y-%m-%d').date()
+
+        serializer = StudentSerializer(data=input_params)
+
+        print(input_params)
+        print(certificates)
+
+
+        Student.objects.create(**input_params)
+
+        qset = Student.objects.filter(id=1041578941)
+        qset = StudentSerializerGeneral(qset, many=True).data
+        print(qset)
+
+
+        return JsonResponse({'mensaje', 'Estudiante creado exitosamente'}, status=200, safe=False)
