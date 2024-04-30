@@ -2,7 +2,7 @@
 
 ## 1. Filter and Retrieve all Applicants for a Specific Call
 
-**URL:** `application/applicants/<convocatoria_id>/`
+**URL:** `application/applicants/<call_id>/`
 
 **Method:** `GET`
 
@@ -29,7 +29,7 @@
 
 
 ## 2. Get documents for a specific student in the specific call
-**URL:** `application/applicants/<convocatoria_id>/documents/<student_id>/`
+**URL:** `application/applicants/<call_id>/documents/<student_id>/`
 
 **Method:** `GET`
 
@@ -54,7 +54,7 @@ The response will be a JSON object containing document names as keys and their c
 
 **URL:** `/application/update_state_documents/<call_id>/<student_id>/`
 
-**Method:** `POST`
+**Method:** `PUT`
 
 **Description:** Updates the state documents for a specific application associated with a call and a student.
 

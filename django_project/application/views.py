@@ -3,6 +3,7 @@ from . import serializers
 from call.models import Call
 from .models import Application
 from rest_framework import status
+from .helpers import get_link_file
 from .serializers import Applicants
 from django.http import JsonResponse
 from rest_framework import permissions
@@ -12,6 +13,7 @@ from rest_framework.response import Response
 from student.views import ApplicationDataView
 from .serializers import ApplicationSerializer
 from .permissions import IsStudent, IsEmployee
+from google.cloud import exceptions as gcloud_exceptions
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.decorators import api_view, permission_classes, parser_classes
 
@@ -234,3 +236,41 @@ def applicants(request, call_id):
 
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated, IsEmployee])
+def documents(request, call_id, student_id):
+    """
+        Endpoint used to retrieves documents associated with a student's
+        application for a specific call.
+        """
+    try:
+        application = Application.objects.get(call_id=call_id, student_id=student_id)
+    except Application.DoesNotExist:
+        return JsonResponse({'error': 'Application not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    call = Call.objects.get(id=call_id)
+    region = call.university_id.get_region_display()
+    print(region)
+    documents = {}
+    if region == 'Uniandes':
+        doc_names = Application.name_docs
+    elif region == 'Convenio Sigueme/Nacional':
+        doc_names = Application.national_name_docs
+    else:
+        doc_names = Application.international_name_docs + Application.name_docs
+
+    for doc_name in doc_names:
+        try:
+            link = get_link_file('complete_doc', f"{doc_name}")
+            documents[doc_name] = link
+
+        except gcloud_exceptions.Forbidden:
+            return JsonResponse({'error': f'URL expiration time has passed for file "{doc_name}"'},
+                                status=status.HTTP_400_BAD_REQUEST)
+        except FileNotFoundError:
+            return JsonResponse({'error': f'File "{doc_name}" not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    return JsonResponse(documents, status=status.HTTP_200_OK)
+
+
