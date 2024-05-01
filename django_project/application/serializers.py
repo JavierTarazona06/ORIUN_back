@@ -56,4 +56,3 @@ class Applicants(serializers.ModelSerializer):
     class Meta:
         model = Application
         fields = ['call','student','university_name','university_country','year','semester']
-
