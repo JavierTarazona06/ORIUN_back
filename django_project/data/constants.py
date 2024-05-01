@@ -29,3 +29,4 @@ class Constants:
     FORMAT_CHOICES = constants_dict["format_en"]
     LANGUAGE_CHOICES = constants_dict["language_en"]
     SEMESTER_CHOICES = constants_dict["semester_en"]
+    STATE_DOCS_CHOICES = constants_dict["state_documents_en"]
