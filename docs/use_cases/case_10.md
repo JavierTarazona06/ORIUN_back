@@ -10,6 +10,8 @@
 
 **Authorization:** User authentication is required (Bearer token), and the user must be an employee.
 
+**Filters:** The filters that will be allowed will be student_id and university_name.
+
 **Inputs:** Query parameters.
 
 | Name      | Type   | Description                                                 |
@@ -32,7 +34,6 @@
 **URL:** `application/applicants/<call_id>/documents/<student_id>/`
 
 **Method:** `GET`
-
 
 **Description:** Retrieves documents associated with a student's application for a specific call.
 
