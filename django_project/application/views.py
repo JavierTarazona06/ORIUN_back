@@ -11,12 +11,11 @@ from datetime import datetime, timezone
 from rest_framework import status, generics
 from rest_framework.response import Response
 from student.views import ApplicationDataView
-from .serializers import ApplicationSerializer
 from .permissions import IsStudent, IsEmployee
 from google.cloud import exceptions as gcloud_exceptions
 from rest_framework.parsers import MultiPartParser, FormParser
+from .serializers import ApplicationSerializer,ApplicationModifySerializer
 from rest_framework.decorators import api_view, permission_classes, parser_classes
-
 
 
 @api_view(['GET'])
@@ -220,7 +219,7 @@ def applicants(request, call_id):
     serializer.is_valid(raise_exception=True)
 
     try:
-        applications = Application.objects.filter(call_id=call_id)
+        applications = Application.objects.filter(call_id=call_id).order_by('state_documents')
         # Check if any applications are found for the given call ID
         if not applications.exists():
             return Response({"error": "No applications found for the provided call ID"},
@@ -256,7 +255,7 @@ def documents(request, call_id, student_id):
     if region == 'Uniandes':
         doc_names = Application.name_docs
     elif region == 'Convenio Sigueme/Nacional':
-        doc_names = Application.national_name_docs
+        doc_names = Application.national_name_docs + Application.name_docs
     else:
         doc_names = Application.international_name_docs + Application.name_docs
 
@@ -272,5 +271,26 @@ def documents(request, call_id, student_id):
             return JsonResponse({'error': f'File "{doc_name}" not found'}, status=status.HTTP_404_NOT_FOUND)
 
     return JsonResponse(documents, status=status.HTTP_200_OK)
+
+
+@api_view(['PUT'])
+@permission_classes([permissions.IsAuthenticated, IsEmployee])
+def modify(request, call_id, student_id):
+        """
+        Endpoint used to request modifications to an existing student application
+        """
+        #TODO: Add modified atribute to make the review
+        try:
+            application = Application.objects.get(call_id=call_id, student_id=student_id)
+        except Application.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        data = {'state_documents':'1'}
+        serializer = ApplicationModifySerializer(application, data=data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
