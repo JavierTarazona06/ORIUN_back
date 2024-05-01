@@ -21,12 +21,14 @@
 
 **Outputs:**
 
-| Name                 | Type    | Description                                           |
-|----------------------|---------|-------------------------------------------------------|
-| `student_id`         | Integer | Unique identifier of the student.                     |
-| `student_name`       | String  | Full name of the student.                             |
-| `university_name`    | String  | Name of the university where the student is an applicant|
-| `university_country` | String  | Country where the university is located.              |
+| Name                 | Type    | Description                                              |
+|----------------------|---------|----------------------------------------------------------|
+| `student_id`         | Integer | Unique identifier of the student.                        |
+| `student_name`       | String  | Full name of the student.                                |
+| `university_name`    | String  | Name of the university where the student is an applicant |
+| `university_country` | String  | Country where the university is located.                 |
+| `student_major`      | String  | Major of the student.                                    |
+| `call`               | Integer | Unique identifier of the  call.                          |
 <hr style="border:2px solid grey">
 
 
@@ -51,25 +53,61 @@ The response will be a JSON object containing document names as keys and their c
 
 <hr style="border:2px solid grey">
 
-## 3.Update state documents for a specific application
+## 3.Request a modification for an application
 
-**URL:** `/application/update_state_documents/<call_id>/<student_id>/`
+**URL:** `application/<int:call_id>/<int:student_id>/modify/`
 
 **Method:** `PUT`
 
-**Description:** Updates the state documents for a specific application associated with a call and a student.
+**Description:**  Modifies an existing application for a specific student in a specific call.
 
 **Authorization:** User authentication is required (Bearer token), and the user must be an employee.
 
 **Inputs:** 
 
-| Name              | Type   | Description                                    |
-|-------------------|--------|------------------------------------------------|
-| `state_documents` | Integer| The new state of documents for the application. This should be one of the following values: `0` (Not Reviewed), `1` (Modification Requested), or `2` (Documents Approved). |
+| Name         | Type    | Description                                    |
+|--------------|---------|------------------------------------------------|
+| `call_id`    | Integer | ID of the call to retrieve documents for.      |
+| `student_id` | Integer | ID of the student to retrieve documents for.   |
+
 
 **Outputs:**
 
-## 4. Add Comment to Application
+| Name      | Type   | Description                                                              |
+|-----------|--------|--------------------------------------------------------------------------|
+| `message` | String | Message indicating the application data requested to be modified, like: 'request a modification' |
+
+
+
+## 4. Endpoint to Accept Documents for a Specific Student's Application
+
+*URL:** `application/<int:call_id>/<int:student_id>/modify/`
+
+**Method:** `PUT`
+
+**Description:**  Modifies an existing application for a specific student in a specific call.
+
+**Authorization:** User authentication is required (Bearer token), and the user must be an employee.
+
+**Inputs:** 
+
+| Name         | Type    | Description                                    |
+|--------------|---------|------------------------------------------------|
+| `call_id`    | Integer | ID of the call to retrieve documents for.      |
+| `student_id` | Integer | ID of the student to retrieve documents for.   |
+
+
+**Outputs:**
+
+| Name      | Type   | Description                                                              |
+|-----------|--------|--------------------------------------------------------------------------|
+| `message` | String | Message indicating the application data requested to be modified, like: 'request a modification' |
+
+
+
+
+
+## 5. Add Comment to Application
 
 **URL:** `/application/add_comment/<call_id>/<student_id>/`
 
