@@ -162,6 +162,7 @@ cython_debug/
 
 # Testing files for stupid code that should not be visible :)
 test.py
+testy.py
 
 
 **/.DS_Store
