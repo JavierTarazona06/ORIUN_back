@@ -33,7 +33,7 @@
 <hr style="border:2px solid grey">
 
 ## 2.  Retrieve Student Information Related to an Application
-**URL:** `application/<int:call_id>/<int:student_id>/student-info/`
+**URL:** `application/student-info/<int:call_id>/<int:student_id>/`
 
 **Method:** `GET`
 
@@ -60,7 +60,7 @@
 | `call`               | Integer | Unique identifier of the  call.                          |
 
 ## 3. Get documents for a specific student in the specific call
-**URL:** `application/applicants/<call_id>/documents/<student_id>/`
+**URL:** `application/documents/<call_id>/<student_id>/`
 
 **Method:** `GET`
 
@@ -78,7 +78,8 @@
 **Outputs:**
 The response will be a JSON object containing document names as keys and their corresponding public links as values, the documents vary according to region, as shown below:
 
- **Uniandes:**
+ 
+**Uniandes:**
 
 | Name                   | Type  | Description                                    |
 |------------------------|-------|------------------------------------------------|
@@ -88,7 +89,7 @@ The response will be a JSON object containing document names as keys and their c
 | `doc_id_student`       | Link  | Identity Document.                             |
 | `grades_certificate`   | Link  | Grades Certificate.                            |
 
-### National:
+**National:**
 
 | Name                   | Type | Description                                    |
 |------------------------|------|------------------------------------------------|
@@ -99,10 +100,11 @@ The response will be a JSON object containing document names as keys and their c
 | `grades_certificate`   | link | Grades Certificate.                            |
 | `sigueme_form`         | link | 'Sigueme' Document.                            |
 | `payment_tuition`      | link | Tuition Payment Certificate.                   |
-| `eps_certificate`      | File | EPS Affiliation Certificate.                   |
+| `eps_certificate`      | link | EPS Affiliation Certificate.                   |
 | `economic_letter`      | link | Economic Sufficiency Letter.                   |
 
-### International:
+**International:**
+
 | Name                   | Type | Description                                    |
 |------------------------|------|------------------------------------------------|
 | `request_form`         | link | Request Form.                                  |
@@ -115,11 +117,18 @@ The response will be a JSON object containing document names as keys and their c
 | `language_certificate` | link | Language Certificate.                          |
 | `economic_letter`      | link | Economic Sufficiency Letter.                   |
 
+
+**Error Handling**
+
+| Error Handling    | Description                                                                                                                                                 |
+|-------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Link Expiration   | Posible message:'The links provided below may expire after a certain period. If you encounter any issues accessing the documents, please refresh the page.' |
+
 <hr style="border:2px solid grey">
 
 ## 4. Request a modification for an application
 
-**URL:** `application/<int:call_id>/<int:student_id>/modify/`
+**URL:** `application/modify/<int:call_id>/<int:student_id>/`
 
 **Method:** `PUT`
 
@@ -145,7 +154,7 @@ The response will be a JSON object containing document names as keys and their c
 
 ## 5. Endpoint to Accept Documents for a Specific Student's Application
 
-*URL:** `application/<int:call_id>/<int:student_id>/modify/`
+*URL:** `application/accept-documents/<int:student_id>/<int:call_id>'`
 
 **Method:** `PUT`
 
@@ -167,10 +176,6 @@ The response will be a JSON object containing document names as keys and their c
 |-----------|--------|----------------------------------------------------------------------------------------------|
 | `message` | String | Message indicating the application data requested to be accepted, like: 'accepted documents' |
 
-
-
-
-
 ## 6. Add Comment to Application
 
 **URL:** `/application/add_comment/<call_id>/<student_id>/`
@@ -185,7 +190,7 @@ The response will be a JSON object containing document names as keys and their c
 
 | Name         | Type   | Description                                   |
 |--------------|--------|-----------------------------------------------|
-| `comment_docs`    | String | The comment to be added to the application.  |
+| `comment`    | String | The comment to be added to the application.  |
 
 **Outputs:**
 
