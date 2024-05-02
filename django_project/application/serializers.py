@@ -77,3 +77,9 @@ class ApplicationModifySerializer(serializers.ModelSerializer):
         model = Application
         fields = ['state_documents', 'call_id', 'student_id']
 
+class StateSerializer(serializers.Serializer):
+    student_id = serializers.IntegerField()
+    call_id = serializers.IntegerField()
+    state = serializers.IntegerField()
+    class Meta:
+        fields = ('student_id', 'call_id', 'state')

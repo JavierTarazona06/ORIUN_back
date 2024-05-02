@@ -15,7 +15,7 @@ from .permissions import IsStudent, IsEmployee
 from google.cloud import exceptions as gcloud_exceptions
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.decorators import api_view, permission_classes, parser_classes
-from .serializers import ApplicationSerializer,ApplicationModifySerializer
+from .serializers import ApplicationSerializer,ApplicationModifySerializer, StateSerializer
 
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated, IsStudent])
@@ -285,7 +285,7 @@ def modify(request, call_id, student_id):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         data = {'state_documents':'1', 'modified': False}
-        serializer = ApplicationModifySerializer(application, data=data)
+        serializer = ApplicationModifySerializer(application, data=data, partial=True)
 
         if serializer.is_valid():
             serializer.save()
@@ -305,9 +305,8 @@ def accept_documents(request, call_id, student_id):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     # Set the value of state_documents to 2 for accepting documents
-    data = {'state_documents': 2, 'modified': False}
-    serializer = ApplicationModifySerializer(application, data=data)
-
+    data = {'state_documents': 2, 'modified': False }
+    serializer = ApplicationModifySerializer(application, data=data, partial=True)
 
     if serializer.is_valid():
         serializer.save()
@@ -329,3 +328,34 @@ def get_student_info(request, student_id, call_id):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated, IsEmployee])
+def get_state(request, call_id, student_id):
+    """
+    Endpint to  retrieve the state of a student application based on the provided call_id and student_id.
+
+    State Values:
+    - 0: Application not yet reviewed.
+    - 1: Modification requested by the student.
+    - 2: Application accepted.
+    - 3: Modifications made by the student.
+       """
+    try:
+        application = Application.objects.get(call_id=call_id, student_id=student_id)
+        # Check modified and determine state (Not reviewed: 0, Modify: 1, Accepted:2)
+        if application.modified:
+            state = 3
+        elif application.state_documents == 0:
+            state = 0
+        elif application.state_documents == 1:
+            state = 1
+        elif application.state_documents == 2:
+            state = 2
+        else:
+            state = None
+
+        # Serialize the data using the StateSerializer
+        serializer = StateSerializer(application, {'state': state})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Application.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
