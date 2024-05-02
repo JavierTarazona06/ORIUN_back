@@ -28,12 +28,12 @@ class ApplicationDetailSerializer(serializers.ModelSerializer):
 
 
 class ApplicationComments(serializers.ModelSerializer):
-    comment_docs = serializers.SerializerMethodField()
+    comment = serializers.SerializerMethodField()
 
     def get_comment_docs(self, obj):
-        if obj.comment_docs is None:
+        if obj.comment is None:
             return 'No hay comentarios con respecto a los documentos subidos.'
-        return obj.comment_docs
+        return obj.comment
 
     class Meta:
         model = Application

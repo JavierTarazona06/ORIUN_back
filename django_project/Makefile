@@ -21,3 +21,5 @@ populate_data:
 
 delete_migrations:
 	find . -path "./*/migrations/*.py" -not -name "__init__.py" -delete
+activate:
+	source .venv/bin/activate
