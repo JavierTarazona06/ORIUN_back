@@ -37,7 +37,7 @@ class ApplicationComments(serializers.ModelSerializer):
 
     class Meta:
         model = Application
-        fields = ['comment_docs']
+        fields = ['comment']
 
 
 class Applicants(serializers.ModelSerializer):
