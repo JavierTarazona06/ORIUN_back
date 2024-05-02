@@ -18,7 +18,7 @@ class CallsTestCase2(TestCase):
     def setUpClass(cls):
         # Populate DB
         comm = Command()
-        comm.handle(path=r"C:\Users\javit\Documents\ORIUN_back\django_project\data\data_csv")
+        comm.handle(path=r"data\data_csv")
 
     def setUp(self):
         # User auth

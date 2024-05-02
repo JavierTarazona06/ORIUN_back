@@ -1,7 +1,9 @@
 import json
+import os
 
 from call.models import Call
-from rest_framework import status
+from rest_framework import status, viewsets
+from rest_framework.exceptions import ValidationError
 
 from .models import Student
 from .permissions import IsStudent
@@ -13,7 +15,10 @@ from application.models import Application
 from rest_framework.response import Response
 from .serializers import StudentApplicationSerializer, StudentSerializer, StudentSerializerGeneral
 from django.contrib.auth.models import User
-
+from person.serializers import UserSerializerShort
+from application.helpers import upload_object
+from data import helpers
+from data.constants import Constants
 
 class EligibilityView(APIView):
     """
@@ -84,45 +89,139 @@ class post_user_student(APIView):
     serializer = StudentSerializer()
 
     def post(self, request):
-        input_params = json.loads(request.body)
-        input_params['username'] = input_params["email"]
+        try:
+            input_params = request.data
 
-        user = User.objects.create_user(
-            username=input_params['username'],
-            email=input_params['email'],
-            password=input_params['password'],
-            first_name=input_params['first_name'],
-            last_name=input_params['last_name'],
-        )
-        input_params["user"] = user
-        del input_params["username"]
-        del input_params["email"]
-        del input_params["password"]
-        del input_params["first_name"]
-        del input_params["last_name"]
+            if not "@unal.edu.co" in input_params["email"]:
+                raise ValueError("El correo no es dominio @unal.edu.co")
 
-        certificates = [input_params["certificate_grades"], input_params["certificate_student"],
-                        input_params["payment_receipt"]]
-        del input_params["certificate_grades"]
-        del input_params["certificate_student"]
-        del input_params["payment_receipt"]
+            # Creating User -----
+            input_params['username'] = input_params["email"]
+            user = User.objects.create_user(
+                username=input_params['username'],
+                email=input_params['email'],
+                password=input_params['password'],
+                first_name=input_params['first_name'],
+                last_name=input_params['last_name'],
+            )
+            input_params["user"] = user.id
+            del input_params["username"]
+            del input_params["email"]
+            del input_params["password"]
+            del input_params["first_name"]
+            del input_params["last_name"]
 
-        verif_code = input_params["verif_code"]
-        del input_params["verif_code"]
+            # Dividing certificates -----
+            if input_params["certificate_grades"].size > 3_000_000:
+                raise ValidationError("File grades is too big. It must be smaller than 3 MB")
+            if input_params["certificate_student"].size > 3_000_000:
+                raise ValidationError("File student is too big. It must be smaller than 3 MB")
+            if input_params["payment_receipt"].size > 3_000_000:
+                raise ValidationError("File payment is too big. It must be smaller than 3 MB")
+            certificates = {
+                "grades": input_params["certificate_grades"].file,
+                "student": input_params["certificate_student"].file,
+                "payment": input_params["payment_receipt"].file
+            }
+            del input_params["certificate_grades"]
+            del input_params["certificate_student"]
+            del input_params["payment_receipt"]
 
-        input_params['birth_date'] = datetime.strptime(input_params['birth_date'], '%Y-%m-%d').date()
+            # Verification Code -----
+            if "verif_code" in input_params:
+                verif_code = input_params["verif_code"]
+                del input_params["verif_code"]
 
-        serializer = StudentSerializer(data=input_params)
+            # Data Validation -----
+            input_params['birth_date'] = datetime.strptime(input_params['birth_date'], '%Y-%m-%d').date()
+            input_params = dict(input_params)
+            for key, value in input_params.items():
+                if str(type(value)) == "<class 'datetime.date'>":
+                    input_params[key] = value.strftime("%Y-%m-%d")
+                if str(type(value)) == "<class 'int'>":
+                    input_params[key] = str(value)
+                else:
+                    input_params[key] = value[0]
 
-        print(input_params)
-        print(certificates)
+            # Validation Serializer -----
+            serializer = StudentSerializer(data=input_params)
+            if not serializer.is_valid():
+                errors = serializer.errors
+                raise ValueError(str(errors))
+            input_params["user"] = user
 
+            # Upload Certificates
+            grades_file_name = str(input_params["id"]) + '_' + str(Student.certificates[0])
+            upload_object('student_certificates', certificates["grades"], grades_file_name)
 
-        Student.objects.create(**input_params)
+            student_file_name = str(input_params["id"]) + '_' + str(Student.certificates[1])
+            upload_object('student_certificates', certificates["student"], student_file_name)
 
-        qset = Student.objects.filter(id=1041578941)
-        qset = StudentSerializerGeneral(qset, many=True).data
-        print(qset)
+            payment_file_name = str(input_params["id"]) + '_' + str(Student.certificates[2])
+            upload_object('student_certificates', certificates["payment"], payment_file_name)
 
+            # Certificates Validation
+            with open(grades_file_name, "wb") as pdf_file:
+                pdf_file.write(certificates["grades"].getvalue())
+            with open(student_file_name, "wb") as pdf_file:
+                pdf_file.write(certificates["student"].getvalue())
+            with open(payment_file_name, "wb") as pdf_file:
+                pdf_file.write(certificates["payment"].getvalue())
 
-        return JsonResponse({'mensaje', 'Estudiante creado exitosamente'}, status=200, safe=False)
+            data_from_grades = helpers.get_data_grades_certificate(grades_file_name)
+            data_from_student = helpers.get_data_student_certificate(student_file_name)
+            data_from_payment = helpers.get_data_student_payment(payment_file_name)
+            os.remove(grades_file_name)
+            os.remove(student_file_name)
+            os.remove(payment_file_name)
+
+            valid_id = ((data_from_grades['id'] == input_params['id']) and (data_from_student['id'] == input_params['id'])
+                        and (data_from_payment['id'] == input_params['id']))
+            if not valid_id:
+                raise ValueError("El ID no concuerda con el certificado.")
+
+            valid_average = (data_from_grades['average'] == input_params['PAPA'])
+            if not valid_average:
+                raise ValueError("El promedio no concuerda con el certificado.")
+
+            std_program = ''
+            for opt in Constants.MAJOR_CHOICES:
+                if opt["value"] == input_params['major']:
+                    std_program = opt["display"]
+                    break
+            valid_program = (data_from_grades['program'].upper() == std_program.upper())
+            if not valid_program:
+                raise ValueError("El programa no concuerda con el certificado o hay problema con la lista almacenada de programas.")
+
+            valid_faculty = (data_from_grades['faculty'].upper() == input_params['faculty'].upper())
+            if not valid_faculty:
+                raise ValueError("La facultad no concuerda con el certificado o hay problema con la lista almacenada de facultades.")
+
+            valid_advance = (data_from_student['advance'] == input_params['advance'])
+            if not valid_advance:
+                raise ValueError("El avance no concuerda con el certificado.")
+
+            valid_pbm = (data_from_payment['pbm'] == input_params['PBM'])
+            if not valid_pbm :
+                raise ValueError("El valor de PBM no concuerda con el certificado.")
+
+            val_admi = ''
+            data_from_payment['admission'] = data_from_payment['admission'].upper()
+            if "PAES" in data_from_payment['admission']:
+                val_admi = "PAES"
+            if "PEAMA" in data_from_payment['admission']:
+                val_admi = "PEAMA"
+            if (len(data_from_payment['admission']) > 5) or ("REGUL" in data_from_payment['admission']):
+                val_admi = "REGUL"
+            else:
+                raise ValueError("El string de admisión no se reconoció como PAES/PEAMA/REGUL.")
+            valid_admission = (val_admi == input_params['admission'])
+            if not valid_admission:
+                raise ValueError("El string de admisión no concuerda con el certificado.")
+
+            # Create Student -----
+            Student.objects.create(**input_params)
+
+            return JsonResponse({'mensaje': 'Estudiante creado exitosamente'}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)

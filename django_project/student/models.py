@@ -40,7 +40,7 @@ class Student(Person):
     study_level_choices = [(choice['value'], _(choice['display'])) for choice in Constants.STUDY_LEVEL_CHOICES]
     study_level = models.CharField(max_length=10, choices=study_level_choices)
 
-    certificates = ['certificate_grades', 'certificate_student', 'payment_receipt']
+    certificates = ['certificate_grades.pdf', 'certificate_student.pdf', 'payment_receipt.pdf']
 
     def __str__(self):
         return f'Student: {self.user.first_name} with ID {self.id}.'
