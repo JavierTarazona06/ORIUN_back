@@ -15,4 +15,6 @@ urlpatterns = [
     path('documents/<int:call_id>/<int:student_id>/', views.documents, name='documents_student'),
     path('modify/<int:call_id>/<int:student_id>/',views.modify ,name= 'modify_application'),
     path('accept-documents/<int:student_id>/<int:call_id>/',views.accept_documents,  name='accept_documents'),
+    path('student-info/<int:call_id>/<int:student_id>/', views.get_student_info, name= 'student_info')
+
 ]

@@ -14,9 +14,8 @@ from student.views import ApplicationDataView
 from .permissions import IsStudent, IsEmployee
 from google.cloud import exceptions as gcloud_exceptions
 from rest_framework.parsers import MultiPartParser, FormParser
-from .serializers import ApplicationSerializer,ApplicationModifySerializer
 from rest_framework.decorators import api_view, permission_classes, parser_classes
-
+from .serializers import ApplicationSerializer,ApplicationModifySerializer
 
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated, IsStudent])
@@ -285,7 +284,7 @@ def modify(request, call_id, student_id):
         except Application.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        data = {'state_documents':'1'}
+        data = {'state_documents':'1', 'modified': False}
         serializer = ApplicationModifySerializer(application, data=data)
 
         if serializer.is_valid():
@@ -306,7 +305,7 @@ def accept_documents(request, call_id, student_id):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     # Set the value of state_documents to 2 for accepting documents
-    data = {'state_documents': 2}
+    data = {'state_documents': 2, 'modified': False}
     serializer = ApplicationModifySerializer(application, data=data)
 
 
@@ -314,4 +313,19 @@ def accept_documents(request, call_id, student_id):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated, IsEmployee])
+def get_student_info(request, student_id, call_id):
+    """
+    Endpoint to retrieve student information related to an application
+    """
+    try:
+        student = Application.objects.get(call_id=call_id, student_id=student_id)
+    except Application.DoesNotExist:
+        return JsonResponse({'error': 'Application not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    serializer = Applicants(student)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
 

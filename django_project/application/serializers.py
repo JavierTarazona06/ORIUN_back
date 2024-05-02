@@ -41,14 +41,17 @@ class ApplicationComments(serializers.ModelSerializer):
 
 
 class Applicants(serializers.ModelSerializer):
+    year = serializers.IntegerField(required=False)
+    semester = serializers.CharField(required=False)
     student_name = serializers.SerializerMethodField()
     student_major = serializers.SerializerMethodField()
+    state_documents = serializers.SerializerMethodField()
     university_name = serializers.SerializerMethodField()
     university_country = serializers.SerializerMethodField()
-    year = serializers.IntegerField(required=False)
     call = serializers.PrimaryKeyRelatedField(queryset=Call.objects.all(), required=False)
-    semester = serializers.CharField(required=False)
     student_id = serializers.PrimaryKeyRelatedField(queryset=Student.objects.all(), required=False)
+
+
     def get_university_name(self, obj):
         return obj.call.university_id.name
     def get_student_name(self, obj):
@@ -60,11 +63,17 @@ class Applicants(serializers.ModelSerializer):
     def get_student_major(self, obj):
         return obj.student.get_major_display()
 
+    def get_state_documents(self, obj):
+        return obj.get_state_documents_display()
+
     class Meta:
         model = Application
         fields = ['call','student_id','university_name','university_country','year','semester','student_name','student_major', 'state_documents']
 
 class ApplicationModifySerializer(serializers.ModelSerializer):
+    call_id = serializers.PrimaryKeyRelatedField(queryset=Call.objects.all(), required=False)
+    student_id = serializers.PrimaryKeyRelatedField(queryset=Student.objects.all(), required=False)
     class Meta:
         model = Application
-        fields = ['state_documents']
+        fields = ['state_documents', 'call_id', 'student_id']
+
