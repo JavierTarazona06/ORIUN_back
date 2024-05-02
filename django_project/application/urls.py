@@ -12,6 +12,7 @@ urlpatterns = [
     path('comments/', views.ApplicationComments.as_view(), name='application_comments'),
     path('edit/', views.edit_application, name='edit_application'),
     path('applicants/<int:call_id>/', views.applicants, name='applicants'),
-    path('applicants/<int:call_id>/documents/<int:student_id>/', views.documents, name='documents_student'),
-    path('applicants/<int:call_id>/<int:student_id>/modify/',views.modify ,name= 'modify_application'),
+    path('documents/<int:call_id>/<int:student_id>/', views.documents, name='documents_student'),
+    path('modify/<int:call_id>/<int:student_id>/',views.modify ,name= 'modify_application'),
+    path('accept-documents/<int:student_id>/<int:call_id>/',views.accept_documents,  name='accept_documents'),
 ]

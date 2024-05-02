@@ -294,3 +294,24 @@ def modify(request, call_id, student_id):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(['PUT'])
+@permission_classes([permissions.IsAuthenticated, IsEmployee])
+def accept_documents(request, call_id, student_id):
+    """
+    Endpoint to accept documents for a specific student's application
+    """
+    try:
+        application = Application.objects.get(call_id=call_id, student_id=student_id)
+    except Application.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    # Set the value of state_documents to 2 for accepting documents
+    data = {'state_documents': 2}
+    serializer = ApplicationModifySerializer(application, data=data)
+
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+

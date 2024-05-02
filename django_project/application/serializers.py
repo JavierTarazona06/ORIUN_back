@@ -1,7 +1,7 @@
 from call.models import Call
+from .models import Application
 from student.models import Student
 from rest_framework import serializers
-from .models import Application
 
 class ApplicationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -62,7 +62,7 @@ class Applicants(serializers.ModelSerializer):
 
     class Meta:
         model = Application
-        fields = ['call','student_id','university_name','university_country','year','semester','student_name','student_major']
+        fields = ['call','student_id','university_name','university_country','year','semester','student_name','student_major', 'state_documents']
 
 class ApplicationModifySerializer(serializers.ModelSerializer):
     class Meta:
