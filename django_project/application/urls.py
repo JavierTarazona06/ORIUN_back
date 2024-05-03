@@ -17,5 +17,5 @@ urlpatterns = [
     path('accept-documents/<int:student_id>/<int:call_id>/',views.accept_documents,  name='accept_documents'),
     path('student-info/<int:call_id>/<int:student_id>/', views.get_student_info, name= 'student_info'),
     path('get-state/<int:call_id>/<int:student_id>/', views.get_state, name='get_state'),
-
+    path('add-comment/<int:call_id>/<int:student_id>/', views.add_comment, name='comment_application'),
 ]

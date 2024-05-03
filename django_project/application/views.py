@@ -322,7 +322,7 @@ def get_student_info(request, student_id, call_id):
     try:
         student = Application.objects.get(call_id=call_id, student_id=student_id)
     except Application.DoesNotExist:
-        return JsonResponse({'error': 'Application not found'}, status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
     serializer = Applicants(student)
     return Response(serializer.data, status=status.HTTP_200_OK)
@@ -354,8 +354,23 @@ def get_state(request, call_id, student_id):
         else:
             state = None
 
-        # Serialize the data using the StateSerializer
         serializer = StateSerializer(application, {'state': state})
         return Response(serializer.data, status=status.HTTP_200_OK)
     except Application.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated, IsEmployee])
+def add_comment(request, call_id, student_id):
+    """
+    Endpoint to add a comment to a student's application for a specific call.
+    """
+    try:
+        application = Application.objects.get(call_id=call_id, student_id=student_id)
+    except Application.DoesNotExist:
+        return Response({"error": "Application not found."}, status=status.HTTP_404_NOT_FOUND)
+
+    comment = request.data.get('comment')
+    application.comment = comment
+    application.save()
+    return Response({"message": "Comment added successfully."}, status=status.HTTP_201_CREATED)
