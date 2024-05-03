@@ -197,3 +197,36 @@ The response will be a JSON object containing document names as keys and their c
 | Name      | Type   | Description                                             |
 |-----------|--------|---------------------------------------------------------|
 | `message` | String | Message indicating that the comment has been created successfully |
+
+## 7. Obtain the status of the documentation
+
+**URL:** `/application/get-state/<int:call_id>/<int:student_id>/`
+
+**Method:** `GET`
+
+**Description:** Retrieves the state of a student application based on the provided call_id and student_id.
+
+**Authorization:** User authentication is required (Bearer token), and the user must be an employee.
+
+**Inputs:** JSON object in the request body.
+
+| Name         | Type    | Description                                    |
+|--------------|---------|------------------------------------------------|
+| `call_id`    | Integer | ID of the call to retrieve documents for.      |
+| `student_id` | Integer | ID of the student to retrieve documents for.   |
+
+**Outputs:**
+
+| Name         | Type    | Description                                    |
+|--------------|---------|------------------------------------------------|
+| `state`      | Integer | State of the student's application (see possible values below).   |
+
+
+**State Values:**
+
+| State Value | Description                            |
+|-------------|----------------------------------------|
+| 0           | Application not yet reviewed.          |
+| 1           | Modification requested by the employee |
+| 2           | Application accepted.                  |
+| 3           | Modifications made by the student.     |
