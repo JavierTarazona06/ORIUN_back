@@ -78,8 +78,9 @@ class ApplicationModifySerializer(serializers.ModelSerializer):
         fields = ['state_documents', 'call_id', 'student_id']
 
 class StateSerializer(serializers.Serializer):
-    student_id = serializers.IntegerField()
-    call_id = serializers.IntegerField()
+    call = serializers.PrimaryKeyRelatedField(queryset=Call.objects.all(), required=False)
+    student_id = serializers.PrimaryKeyRelatedField(queryset=Student.objects.all(), required=False)
     state = serializers.IntegerField()
+
     class Meta:
-        fields = ('student_id', 'call_id', 'state')
+        fields = ['student_id', 'call_id', 'state']

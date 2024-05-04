@@ -249,7 +249,7 @@ def documents(request, call_id, student_id):
 
     call = Call.objects.get(id=call_id)
     region = call.university_id.get_region_display()
-    print(region)
+
     documents = {}
     if region == 'Uniandes':
         doc_names = Application.name_docs
@@ -269,7 +269,13 @@ def documents(request, call_id, student_id):
         except FileNotFoundError:
             return JsonResponse({'error': f'File "{doc_name}" not found'}, status=status.HTTP_404_NOT_FOUND)
 
-    return JsonResponse(documents, status=status.HTTP_200_OK)
+    response_data = {
+        'call_id': call_id,
+        'student_id': student_id,
+        'documents': documents
+    }
+
+    return JsonResponse(response_data, status=status.HTTP_200_OK)
 
 
 @api_view(['PUT'])
@@ -354,8 +360,10 @@ def get_state(request, call_id, student_id):
         else:
             state = None
 
-        serializer = StateSerializer(application, {'state': state})
+        serializer = StateSerializer(data={'call': application.call_id, 'student_id': application.student_id, 'state': state})
+        serializer.is_valid()
         return Response(serializer.data, status=status.HTTP_200_OK)
+
     except Application.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
