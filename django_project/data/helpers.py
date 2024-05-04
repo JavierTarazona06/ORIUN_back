@@ -1,5 +1,50 @@
+import time
 import fitz
 import re
+import smtplib
+import os
+from dotenv import load_dotenv, find_dotenv
+import threading
+import random
+import string
+
+def delete_verif_code(path):
+    time.sleep(300)  # Esperar 5 minutos (5 minutos * 60 segundos/minuto)
+    if os.path.exists(path):
+        os.remove(path)
+
+def sent_email_verif_code(to:str, id):
+    dotenv_path = find_dotenv()
+    load_dotenv(dotenv_path)
+
+    MAIL = "jtarazonaj@unal.edu.co"
+    MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
+
+    caracteres = string.ascii_letters + string.digits
+    verif_code = ''.join(random.choice(caracteres) for _ in range(10))
+
+    with (smtplib.SMTP("smtp.gmail.com", 587) as smtp):
+        smtp.ehlo()
+        smtp.starttls()
+        smtp.ehlo()
+
+        smtp.login(MAIL, MAIL_PASSWORD)
+
+        subject = "ORIUN Verification Code"
+        headers = f"From: {MAIL}\r\nTo: {to}\r\nSubject: {subject}\r\n"
+        msg = f"{headers}\r\nCordial saludo,\n\nSu codigo de verificacion para acceder a la plataforma es: {verif_code}.\nRecuerde que el codigo solo dura 5 minutos activo desde la primera solicitud.\n\nAtentamente,\nEquipo ORIUN."
+
+        smtp.sendmail(MAIL, to, msg)
+
+    file_name = r"data/{}_verif_code.txt".format(id)
+    with open(file_name, "w") as file:
+        file.write(verif_code)
+    borrar_thread = threading.Thread(target=delete_verif_code, args=(file_name,))
+    borrar_thread.start()
+
+    return 0
+
+#sent_email_verif_code("javitar06@gmail.com", 1021632167)
 
 
 def get_data_grades_certificate(path: str):

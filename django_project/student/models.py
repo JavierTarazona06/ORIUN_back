@@ -20,7 +20,6 @@ class Student(Person):
     PAPA = models.FloatField()
     PBM = models.SmallIntegerField()
     advance = models.FloatField()
-    calls_done = models.ManyToManyField('call.Call', null=True)
     is_enrolled = models.BooleanField()
     date_banned_mobility = models.DateField(default=date(2000, 1, 1), null=True)
     num_semesters = models.SmallIntegerField()

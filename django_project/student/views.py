@@ -2,6 +2,7 @@ import json
 import os
 
 from call.models import Call
+from call.serializers import CallSerializer
 from rest_framework import status, viewsets
 from rest_framework.exceptions import ValidationError
 
@@ -13,12 +14,14 @@ from datetime import datetime, timezone
 from rest_framework.views import APIView
 from application.models import Application
 from rest_framework.response import Response
-from .serializers import StudentApplicationSerializer, StudentSerializer, StudentSerializerGeneral
+from .serializers import StudentApplicationSerializer, StudentSerializer, StudentSerializerGeneral, StudentGetSerializer
 from django.contrib.auth.models import User
 from person.serializers import UserSerializerShort
-from application.helpers import upload_object
+from application.helpers import upload_object, get_link_file
+from application.serializers import ApplicationSerializer
 from data import helpers
 from data.constants import Constants
+
 
 class EligibilityView(APIView):
     """
@@ -84,14 +87,52 @@ class ApplicationDataView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class read_user_student(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsStudent]
+
+    def get(self, request, pk):
+        try:
+            my_student = Student.objects.get(pk=pk)
+            my_student_qset = Student.objects.filter(pk=pk)
+            my_student_sr = StudentGetSerializer(my_student_qset, many=True).data[0]
+
+            applications_qset = Application.objects.filter(student__id=my_student.id)
+            calls_list = applications_qset.values('call__id', 'call__university__name', 'call__study_level',
+                                                  'call__year', 'call__semester', 'call__description')
+            calls_done = list(calls_list)
+            my_student_sr['calls_done'] = calls_done
+
+            certificates = Student.certificates
+            certificates_names = [
+                str(my_student.id) + '_' + str(certificates[0]),
+                str(my_student.id) + '_' + str(certificates[1]),
+                str(my_student.id) + '_' + str(certificates[2])
+            ]
+
+            bucket = 'student_certificates'
+            certificates_links = [
+                get_link_file(bucket, certificates_names[0]),
+                get_link_file(bucket, certificates_names[1]),
+                get_link_file(bucket, certificates_names[2])
+            ]
+
+            my_student_sr[certificates[0][:-4]] = certificates_links[0]
+            my_student_sr[certificates[1][:-4]] = certificates_links[1]
+            my_student_sr[certificates[2][:-4]] = certificates_links[2]
+
+            return JsonResponse(my_student_sr, status=status.HTTP_200_OK)
+        except Exception as e:
+            return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
 class post_user_student(APIView):
     permission_classes = []
     serializer = StudentSerializer()
 
     def post(self, request):
+        input_params = request.data
+        username = input_params["email"]
         try:
-            input_params = request.data
-
             if not "@unal.edu.co" in input_params["email"]:
                 raise ValueError("El correo no es dominio @unal.edu.co")
 
@@ -128,9 +169,16 @@ class post_user_student(APIView):
             del input_params["payment_receipt"]
 
             # Verification Code -----
-            if "verif_code" in input_params:
-                verif_code = input_params["verif_code"]
+            if "verif_code" not in input_params:
+                raise ValueError("No se envío el código de verificación enviado al correo")
+            else:
+                verif_code_sent = input_params["verif_code"]
                 del input_params["verif_code"]
+                code_file_name = r"data/{}_verif_code.txt".format(input_params["id"])
+                with open(code_file_name, "r") as file:
+                    code_stored = file.read()
+                if not (code_stored==verif_code_sent):
+                    raise ValidationError("El código de verificación de acceso enviado al correo no concuerda con el ingresado")
 
             # Data Validation -----
             input_params['birth_date'] = datetime.strptime(input_params['birth_date'], '%Y-%m-%d').date()
@@ -175,7 +223,8 @@ class post_user_student(APIView):
             os.remove(student_file_name)
             os.remove(payment_file_name)
 
-            valid_id = ((data_from_grades['id'] == input_params['id']) and (data_from_student['id'] == input_params['id'])
+            valid_id = ((data_from_grades['id'] == input_params['id']) and (
+                        data_from_student['id'] == input_params['id'])
                         and (data_from_payment['id'] == input_params['id']))
             if not valid_id:
                 raise ValueError("El ID no concuerda con el certificado.")
@@ -191,18 +240,20 @@ class post_user_student(APIView):
                     break
             valid_program = (data_from_grades['program'].upper() == std_program.upper())
             if not valid_program:
-                raise ValueError("El programa no concuerda con el certificado o hay problema con la lista almacenada de programas.")
+                raise ValueError(
+                    "El programa no concuerda con el certificado o hay problema con la lista almacenada de programas.")
 
             valid_faculty = (data_from_grades['faculty'].upper() == input_params['faculty'].upper())
             if not valid_faculty:
-                raise ValueError("La facultad no concuerda con el certificado o hay problema con la lista almacenada de facultades.")
+                raise ValueError(
+                    "La facultad no concuerda con el certificado o hay problema con la lista almacenada de facultades.")
 
             valid_advance = (data_from_student['advance'] == input_params['advance'])
             if not valid_advance:
                 raise ValueError("El avance no concuerda con el certificado.")
 
             valid_pbm = (data_from_payment['pbm'] == input_params['PBM'])
-            if not valid_pbm :
+            if not valid_pbm:
                 raise ValueError("El valor de PBM no concuerda con el certificado.")
 
             val_admi = ''
@@ -224,4 +275,10 @@ class post_user_student(APIView):
 
             return JsonResponse({'mensaje': 'Estudiante creado exitosamente'}, status=status.HTTP_200_OK)
         except Exception as e:
+            try:
+                user_inst = User.objects.get(username=username)
+            except User.DoesNotExist:
+                pass
+            else:
+                user_inst.delete()
             return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)

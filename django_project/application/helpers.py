@@ -154,7 +154,7 @@ def get_link_file(type_file: str, file_name: str) -> str:
     try:
         blob = next(blobs)
     except StopIteration:
-        raise FileNotFoundError
+        raise FileNotFoundError("No se encontró el archivo con el nombre especificado")
 
     # Set the expiration time for the signed URL
     url_expiration = timedelta(minutes=10)

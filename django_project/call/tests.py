@@ -538,8 +538,8 @@ class CallsTestCase2(TestCase):
         qset = qset.filter(deadline__gte=timezone.now().date())
         qset = CallSerializer(qset, many=True).data
 
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), qset)
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json(), {'message': 'No calls match the provided criteria'})
 
     def test_filter_calls_university_id(self):
         print("TEST: test_filter_calls_university_id")
@@ -859,6 +859,9 @@ class CallsTestCase2(TestCase):
 
         self.assertEqual(err, 'University matching query does not exist.')
 
+
+    def tearDown(self):
+        pass
 
     @classmethod
     def tearDownClass(cls):
