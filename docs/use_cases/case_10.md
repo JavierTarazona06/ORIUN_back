@@ -76,10 +76,15 @@
 | `student_id` | Integer | ID of the student to retrieve documents for.   |
 
 **Outputs:**
-The response will be a JSON object containing document names as keys and their corresponding public links as values, the documents vary according to region, as shown below:
 
- 
+| Name         | Type      | Description                                                                                   |
+|--------------|-----------|-----------------------------------------------------------------------------------------------|
+| `call_id`    | Integer   | ID of the call to retrieve documents for.                                                     |
+| `student_id` | Integer   | ID of the student to retrieve documents for.                                                  |
+| `documents`  | Dictionary | It contains the names of the documents as keys and their corresponding public links as values |
+
 **Uniandes:**
+
 
 | Name                   | Type  | Description                                    |
 |------------------------|-------|------------------------------------------------|
@@ -149,7 +154,8 @@ The response will be a JSON object containing document names as keys and their c
 | Name      | Type   | Description                                                              |
 |-----------|--------|--------------------------------------------------------------------------|
 | `message` | String | Message indicating the application data requested to be modified, like: 'request a modification' |
-
+| `call_id` | Integer   | ID of the call to retrieve documents for.                                                     |
+|`student_id` | Integer   | ID of the student to retrieve documents for.                                                  |
 
 
 ## 5. Endpoint to Accept Documents for a Specific Student's Application
@@ -175,6 +181,8 @@ The response will be a JSON object containing document names as keys and their c
 | Name      | Type   | Description                                                                                  |
 |-----------|--------|----------------------------------------------------------------------------------------------|
 | `message` | String | Message indicating the application data requested to be accepted, like: 'accepted documents' |
+| `call_id`    | Integer   | ID of the call to retrieve documents for.                                                     |
+| `student_id` | Integer   | ID of the student to retrieve documents for.                                                  |
 
 ## 6. Add Comment to Application
 
@@ -197,6 +205,8 @@ The response will be a JSON object containing document names as keys and their c
 | Name      | Type   | Description                                             |
 |-----------|--------|---------------------------------------------------------|
 | `message` | String | Message indicating that the comment has been created successfully |
+| `call_id`    | Integer   | ID of the call to retrieve documents for.                                                     |
+| `student_id` | Integer   | ID of the student to retrieve documents for.                                                  |
 
 ## 7. Obtain the status of the documentation
 
@@ -220,7 +230,8 @@ The response will be a JSON object containing document names as keys and their c
 | Name         | Type    | Description                                    |
 |--------------|---------|------------------------------------------------|
 | `state`      | Integer | State of the student's application (see possible values below).   |
-
+| `call_id`    | Integer   | ID of the call to retrieve documents for.                                                     |
+| `student_id` | Integer   | ID of the student to retrieve documents for.                                                  |
 
 **State Values:**
 
