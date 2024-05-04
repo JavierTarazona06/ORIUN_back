@@ -4,6 +4,7 @@ from call.models import Call
 from django.test import TestCase
 from student.models import ContactPerson
 from data.management.commands.populate_data import Command
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 
 class ApplicationTestCase(TestCase):
@@ -198,12 +199,12 @@ class ApplicationTestCase(TestCase):
         """
 
         """
-        from django.core.files.uploadedfile import SimpleUploadedFile
+
         response = self.client.post('/api-token/', {'username': 'santiago_garcia', 'password': 'Password123'})
 
-        with open('/home/valeria/Downloads/videos infracom/10 WLAN 02.mov', 'rb') as file:
+        with open('data/big_file.mov', 'rb') as file:
             file_data = file.read()
-            file_obj = SimpleUploadedFile('10 WLAN 02.mov', file_data)
+            file_obj = SimpleUploadedFile('big_file.mov', file_data)
             headers = {
                 "Authorization": f"Bearer {response.json()['access']}",
             }
@@ -212,7 +213,6 @@ class ApplicationTestCase(TestCase):
                 'document': file_obj,
                 'call': 5,
             }
-
             response = self.client.post('/application/upload/', data=data, headers=headers)
         self.assertEqual(response.status_code, 413)
         self.assertEqual(response.json()['error'], 'File is too big. It must be smaller than 9 MB')
@@ -221,7 +221,6 @@ class ApplicationTestCase(TestCase):
         """
 
         """
-        from django.core.files.uploadedfile import SimpleUploadedFile
         response = self.client.post('/api-token/', {'username': 'santiago_garcia', 'password': 'Password123'})
 
         with open('data/forms/templates/request_form.docx', 'rb') as file:
