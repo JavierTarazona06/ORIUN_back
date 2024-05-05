@@ -1,6 +1,7 @@
 import os
 import student
 from call.models import Call
+from django.urls import reverse
 from django.test import TestCase
 from student.models import ContactPerson
 from data.management.commands.populate_data import Command
@@ -237,6 +238,126 @@ class ApplicationTestCase(TestCase):
             response = self.client.post('/application/upload/', data=data, headers=headers)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['message'], 'File uploaded successfully!')
+
+#case 10
+    def test_application_doesntexist(self):
+        '''
+           Returns a non-existent application error
+        '''
+        print("TEST:test_application_doesntexist")
+
+        response = self.client.post('/api-token/', {'username': 'maria_alvarez', 'password': 'Maria#1234'})
+
+        headers = {
+            "Authorization": f"Bearer {response.json()['access']}",
+        }
+
+        response = self.client.get(reverse("application:applicants", args=[5]), headers=headers)
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_get_applicants(self):
+        '''
+        Return all applications with auth
+        '''
+
+        print("TEST:test_get_applicants")
+
+        response = self.client.post('/api-token/', {'username': 'maria_alvarez', 'password': 'Maria#1234'})
+
+        headers = {
+            "Authorization": f"Bearer {response.json()['access']}",
+        }
+        response = self.client.get(reverse("application:applicants", args=[1]), headers=headers)
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(len(response.json()), 3)
+
+    def test_get_applicants_filter(self):
+        '''
+        Return applications with filters allowed: student_id and state_documents
+        '''
+
+        print("TEST:test_get_applicants_filter")
+
+        response = self.client.post('/api-token/', {'username': 'maria_alvarez', 'password': 'Maria#1234'})
+
+        headers = {
+            "Authorization": f"Bearer {response.json()['access']}",
+        }
+
+        data={
+            'student_id':5596848490,
+            'state_documents':0
+        }
+
+        response = self.client.get(reverse("application:applicants", args=[1]),data=data, headers=headers)
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_request_modification(self):
+        '''
+        Return state_document equal 1
+        '''
+        print("TEST:test_request_modification")
+
+        response = self.client.post('/api-token/', {'username': 'maria_alvarez', 'password': 'Maria#1234'})
+        headers = {
+            "Authorization": f"Bearer {response.json()['access']}",
+        }
+
+        response = self.client.put(reverse("application:modify_application", args=[1,5596848490]), headers=headers)
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_accept_documents(self):
+        '''
+        Return state_document equal 2
+        '''
+
+        print("TEST:test_modify_state_documents")
+
+        response = self.client.post('/api-token/', {'username': 'maria_alvarez', 'password': 'Maria#1234'})
+        headers = {
+            "Authorization": f"Bearer {response.json()['access']}",
+        }
+
+        response = self.client.put(reverse("application:accept_documents", args=[1,5596848490]), headers=headers)
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_make_comment(self):
+        '''
+        Returns the message in which the comment was successfully added.
+        '''
+        print("TEST:test_make_comment")
+
+        response = self.client.post('/api-token/', {'username': 'maria_alvarez', 'password': 'Maria#1234'})
+        headers = {
+            "Authorization": f"Bearer {response.json()['access']}",
+        }
+
+        data={
+            'comment':'ola'
+        }
+
+        response = self.client.post(reverse("application:comment_application", args=[1, 5596848490]),data=data, headers=headers)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.json()['message'], "Comment added successfully.")
+
+
+    def status_documents_not_reviewed(self):
+        print("TEST:test_status_documents_not_reviewed")
+
+        response = self.client.post('/api-token/', {'username': 'maria_alvarez', 'password': 'Maria#1234'})
+        headers = {
+            "Authorization": f"Bearer {response.json()['access']}",
+        }
+        response = self.client.get(reverse("application:get_state", args=[1, 5596848490]),headers=headers)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['state'], 0)
+
 
     @classmethod
     def tearDownClass(cls):

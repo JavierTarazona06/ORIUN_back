@@ -219,14 +219,13 @@ def applicants(request, call_id):
 
     try:
         applications = Application.objects.filter(call_id=call_id).order_by('state_documents')
-        # Check if any applications are found for the given call ID
         if not applications.exists():
             return Response({"error": "No applications found for the provided call ID"},
                             status=status.HTTP_404_NOT_FOUND)
 
         # Apply filters from query parameters:)
         filters = request.query_params.dict()
-        print(filters)
+
         applications = applications.filter(**filters)
 
         serializer = Applicants(applications, many=True)
