@@ -25,16 +25,18 @@ class StudentTestCase(TestCase):
         # cur_user = Employee.objects.get(user__username='maria_alvarez')
         response = self.client.post('/api-token/', {'username': 'maria.alvarez@unal.edu.co', 'password': 'Maria#1234'})
         self.assertEqual(response.status_code, 200)
-
         response_body = json.loads(response.content.decode('utf-8'))
         self.bearer_token = response_body['access']
 
         response = self.client.post('/api-token/', {'username': 'santiago.garcia@unal.edu.co', 'password': 'Password123'})
         self.assertEqual(response.status_code, 200)
-
         response_body = json.loads(response.content.decode('utf-8'))
         self.bearer_token_std = response_body['access']
-        pass
+
+        response = self.client.post('/api-token/', {'username': 'vmoras@unal.edu.co', 'password': '123456'})
+        self.assertEqual(response.status_code, 200)
+        response_body = json.loads(response.content.decode('utf-8'))
+        self.bearer_token_std_vale = response_body['access']
 
     def test_get_students(self):
         print("TEST: test_get_students")
@@ -130,7 +132,7 @@ class StudentTestCase(TestCase):
     def test_get_student_by_id(self):
         print("TEST: test_get_student_by_id")
 
-        headers = {"Authorization": f"Bearer {self.bearer_token_std}"}
+        headers = {"Authorization": f"Bearer {self.bearer_token_std_vale}"}
         response = self.client.get(reverse("student:read_user_student", args=[1013691479]), headers=headers)
 
         qset = response.json()
@@ -155,7 +157,6 @@ class StudentTestCase(TestCase):
 
     def tearDown(self):
         pass
-
 
     @classmethod
     def tearDownClass(cls):

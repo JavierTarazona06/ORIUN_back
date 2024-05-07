@@ -89,7 +89,9 @@ class ReadUserEmployee(APIView):
 
     def get(self, request, pk):
         try:
-            Employee.objects.get(pk=pk)
+            myEmployee = Employee.objects.get(pk=pk)
+            if not (request.user.email == myEmployee.user.email):
+                raise ValidationError("El usuario {} no tiene permiso para ver la información del usuario solicitado".format(request.user))
             my_employee_qset = Employee.objects.filter(pk=pk)
             my_employee_sr = EmployeeGetSerializer(my_employee_qset, many=True).data[0]
 
