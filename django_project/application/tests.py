@@ -15,13 +15,25 @@ class ApplicationTestCase(TestCase):
             command = Command()
             command.handle(path=os.path.join('data', 'data_csv'))
 
+    def setUp(self):
+        response = self.client.post(
+            '/api-token/', {'username': 'maria.alvarez@unal.edu.co', 'password': 'Maria#1234'}
+        )
+        self.assertEqual(response.status_code, 200)
+        self.token_employee = response.json()['access']
+
+        response = self.client.post(
+            '/api-token/', {'username': 'santiago.garcia@unal.edu.co', 'password': 'Password123'}
+        )
+        self.assertEqual(response.status_code, 200)
+        self.token_student = response.json()['access']
+
     def test_authentication(self):
         """
         Current user must be authenticated and a student.
         """
-        response = self.client.post('/api-token/', {'username': 'maria_alvarez', 'password': 'Maria#1234'})
         response = self.client.get(
-            '/application/region_call/', {'call': 1}, headers={"Authorization": f"Bearer {response.json()['access']}"}
+            '/application/region_call/', {'call': 1}, headers={"Authorization": f"Bearer {self.token_employee}"}
         )
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.json()['detail'], 'Current user is not a student')
@@ -30,9 +42,8 @@ class ApplicationTestCase(TestCase):
         """
         Check that call 1 return Uniandes as region
         """
-        response = self.client.post('/api-token/', {'username': 'santiago_garcia', 'password': 'Password123'})
         response = self.client.get(
-            '/application/region_call/', {'call': 1}, headers={"Authorization": f"Bearer {response.json()['access']}"}
+            '/application/region_call/', {'call': 1}, headers={"Authorization": f"Bearer {self.token_student}"}
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['region'], 'Uniandes')
@@ -42,9 +53,8 @@ class ApplicationTestCase(TestCase):
         """
         Check that call 4 return Internacional as region
         """
-        response = self.client.post('/api-token/', {'username': 'santiago_garcia', 'password': 'Password123'})
         response = self.client.get(
-            '/application/region_call/', {'call': 4}, headers={"Authorization": f"Bearer {response.json()['access']}"}
+            '/application/region_call/', {'call': 4}, headers={"Authorization": f"Bearer {self.token_student}"}
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['region'], 'Internacional')
@@ -53,7 +63,6 @@ class ApplicationTestCase(TestCase):
         """
         Check that when given
         """
-        response = self.client.post('/api-token/', {'username': 'santiago_garcia', 'password': 'Password123'})
         data = {
             "contact_person": {
                 "name": "nombre",
@@ -64,7 +73,7 @@ class ApplicationTestCase(TestCase):
             "call": 4
         }
         headers = {
-            "Authorization": f"Bearer {response.json()['access']}",
+            "Authorization": f"Bearer {self.token_student}",
         }
         response = self.client.post(
             '/application/create_forms/', headers=headers, data=data, content_type='application/json'
@@ -76,7 +85,6 @@ class ApplicationTestCase(TestCase):
         """
         Check that when given
         """
-        response = self.client.post('/api-token/', {'username': 'santiago_garcia', 'password': 'Password123'})
         data = {
             "contact_person": {
                 "name": "nombre",
@@ -88,7 +96,7 @@ class ApplicationTestCase(TestCase):
             "call": 4
         }
         headers = {
-            "Authorization": f"Bearer {response.json()['access']}",
+            "Authorization": f"Bearer {self.token_student}",
         }
         response = self.client.post(
             '/application/create_forms/', headers=headers, data=data, content_type='application/json'
@@ -100,21 +108,20 @@ class ApplicationTestCase(TestCase):
         """
         Check that when given
         """
-        response = self.client.post('/api-token/', {'username': 'santiago_garcia', 'password': 'Password123'})
         contact_person = {
-                "id": 1,
-                "name": "Jonathan",
-                "last_name": "appelido",
-                "relationship": "relacion",
-                "cellphone": "123456789",
-                "email": "correo@email.com"
-            }
+            "id": 1,
+            "name": "Jonathan",
+            "last_name": "appelido",
+            "relationship": "relacion",
+            "cellphone": "123456789",
+            "email": "correo@email.com"
+        }
         data = {
             "contact_person": contact_person,
             "call": 4
         }
         headers = {
-            "Authorization": f"Bearer {response.json()['access']}",
+            "Authorization": f"Bearer {self.token_student}",
         }
         response = self.client.post(
             '/application/create_forms/', headers=headers, data=data, content_type='application/json'
@@ -127,7 +134,9 @@ class ApplicationTestCase(TestCase):
         """
         Check that when given
         """
-        response = self.client.post('/api-token/', {'username': 'valentina_rodriguez', 'password': 'TestPassword'})
+        response = self.client.post(
+            '/api-token/', {'username': 'valentina.rodriguez@unal.edu.co', 'password': 'TestPassword'}
+        )
         data = {
             "call": 4
         }
@@ -144,13 +153,12 @@ class ApplicationTestCase(TestCase):
         """
 
         """
-        response = self.client.post('/api-token/', {'username': 'santiago_garcia', 'password': 'Password123'})
         data = {
             "diseases": 'de todo',
             "call": 4
         }
         headers = {
-            "Authorization": f"Bearer {response.json()['access']}",
+            "Authorization": f"Bearer {self.token_student}",
         }
         response = self.client.post(
             '/application/create_forms/', headers=headers, data=data, content_type='application/json'
@@ -162,14 +170,13 @@ class ApplicationTestCase(TestCase):
         """
 
         """
-        response = self.client.post('/api-token/', {'username': 'santiago_garcia', 'password': 'Password123'})
         data = {
             "call": 5,
             "name_file": "request_form",
             "type_file": "filled_doc"
         }
         headers = {
-            "Authorization": f"Bearer {response.json()['access']}",
+            "Authorization": f"Bearer {self.token_student}",
         }
         response = self.client.get(
             '/application/download/', headers=headers, data=data, content_type='application/json'
@@ -181,14 +188,13 @@ class ApplicationTestCase(TestCase):
         """
 
         """
-        response = self.client.post('/api-token/', {'username': 'santiago_garcia', 'password': 'Password123'})
         data = {
             "call": 4,
             "name_file": "request_form",
             "type_file": "filled_doc"
         }
         headers = {
-            "Authorization": f"Bearer {response.json()['access']}",
+            "Authorization": f"Bearer {self.token_student}",
         }
         response = self.client.get(
             '/application/download/', headers=headers, data=data, content_type='application/json'
@@ -200,14 +206,11 @@ class ApplicationTestCase(TestCase):
         """
 
         """
-
-        response = self.client.post('/api-token/', {'username': 'santiago_garcia', 'password': 'Password123'})
-
         with open('data/big_file.mov', 'rb') as file:
             file_data = file.read()
             file_obj = SimpleUploadedFile('big_file.mov', file_data)
             headers = {
-                "Authorization": f"Bearer {response.json()['access']}",
+                "Authorization": f"Bearer {self.token_student}",
             }
             data = {
                 'name_file': 'grades_certificate',
@@ -222,13 +225,11 @@ class ApplicationTestCase(TestCase):
         """
 
         """
-        response = self.client.post('/api-token/', {'username': 'santiago_garcia', 'password': 'Password123'})
-
         with open('data/forms/templates/request_form.docx', 'rb') as file:
             file_data = file.read()
             file_obj = SimpleUploadedFile('request_form.docx', file_data)
             headers = {
-                "Authorization": f"Bearer {response.json()['access']}",
+                "Authorization": f"Bearer {self.token_student}",
             }
             data = {
                 'name_file': 'request_form',
@@ -239,17 +240,14 @@ class ApplicationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['message'], 'File uploaded successfully!')
 
-#case 10
-    def test_application_doesntexist(self):
-        '''
+    # case 10
+    def test_application_doesnt_exist(self):
+        """
            Returns a non-existent application error
-        '''
-        print("TEST:test_application_doesntexist")
-
-        response = self.client.post('/api-token/', {'username': 'maria_alvarez', 'password': 'Maria#1234'})
-
+        """
+        print("TEST:test_application_doesnt_exist")
         headers = {
-            "Authorization": f"Bearer {response.json()['access']}",
+            "Authorization": f"Bearer {self.token_employee}",
         }
 
         response = self.client.get(reverse("application:applicants", args=[5]), headers=headers)
@@ -257,16 +255,13 @@ class ApplicationTestCase(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_get_applicants(self):
-        '''
+        """
         Return all applications with auth
-        '''
+        """
 
         print("TEST:test_get_applicants")
-
-        response = self.client.post('/api-token/', {'username': 'maria_alvarez', 'password': 'Maria#1234'})
-
         headers = {
-            "Authorization": f"Bearer {response.json()['access']}",
+            "Authorization": f"Bearer {self.token_employee}",
         }
         response = self.client.get(reverse("application:applicants", args=[1]), headers=headers)
 
@@ -275,89 +270,76 @@ class ApplicationTestCase(TestCase):
         self.assertEqual(len(response.json()), 3)
 
     def test_get_applicants_filter(self):
-        '''
+        """
         Return applications with filters allowed: student_id and state_documents
-        '''
-
+        """
         print("TEST:test_get_applicants_filter")
-
-        response = self.client.post('/api-token/', {'username': 'maria_alvarez', 'password': 'Maria#1234'})
-
         headers = {
-            "Authorization": f"Bearer {response.json()['access']}",
+            "Authorization": f"Bearer {self.token_employee}",
         }
 
-        data={
-            'student_id':5596848490,
-            'state_documents':0
+        data = {
+            'student_id': 5596848490,
+            'state_documents': 0
         }
 
-        response = self.client.get(reverse("application:applicants", args=[1]),data=data, headers=headers)
+        response = self.client.get(reverse("application:applicants", args=[1]), data=data, headers=headers)
 
         self.assertEqual(response.status_code, 200)
 
     def test_request_modification(self):
-        '''
+        """
         Return state_document equal 1
-        '''
+        """
         print("TEST:test_request_modification")
-
-        response = self.client.post('/api-token/', {'username': 'maria_alvarez', 'password': 'Maria#1234'})
         headers = {
-            "Authorization": f"Bearer {response.json()['access']}",
+            "Authorization": f"Bearer {self.token_employee}",
         }
 
-        response = self.client.put(reverse("application:modify_application", args=[1,5596848490]), headers=headers)
+        response = self.client.put(reverse("application:modify_application", args=[1, 5596848490]), headers=headers)
 
         self.assertEqual(response.status_code, 200)
 
     def test_accept_documents(self):
-        '''
+        """
         Return state_document equal 2
-        '''
-
+        """
         print("TEST:test_modify_state_documents")
-
-        response = self.client.post('/api-token/', {'username': 'maria_alvarez', 'password': 'Maria#1234'})
         headers = {
-            "Authorization": f"Bearer {response.json()['access']}",
+            "Authorization": f"Bearer {self.token_employee}",
         }
 
-        response = self.client.put(reverse("application:accept_documents", args=[1,5596848490]), headers=headers)
+        response = self.client.put(reverse("application:accept_documents", args=[1, 5596848490]), headers=headers)
 
         self.assertEqual(response.status_code, 200)
 
     def test_make_comment(self):
-        '''
+        """
         Returns the message in which the comment was successfully added.
-        '''
+        """
         print("TEST:test_make_comment")
-
-        response = self.client.post('/api-token/', {'username': 'maria_alvarez', 'password': 'Maria#1234'})
         headers = {
-            "Authorization": f"Bearer {response.json()['access']}",
+            "Authorization": f"Bearer {self.token_employee}",
         }
 
-        data={
-            'comment':'ola'
+        data = {
+            'comment': 'ola'
         }
 
-        response = self.client.post(reverse("application:comment_application", args=[1, 5596848490]),data=data, headers=headers)
+        response = self.client.post(
+            reverse("application:comment_application", args=[1, 5596848490]), data=data, headers=headers
+        )
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json()['message'], "Comment added successfully.")
 
-
     def status_documents_not_reviewed(self):
         print("TEST:test_status_documents_not_reviewed")
-
-        response = self.client.post('/api-token/', {'username': 'maria_alvarez', 'password': 'Maria#1234'})
         headers = {
-            "Authorization": f"Bearer {response.json()['access']}",
+            "Authorization": f"Bearer {self.token_employee}",
         }
-        response = self.client.get(reverse("application:get_state", args=[1, 5596848490]),headers=headers)
+        response = self.client.get(reverse("application:get_state", args=[1, 5596848490]), headers=headers)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['state'], 0)
-
 
     @classmethod
     def tearDownClass(cls):
