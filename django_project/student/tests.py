@@ -238,6 +238,7 @@ class StudentTestCase(TestCase):
 
         headers = {"Authorization": f"Bearer {self.bearer_token_std}"}
         response = self.client.get(reverse("student:read_user_student", args=[1013691479]), headers=headers)
+        print(response.json())
 
         qset = response.json()
         if "certificate_grades" in qset:
