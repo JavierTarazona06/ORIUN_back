@@ -59,9 +59,9 @@ def set_variables(request: Request, student: Student) -> dict[str, Union[str, li
 
     # Info destination university
     call = Call.objects.get(id=request.data['call'])
-    attributes['DEST_INSTITUTION'] = call.university_id.name
-    attributes['DEST_COUNTRY'] = call.university_id.country
-    attributes['DEST_CITY'] = call.university_id.city
+    attributes['DEST_INSTITUTION'] = call.university.name
+    attributes['DEST_COUNTRY'] = call.university.country
+    attributes['DEST_CITY'] = call.university.city
     info_mobility = request.data.get('info_mobility')
     if info_mobility is not None:
         for name, info in info_mobility.items():
@@ -154,7 +154,7 @@ def get_link_file(type_file: str, file_name: str) -> str:
     try:
         blob = next(blobs)
     except StopIteration:
-        raise FileNotFoundError
+        raise FileNotFoundError(f"No se encontró el archivo con el nombre especificado: {file_name}")
 
     # Set the expiration time for the signed URL
     url_expiration = timedelta(minutes=10)
@@ -195,7 +195,7 @@ def check_docs(student: Student, call: Call) -> tuple[bool, list[str]]:
     name_documents = Application.name_docs
 
     # Check national or international documents, if needed
-    region = call.university_id.get_region_display()
+    region = call.university.get_region_display()
     if region == 'Convenio Sigueme/Nacional':
         name_documents.append(Application.national_name_docs)
 

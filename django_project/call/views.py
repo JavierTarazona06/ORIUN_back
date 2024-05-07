@@ -3,31 +3,34 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 from .models import Call, University
 from .serializers import CallSerializerOpen, CallSerializerClosed, CallDetailsSerializerOpenStudent, \
-    CallDetailsSerializerClosedStudent, CallSerializer, UniversitySerializer
+    CallDetailsSerializerClosedStudent, CallSerializer, UniversitySerializer, CallSerializerPost, UniversitySerializerPost
 from rest_framework.views import APIView
 from rest_framework import status, generics, permissions
 import json
-from django.utils import timezone
-from django.db.models import Q
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.response import Response
-from .permissions import IsEmployee
-from employee.models import Employee
-from django.contrib.auth.models import User
-from data.constants_dict_front import constants_dict_front
 from django.views import View
+from django.db.models import Q
+from django.utils import timezone
+from employee.models import Employee
+from django.http import JsonResponse
+from .models import Call, University
+from rest_framework.views import APIView
+from django.contrib.auth.models import User
+from rest_framework.response import Response
+from .permissions import IsEmployee, IsStudent
 from django.views.decorators.csrf import csrf_exempt
-from datetime import datetime
+from rest_framework import status, generics, permissions
+from data.constants_dict_front import constants_dict_front
+from .serializers import CallSerializerOpen, CallSerializerClosed, CallDetailsSerializerOpenStudent, \
+    CallDetailsSerializerClosedStudent, CallSerializer, UniversitySerializer
 
 
 
 class OpenCallsStudent(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsStudent]
     def get(self, request):
-
         try:
             if not request.user.is_authenticated:
                 return JsonResponse({'error': 'Unauthenticated user'}, status=status.HTTP_401_UNAUTHORIZED)
-            student = request.user.student
 
             student_papa = request.user.student.PAPA
             student_study_level = request.user.student.study_level
@@ -36,6 +39,9 @@ class OpenCallsStudent(APIView):
             countries = request.GET.get('countries')
             languages = request.GET.get('languages')
             university_name = request.GET.get('name_university')
+            deadline = request.GET.get('deadline')
+            call_id = request.GET.get('id')
+            region = request.GET.get('region')
 
             if university_name:
                 university_name = university_name.lower()
@@ -44,11 +50,22 @@ class OpenCallsStudent(APIView):
             open_calls = Call.objects.filter(active=True)
 
             if countries:
-                open_calls = open_calls.filter(university_id__country__in=countries.split(','))
+                open_calls = open_calls.filter(university__country__icontains=countries)
             if languages:
                 open_calls = open_calls.filter(language__in=languages.split(','))
             if university_name:
+                open_calls = open_calls.filter(university__name__icontains=university_name)
                 open_calls = open_calls.filter(university_id__name__icontains=university_name)
+            if deadline:
+                # Filter calls with a deadline before or equal to the specified parameter
+                current_date = timezone.now()
+                open_calls = open_calls.filter(deadline__gte=current_date)
+                open_calls = open_calls.filter(deadline__lte=deadline)
+
+            if call_id:
+                open_calls = open_calls.filter(id=call_id)
+            if region:
+                open_calls = open_calls.filter(university_id__region=region)
 
             open_calls = open_calls.filter(min_papa__lte=student_papa)
             open_calls = open_calls.filter(study_level=student_study_level)
@@ -66,33 +83,36 @@ class OpenCallsStudent(APIView):
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
-
 class ClosedCallsStudent(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsStudent]
     def get(self, request):
         try:
             if not request.user.is_authenticated:
                 return JsonResponse({'error': 'Unauthenticated user'}, status=status.HTTP_401_UNAUTHORIZED)
-            student = request.user.student
 
             country = request.GET.get('country')
             language = request.GET.get('language')
             name_university = request.GET.get('name_university')
             min_papa_winner = request.GET.get('minimum_papa_winner')
+            region = request.GET.get('region')
 
             # Filter calls based on provided criteria (CLOSED CALLS)
             closed_calls = Call.objects.filter(active=False)
 
             if country:
-                closed_calls = closed_calls.filter(university_id__country=country)
+                closed_calls = closed_calls.filter(university__country__icontains=country)
 
             if language:
                 closed_calls = closed_calls.filter(language=language)
 
             if name_university:
-                closed_calls = closed_calls.filter(university_id__name__icontains=name_university)
+                closed_calls = closed_calls.filter(university__name__icontains=name_university)
 
             if min_papa_winner:
                 closed_calls = closed_calls.filter(minimum_papa_winner__gte=float(min_papa_winner))
+
+            if region:
+                closed_calls = closed_calls.filter(university__region=region)
 
             # Serialize the data
             serializer_closed = CallSerializerClosed(closed_calls, many=True)
@@ -109,11 +129,12 @@ class ClosedCallsStudent(APIView):
 
 
 class OpenCallDetailStudent(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsStudent]
     def get(self, request, id):
         try:
             if not request.user.is_authenticated:
                 return JsonResponse({'error': 'Unauthenticated user'}, status=status.HTTP_401_UNAUTHORIZED)
-            student = request.user.student
+
 
             # obtain the specific open call by its ID
             open_call = Call.objects.filter(id=id, active=True).first()
@@ -130,11 +151,12 @@ class OpenCallDetailStudent(APIView):
 
 
 class ClosedCallDetailStudent(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsStudent]
     def get(self, request, id):
         try:
             if not request.user.is_authenticated:
                 return JsonResponse({'error': 'Unauthenticated user'}, status=status.HTTP_401_UNAUTHORIZED)
-            student = request.user.student
+
 
             # obtain the specific open call by its ID
             close_call = Call.objects.filter(id=id, active=False).first()
@@ -165,13 +187,24 @@ class CallView(generics.ListCreateAPIView):
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
 
-        for call in queryset:
-            call.format = constants_dict_front["format"][str(call.format)]
-            call.study_level = constants_dict_front["study_level"][str(call.study_level)]
-            call.language = constants_dict_front["language"][str(call.language)]
-
         serializer = self.get_serializer(queryset, many=True)
         return JsonResponse(serializer.data, safe=False)
+
+    def post(self, request, *args, **kwargs):
+        """
+        Post call.
+        From Employee
+        """
+        data = json.loads(request.body)
+
+        serializer = CallSerializerPost(data=data)
+
+        if serializer.is_valid():
+            call_instance = serializer.save()
+
+            return JsonResponse({'mensaje': 'Convocatoria creada exitosamente', 'id': call_instance.id}, status=201)
+        else:
+            return JsonResponse({'error': str(serializer.errors)}, status=400)
 
 
 class CallDetails(generics.RetrieveUpdateDestroyAPIView):
@@ -209,6 +242,14 @@ class CallDetails(generics.RetrieveUpdateDestroyAPIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def delete(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            self.perform_destroy(instance)
+            return JsonResponse({'mensaje': 'Convocatoria eliminada satisfactoriamente'}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 class UpdateCallsView(View):
     permission_classes = [permissions.IsAuthenticated, IsEmployee]
@@ -230,13 +271,13 @@ class UpdateCallsView(View):
         try:
             data = json.loads(request.body.decode('utf-8'))
 
-            if 'university_id' in data:
-                university_id = int(data['university_id'])
+            if 'university' in data:
+                university_id = int(data['university'])
                 try:
                     university_instance = University.objects.get(pk=university_id)
                 except University.DoesNotExist:
                     return JsonResponse({'error': 'La universidad especificada no existe'}, status=400)
-                call.university_id  = university_instance
+                call.university = university_instance
             if 'active' in data:
                 call.active = data['active']
             if 'begin_date' in data:
@@ -271,7 +312,7 @@ class UpdateCallsView(View):
                 call.selected = data['selected']
 
             call.save()
-            return JsonResponse({'mensaje': 'Convocatoria actualizada exitosamente'})
+            return JsonResponse({'mensaje': 'Convocatoria actualizada exitosamente'}, status=200)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Solicitud JSON no válida'}, status=400)
         except Exception as e:
@@ -333,6 +374,7 @@ class CallsFilterSearch(APIView):
 
     def get(self, request):
         try:
+            call_id = request.GET.get('call_id')
             active = request.GET.get('active')
             university_id = request.GET.get('university_id')
             university_name = request.GET.get('university_name')
@@ -357,10 +399,13 @@ class CallsFilterSearch(APIView):
                 if (active == "false"):
                     active = "F" + active[1:]
                 queryset = queryset.filter(active=active)
+            if call_id:
+                queryset = queryset.filter(id=call_id)
             if university_id:
-                queryset = queryset.filter(university_id__id=university_id)
+                queryset = queryset.filter(university__id=university_id)
             if deadline:
                 queryset = queryset.filter(deadline__lte=deadline)
+                queryset = queryset.filter(deadline__gte=timezone.now().date())
             if format:
                 if format == "P":
                     queryset = queryset.filter(format='P')
@@ -376,13 +421,13 @@ class CallsFilterSearch(APIView):
             if semester:
                 queryset = queryset.filter(semester=semester)
             if region:
-                queryset = queryset.filter(university_id__region=region)
+                queryset = queryset.filter(university__region=region)
             if country:
-                queryset = queryset.filter(university_id__country__icontains=country)
+                queryset = queryset.filter(university__country__icontains=country)
             if language:
                 queryset = queryset.filter(language=language)
             if university_name:
-                queryset = queryset.filter(university_id__name__icontains=university_name)
+                queryset = queryset.filter(university__name__icontains=university_name)
 
             if not queryset.exists():
                 return JsonResponse({'message': 'No calls match the provided criteria'},
@@ -401,7 +446,7 @@ class CallsFilterSearch(APIView):
 
 
 class UniversityView(generics.ListCreateAPIView):
-    serializer_class = UniversitySerializer
+    serializer_class = UniversitySerializerPost
     permission_classes = [permissions.IsAuthenticated, IsEmployee]
 
     def handle_exception(self, exc):
@@ -418,6 +463,18 @@ class UniversityView(generics.ListCreateAPIView):
 
         serializer = self.get_serializer(queryset, many=True)
         return JsonResponse(serializer.data, safe=False)
+
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+
+        serializer = UniversitySerializerPost(data=data)
+
+        if serializer.is_valid():
+            uni_instance = serializer.save()
+
+            return JsonResponse({'mensaje': 'Universidad creada exitosamente', 'id': uni_instance.id}, status=201)
+        else:
+            return JsonResponse(serializer.errors, status=400)
 
 
 class UniversityDetails(generics.RetrieveUpdateDestroyAPIView):
@@ -452,6 +509,14 @@ class UniversityDetails(generics.RetrieveUpdateDestroyAPIView):
 
         serializer = self.get_serializer(instance)
         return JsonResponse(serializer.data)
+
+    def delete(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            self.perform_destroy(instance)
+            return JsonResponse({'mensaje': 'Universidad eliminada satisfactoriamente'}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class UpdateUniversityView(View):

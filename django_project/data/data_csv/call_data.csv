@@ -1,4 +1,4 @@
-university_id,active,begin_date,deadline,min_advance,min_papa,format,study_level,year,semester,language,description,available_slots,note,highest_papa_winner,minimum_papa_winner,selected
+﻿university,active,begin_date,deadline,min_advance,min_papa,format,study_level,year,semester,language,description,available_slots,note,highest_papa_winner,minimum_papa_winner,selected
 1,True,2024-03-19,2024-05-03,20,3.5,P,PRE,2024,2,es,"Realizar una actividad académica reconocible dentro del plan de estudios que cursa el
 estudiante en la Universidad Nacional de Colombia. Las actividades académicas están
 descritas y reglamentadas por la Resolución 13 del 9 de julio de 2021 de la Vicerrectoría

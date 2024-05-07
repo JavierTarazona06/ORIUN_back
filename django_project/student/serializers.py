@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from .models import Student, ContactPerson
 from data.constants import Constants
+from .models import Student
+from person.serializers import UserSerializerShort
 
 
 class ContactPersonSerializer(serializers.ModelSerializer):
@@ -37,3 +39,31 @@ class StudentApplicationSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+
+
+class StudentSerializerGeneral(serializers.ModelSerializer):
+    user = UserSerializerShort()
+
+    class Meta:
+        model = Student
+        fields = '__all__'
+
+
+class StudentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Student
+        fields = '__all__'
+
+
+class StudentGetSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(source='user.email')
+    first_name = serializers.CharField(source='user.first_name')
+    last_name = serializers.CharField(source='user.last_name')
+
+    class Meta:
+        model = Student
+        lista = []
+        for field in Student._meta.fields:
+            if not (field.name == 'user' or field.name == 'contact_person'):
+                lista.append(field.name)
+        fields = ['email', 'first_name', 'last_name'] + lista

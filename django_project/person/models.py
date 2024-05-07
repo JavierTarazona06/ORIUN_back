@@ -6,11 +6,10 @@ from django.utils.translation import gettext_lazy as _
 
 class Person(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-
     birth_place = models.CharField(max_length=100)
     country = models.CharField(max_length=100)
     city = models.CharField(max_length=100)
-    phone = models.CharField(max_length=50)
+    phone = models.CharField(max_length=12)
     address = models.CharField(max_length=100)
     birth_date = models.DateField()
 

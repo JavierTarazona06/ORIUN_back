@@ -1,14 +1,22 @@
 from .helpers import *
 from . import serializers
-from .permissions import IsStudent
+from call.models import Call
+from .models import Application
+from rest_framework import status
+from .helpers import get_link_file
+from .serializers import Applicants
 from django.http import JsonResponse
 from rest_framework import permissions
 from datetime import datetime, timezone
 from rest_framework import status, generics
 from rest_framework.response import Response
 from student.views import ApplicationDataView
+from .permissions import IsStudent, IsEmployee
+from google.cloud import exceptions as gcloud_exceptions
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.decorators import api_view, permission_classes, parser_classes
+from .serializers import ApplicationSerializer,ApplicationModifySerializer, StateSerializer
+from call.models import Call
 
 
 @api_view(['GET'])
@@ -20,7 +28,7 @@ def get_region_call(request: Request):
     """
     call_id = request.query_params['call']
     call = Call.objects.get(id=call_id)
-    region = call.university_id.get_region_display()
+    region = call.university.get_region_display()
     if region == 'Uniandes':
         return JsonResponse({'region': 'Uniandes'}, status=status.HTTP_200_OK)
     elif region == 'Convenio Sigueme/Nacional':
@@ -198,3 +206,180 @@ def edit_application(request: Request):
     upload_object('complete_doc', source_file, new_name)
 
     return Response({'message': 'Document updated'}, status=status.HTTP_200_OK)
+
+#case10
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated, IsEmployee])
+def applicants(request, call_id):
+    """
+    Endpoint used to retrieve applicants for a specific call based on provided filters.
+    Filters can be applied to narrow down the search criteria.
+    """
+    serializer = Applicants(data=request.query_params)
+    serializer.is_valid(raise_exception=True)
+
+    try:
+        applications = Application.objects.filter(call_id=call_id).order_by('state_documents')
+        if not applications.exists():
+            return Response({"error": "No applications found for the provided call ID"},
+                            status=status.HTTP_404_NOT_FOUND)
+
+        # Apply filters from query parameters:)
+        filters = request.query_params.dict()
+
+        applications = applications.filter(**filters)
+
+        serializer = Applicants(applications, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated, IsEmployee])
+def documents(request, call_id, student_id):
+    """
+        Endpoint used to retrieves documents associated with a student's
+        application for a specific call.
+        """
+    try:
+        application = Application.objects.get(call_id=call_id, student_id=student_id)
+    except Application.DoesNotExist:
+        return JsonResponse({'error': 'Application not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    call = Call.objects.get(id=call_id)
+    region = call.university_id.get_region_display()
+
+    documents = {}
+    if region == 'Uniandes':
+        doc_names = Application.name_docs
+    elif region == 'Convenio Sigueme/Nacional':
+        doc_names = Application.national_name_docs + Application.name_docs
+    else:
+        doc_names = Application.international_name_docs + Application.name_docs
+
+    for doc_name in doc_names:
+        try:
+            link = get_link_file('complete_doc', f"{doc_name}")
+            documents[doc_name] = link
+
+        except gcloud_exceptions.Forbidden:
+            return JsonResponse({'error': f'URL expiration time has passed for file "{doc_name}"'},
+                                status=status.HTTP_400_BAD_REQUEST)
+        except FileNotFoundError:
+            return JsonResponse({'error': f'File "{doc_name}" not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    response_data = {
+        'call_id': call_id,
+        'student_id': student_id,
+        'documents': documents
+    }
+
+    return JsonResponse(response_data, status=status.HTTP_200_OK)
+
+
+@api_view(['PUT'])
+@permission_classes([permissions.IsAuthenticated, IsEmployee])
+def modify(request, call_id, student_id):
+        """
+        Endpoint used to request modifications to an existing student application
+        """
+        #TODO: Add modified atribute to make the review
+        try:
+            application = Application.objects.get(call_id=call_id, student_id=student_id)
+        except Application.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        data = {'state_documents':'1', 'modified': False}
+        serializer = ApplicationModifySerializer(application, data=data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['PUT'])
+@permission_classes([permissions.IsAuthenticated, IsEmployee])
+def accept_documents(request, call_id, student_id):
+    """
+    Endpoint to accept documents for a specific student's application
+    """
+    try:
+        application = Application.objects.get(call_id=call_id, student_id=student_id)
+    except Application.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    # Set the value of state_documents to 2 for accepting documents
+    data = {'state_documents': 2, 'modified': False }
+    serializer = ApplicationModifySerializer(application, data=data, partial=True)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated, IsEmployee])
+def get_student_info(request, student_id, call_id):
+    """
+    Endpoint to retrieve student information related to an application
+    """
+    try:
+        student = Application.objects.get(call_id=call_id, student_id=student_id)
+    except Application.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    serializer = Applicants(student)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated, IsEmployee])
+def get_state(request, call_id, student_id):
+    """
+    Endpint to  retrieve the state of a student application based on the provided call_id and student_id.
+
+    State Values:
+    - 0: Application not yet reviewed.
+    - 1: Modification requested by the student.
+    - 2: Application accepted.
+    - 3: Modifications made by the student.
+       """
+    try:
+        application = Application.objects.get(call_id=call_id, student_id=student_id)
+        # Check modified and determine state (Not reviewed: 0, Modify: 1, Accepted:2)
+        if application.modified:
+            state = 3
+        elif application.state_documents == 0:
+            state = 0
+        elif application.state_documents == 1:
+            state = 1
+        elif application.state_documents == 2:
+            state = 2
+        else:
+            state = None
+
+        serializer = StateSerializer(data={'call': application.call_id, 'student_id': application.student_id, 'state': state})
+        serializer.is_valid()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    except Application.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated, IsEmployee])
+def add_comment(request, call_id, student_id):
+    """
+    Endpoint to add a comment to a student's application for a specific call.
+    """
+    try:
+        application = Application.objects.get(call_id=call_id, student_id=student_id)
+    except Application.DoesNotExist:
+        return Response({"error": "Application not found."}, status=status.HTTP_404_NOT_FOUND)
+
+    comment = request.data.get('comment')
+    application.comment = comment
+    application.save()
+    return Response({"message": "Comment added successfully."}, status=status.HTTP_201_CREATED)
