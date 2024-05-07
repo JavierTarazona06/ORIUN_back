@@ -161,9 +161,12 @@ cython_debug/
 .idea/
 
 # Testing files for stupid code that should not be visible :)
+testy.py
+test
 test.py
 testy.py
 
+django_project/data/test_files
 
 **/.DS_Store
 
@@ -172,3 +175,6 @@ docs/Deployment-back.md
 
 # GCP info
 django_project/credentials.json
+
+# Verifications codes
+*_verif_code.txt

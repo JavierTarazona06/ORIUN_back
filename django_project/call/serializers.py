@@ -2,9 +2,10 @@ from rest_framework import serializers
 from .models import Call, University
 from data.constants import Constants
 
+
 class CallSerializerOpen(serializers.ModelSerializer):
-    university_name = serializers.CharField(source='university_id.name')
-    country = serializers.CharField(source='university_id.country')
+    university_name = serializers.CharField(source='university.name')
+    country = serializers.CharField(source='university.country')
     language =  serializers.SerializerMethodField()
     deadline = serializers.DateField(format='%Y-%m-%d')
     region = serializers.SerializerMethodField()
@@ -12,7 +13,7 @@ class CallSerializerOpen(serializers.ModelSerializer):
         return obj.get_language_display()
 
     def get_region(self,obj):
-        return obj.university_id.get_region_display()
+        return obj.university.get_region_display()
 
     class Meta:
         model = Call
@@ -25,8 +26,8 @@ class CallSerializerClosed(CallSerializerOpen):
 
 
 class CallDetailsSerializerOpenStudent(serializers.ModelSerializer):
-    university_name = serializers.CharField(source='university_id.name')
-    country = serializers.CharField(source='university_id.country')
+    university_name = serializers.CharField(source='university.name')
+    country = serializers.CharField(source='university.country')
     language =  serializers.SerializerMethodField()
     deadline = serializers.DateField(format='%Y-%m-%d')
     min_advance = serializers.FloatField()
@@ -46,7 +47,9 @@ class CallDetailsSerializerOpenStudent(serializers.ModelSerializer):
 
     class Meta:
         model = Call
-        fields = ('university_name', 'country', 'language', 'deadline', 'min_advance', 'min_papa', 'format', 'year', 'semester', 'description', 'available_slots', 'note')
+        fields = (
+        'university_name', 'country', 'language', 'deadline', 'min_advance', 'min_papa', 'format', 'year', 'semester',
+        'description', 'available_slots', 'note')
 
 
 class CallDetailsSerializerClosedStudent(CallDetailsSerializerOpenStudent):
@@ -55,15 +58,35 @@ class CallDetailsSerializerClosedStudent(CallDetailsSerializerOpenStudent):
     selected = serializers.IntegerField()
 
     class Meta(CallDetailsSerializerOpenStudent.Meta):
-        fields = CallDetailsSerializerOpenStudent.Meta.fields + ('minimum_papa_winner', 'highest_papa_winner', 'selected')
+        fields = CallDetailsSerializerOpenStudent.Meta.fields + (
+        'minimum_papa_winner', 'highest_papa_winner', 'selected')
 
 
-class CallSerializer(serializers.ModelSerializer):
+class CallSerializerPost(serializers.ModelSerializer):
     class Meta:
         model = Call
         fields = '__all__'
 
+
+class CallSerializer(serializers.ModelSerializer):
+    format = serializers.CharField(source="get_format_display")
+    study_level = serializers.CharField(source="get_study_level_display")
+    language = serializers.CharField(source="get_language_display")
+
+    class Meta:
+        model = Call
+        fields = '__all__'
+
+
 class UniversitySerializer(serializers.ModelSerializer):
+    region = serializers.CharField(source="get_region_display")
+
+    class Meta:
+        model = University
+        fields = '__all__'
+
+
+class UniversitySerializerPost(serializers.ModelSerializer):
     class Meta:
         model = University
         fields = '__all__'

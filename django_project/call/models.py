@@ -31,7 +31,7 @@ class University(models.Model):
 
 class Call(models.Model):
 
-    university_id = models.ForeignKey('University', on_delete=models.CASCADE)
+    university = models.ForeignKey('University', on_delete=models.CASCADE)
     active = models.BooleanField()
     begin_date = models.DateField()
     deadline = models.DateField()
@@ -43,7 +43,6 @@ class Call(models.Model):
 
     study_level_choices = [(choice['value'], _(choice['display'])) for choice in Constants.STUDY_LEVEL_CHOICES]
     study_level = models.CharField(max_length=10, choices=study_level_choices)
-
 
     year = models.SmallIntegerField()
 
@@ -63,4 +62,4 @@ class Call(models.Model):
     selected = models.IntegerField(default=0)
 
     def __str__(self):
-        return f'Call: university {self.university_id.name} during semester {self.semester} on year {self.year}'
+        return f'Call: university {self.university.name} during semester {self.semester} on year {self.year}'

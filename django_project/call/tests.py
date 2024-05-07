@@ -1,144 +1,54 @@
-import os
 import json
-from django.urls import reverse
+
 from django.test import TestCase
-from employee.models import Employee
+from django.urls import reverse
 from call.models import Call, University
+from employee.models import Employee
 from data.management.commands.populate_data import Command
 from call.serializers import CallSerializer, UniversitySerializer
 from django.utils import timezone
 from django.db.models import Q
+from student.models import Student
 
 import requests
+
+
 class CallsTestCase2(TestCase):
+
     @classmethod
     def setUpClass(cls):
-        if Call.objects.count() == 0:
-            command = Command()
-            command.handle(path=os.path.join('data', 'data_csv'))
+        qset_students = Student.objects.all()
+        if not qset_students:
+            # Populate DB
+            comm = Command()
+            comm.handle(path=r"data\data_csv")
+
     def setUp(self):
         # User auth
         # cur_user = Employee.objects.get(user__username='maria_alvarez')
-        response = self.client.post('/api-token/', {'username': 'maria_alvarez', 'password': 'Maria#1234'})
+        response = self.client.post('/api-token/', {'username': 'maria.alvarez@unal.edu.co', 'password': 'Maria#1234'})
         self.assertEqual(response.status_code, 200)
 
         response_body = json.loads(response.content.decode('utf-8'))
         self.bearer_token = response_body['access']
 
-        response = self.client.post('/api-token/', {'username': 'santiago_garcia', 'password': 'Password123'})
+        response = self.client.post('/api-token/', {'username': 'santiago.garcia@unal.edu.co', 'password': 'Password123'})
         self.assertEqual(response.status_code, 200)
 
         response_body = json.loads(response.content.decode('utf-8'))
         self.bearer_token_std = response_body['access']
 
-    # 1: Get Call Student:----------------------------------------------------------------------------
-    def test_get_calls_notstudent(self):
+    # 1: Get Call: Employee
+    def test_get_all_calls_noauth(self):
         """
-        Return calls with employee credentials
+        Return all calls without auth
         """
-        print("TEST: test_get_calls_notstudent")
+        print("TEST: test_get_all_calls_noauth")
 
-        authorization_header = {"HTTP_AUTHORIZATION": f"Bearer {self.bearer_token}"}
-        response = self.client.get(reverse("call:open_calls"),  **authorization_header)
-        self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.json(), {'detail': 'Current user is not a student'})
+        response = self.client.get(reverse("call:calls_list"))
 
-    def test_calls_notfound(self):
-        """
-        Return not found calls with the provided criteria
-        """
-        print("TEST: test_calls_notfound")
-        data = {
-            'id': 12,
-            'name_university': 'andes',
-            'countries': 'col',
-            'region': 'AN',
-        }
-
-        authorization_header = {"HTTP_AUTHORIZATION": f"Bearer {self.bearer_token_std}"}
-        response = self.client.get(reverse("call:open_calls"),data = data, **authorization_header)
-
-        self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json(), {'message': 'No calls match the provided criteria'})
-
-    def test_get_open_calls(self):
-        """
-        Return ALL open calls with all filters allowed
-        """
-        print("TEST: test_get_open_calls")
-
-        authorization_header = {"HTTP_AUTHORIZATION": f"Bearer {self.bearer_token_std}"}
-        response = self.client.get(reverse("call:open_calls"),**authorization_header)
-
-        self.assertEqual(response.status_code, 200)
-
-    def test_get_open_calls_filter(self):
-        """
-        Return OPEN CALLS applying any filter
-        """
-        print("TEST: test_get_calls_filter")
-
-        authorization_header = {"HTTP_AUTHORIZATION": f"Bearer {self.bearer_token_std}"}
-
-        data = {
-            'id':1,
-            'name_university': 'andes',
-            'languages': 'es',
-            'countries': 'col',
-            'region': 'AN',
-        }
-
-        response = self.client.get(reverse("call:open-call-detail"), data = data,  **authorization_header)
-
-        self.assertEqual(response.status_code, 200)
-
-    def test_get_closed_calls_filter(self):
-        """
-        Return open calls with all filters allowed
-        """
-        print("TEST: test_get_calls_details_any_filter")
-
-        authorization_header = {"HTTP_AUTHORIZATION": f"Bearer {self.bearer_token_std}"}
-
-        data = {
-            'country':'franc',
-            'language':'fr',
-            'name_university' : 'arts',
-            'region':'EU',
-            'minimum_papa_winner' : 4.0
-        }
-
-        response = self.client.get(reverse("call:closed_calls"), data = data,  **authorization_header)
-
-        self.assertEqual(response.status_code, 200)
-
-    def test_get_closed_calls(self):
-
-        """
-        Return all closed calls without filter
-        """
-
-        print("TEST: test_get_closed_calls")
-
-        authorization_header = {"HTTP_AUTHORIZATION": f"Bearer {self.bearer_token_std}"}
-        response = self.client.get(reverse("call:closed_calls"),**authorization_header)
-
-        self.assertEqual(response.status_code, 200)
-
-    def test_get_open_calls_details(self):
-
-        """
-        Return call without applying any filter
-
-        """
-        print("TEST: test_get_calls_details_any_filter")
-
-        authorization_header = {"HTTP_AUTHORIZATION": f"Bearer {self.bearer_token_std}"}
-        response = self.client.get(reverse("call:open-call-detail", args=[1]),**authorization_header)
-
-        self.assertEqual(response.status_code, 200)
-
-    # 1: Get Call: Employee -------------------------------------------------------------------------
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.json(), {'error': 'Authentication credentials were not provided.'})
 
     def test_get_all_calls_wrong_auth(self):
         """

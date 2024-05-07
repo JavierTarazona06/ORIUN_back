@@ -8,8 +8,10 @@ class Application(models.Model):
     call = models.ForeignKey('call.Call', on_delete=models.CASCADE)
     student = models.ForeignKey('student.Student', on_delete=models.CASCADE)
     year = models.SmallIntegerField()
+
     semester_choices = [(choice['value'], _(choice['display'])) for choice in Constants.SEMESTER_CHOICES]
     semester = models.CharField(max_length=10, choices=semester_choices)
+
     is_extension = models.BooleanField()
     comment = models.TextField(null=True)
     state_documents_choices = [(choice['value'], _(choice['display'])) for choice in Constants.STATE_DOCS_CHOICES]

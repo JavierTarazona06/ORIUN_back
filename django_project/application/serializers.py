@@ -17,10 +17,10 @@ class ApplicationDetailSerializer(serializers.ModelSerializer):
     university_country = serializers.SerializerMethodField()
 
     def get_university_name(self, obj):
-        return obj.call.university_id.name
+        return obj.call.university.name
 
     def get_university_country(self, obj):
-        return obj.call.university_id.country
+        return obj.call.university.country
 
     class Meta:
         model = Application
