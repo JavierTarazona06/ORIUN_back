@@ -128,7 +128,7 @@ class ApplicationTestCase(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         changed_contact_person = student.serializers.ContactPersonSerializer(ContactPerson.objects.get(id=1))
-        self.assertEquals(changed_contact_person.data, contact_person)
+        self.assertEqual(changed_contact_person.data, contact_person)
 
     def test_create_form_missing_contact_person(self):
         """
@@ -164,7 +164,7 @@ class ApplicationTestCase(TestCase):
             '/application/create_forms/', headers=headers, data=data, content_type='application/json'
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEquals(response.json()['message'], 'Forms filled successfully')
+        self.assertEqual(response.json()['message'], 'Forms filled successfully')
 
     def test_download_no_found(self):
         """
@@ -182,7 +182,7 @@ class ApplicationTestCase(TestCase):
             '/application/download/', headers=headers, data=data, content_type='application/json'
         )
         self.assertEqual(response.status_code, 404)
-        self.assertEquals(response.json()['message'], 'form not found')
+        self.assertEqual(response.json()['message'], 'form not found')
 
     def test_download_found(self):
         """
