@@ -45,7 +45,9 @@ class StudentTestCase(TestCase):
         """
         Makes sure only students can access their eligibility data.
         """
-        response = self.client.post('/api-token/', {'username': 'maria_alvarez', 'password': 'Maria#1234'})
+        response = self.client.post(
+            '/api-token/', {'username': 'maria.alvarez@unal.edu.co', 'password': 'Maria#1234'}
+        )
         response = self.client.get(
             '/student/eligible/', headers={"Authorization": f"Bearer {response.json()['access']}"}
         )
@@ -56,7 +58,9 @@ class StudentTestCase(TestCase):
         """
         Makes sure the student is enrolled.
         """
-        response = self.client.post('/api-token/', {'username': 'nicolas_ramirez', 'password': 'shakira101'})
+        response = self.client.post(
+            '/api-token/', {'username': 'nicolas.ramirez@unal.edu.co', 'password': 'shakira101'}
+        )
         response = self.client.get(
             '/student/eligible/', headers={"Authorization": f"Bearer {response.json()['access']}"}
         )
@@ -68,7 +72,9 @@ class StudentTestCase(TestCase):
         """
         Makes sure the student has enough PAPA.
         """
-        response = self.client.post('/api-token/', {'username': 'isabella_gonzalez', 'password': 'Pasword021'})
+        response = self.client.post(
+            '/api-token/', {'username': 'isabella.gonzalez@unal.edu.co', 'password': 'Pasword021'}
+        )
         response = self.client.get(
             '/student/eligible/', {'call': 1}, headers={"Authorization": f"Bearer {response.json()['access']}"}
         )
@@ -80,7 +86,9 @@ class StudentTestCase(TestCase):
         """
         Makes sure that the student has the correct study level for the call
         """
-        response = self.client.post('/api-token/', {'username': 'camila_perez', 'password': 'qwertY'})
+        response = self.client.post(
+            '/api-token/', {'username': 'camila.perez@unal.edu.co', 'password': 'qwertY'}
+        )
         response = self.client.get(
             '/student/eligible/', {'call': 1}, headers={"Authorization": f"Bearer {response.json()['access']}"}
         )
@@ -92,7 +100,9 @@ class StudentTestCase(TestCase):
         """
         Makes sure that for Uniandes calls the student has the correct number of semesters
         """
-        response = self.client.post('/api-token/', {'username': 'juanpablo_lopez', 'password': 'abc123'})
+        response = self.client.post(
+            '/api-token/', {'username': 'juanpablo.lopez@unal.edu.co', 'password': 'abc123'}
+        )
         response = self.client.get(
             '/student/eligible/', {'call': 1}, headers={"Authorization": f"Bearer {response.json()['access']}"}
         )
@@ -104,7 +114,9 @@ class StudentTestCase(TestCase):
         """
         Makes sure the student has enough advance
         """
-        response = self.client.post('/api-token/', {'username': 'andres_hernandez', 'password': 'pass1234'})
+        response = self.client.post(
+            '/api-token/', {'username': 'andres.hernandez@unal.edu.co', 'password': 'pass1234'}
+        )
         response = self.client.get(
             '/student/eligible/', {'call': 2}, headers={"Authorization": f"Bearer {response.json()['access']}"}
         )
@@ -116,9 +128,8 @@ class StudentTestCase(TestCase):
         """
         If the student has all the requirements, they can apply
         """
-        response = self.client.post('/api-token/', {'username': 'santiago_garcia', 'password': 'Password123'})
         response = self.client.get(
-            '/student/eligible/', {'call': 1}, headers={"Authorization": f"Bearer {response.json()['access']}"}
+            '/student/eligible/', {'call': 1}, headers={"Authorization": f"Bearer {self.bearer_token_std}"}
         )
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.json()['eligibility'])
@@ -130,7 +141,7 @@ class StudentTestCase(TestCase):
         """
         response = self.client.post('/api-token/', {'username': 'santiago_garcia', 'password': 'Password123'})
         response = self.client.get(
-            '/student/info_application/', headers={"Authorization": f"Bearer {response.json()['access']}"}
+            '/student/info_application/', headers={"Authorization": f"Bearer {self.bearer_token_std}"}
         )
         self.assertEqual(response.status_code, 200)
         contact_person = student.serializers.ContactPersonSerializer(ContactPerson.objects.get(id=1))
@@ -262,7 +273,6 @@ class StudentTestCase(TestCase):
 
     def tearDown(self):
         pass
-
 
     @classmethod
     def tearDownClass(cls):
