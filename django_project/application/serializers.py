@@ -23,7 +23,7 @@ class ApplicationDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Application
-        fields = ['call', 'university_name', 'university_country', 'approve_documents', 'approved']
+        fields = ['call', 'university_name', 'university_country', 'state_documents', 'approved']
 
 
 class ApplicationComments(serializers.ModelSerializer):
