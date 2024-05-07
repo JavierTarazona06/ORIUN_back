@@ -15,7 +15,9 @@ class SigninTestCase(TestCase):
         """
         Checks that login returns 2 tokens (refresh and access) and type_user is student
         """
-        response = self.client.post('/api-token/', {'username': 'santiago_garcia', 'password': 'Password123'})
+        response = self.client.post(
+            '/api-token/', {'username': 'santiago.garcia@unal.edu.co', 'password': 'Password123'}
+        )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'refresh')
         self.assertContains(response, 'access')
@@ -26,7 +28,9 @@ class SigninTestCase(TestCase):
         """
         Checks that login returns 2 tokens (refresh and access) and type_user is employee
         """
-        response = self.client.post('/api-token/', {'username': 'maria_alvarez', 'password': 'Maria#1234'})
+        response = self.client.post(
+            '/api-token/', {'username': 'maria.alvarez@unal.edu.co', 'password': 'Maria#1234'}
+        )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'refresh')
         self.assertContains(response, 'access')
@@ -37,7 +41,9 @@ class SigninTestCase(TestCase):
         """
         Check that login returns 401 for user that is not in the database
         """
-        response = self.client.post('/api-token/', {'username': 'anonimo', 'password': 'contraseña'})
+        response = self.client.post(
+            '/api-token/', {'username': 'anonimo.alguien@unal.edu.co', 'password': 'contraseña'}
+        )
         self.assertEqual(response.status_code, 401)
         self.assertEqual('No active account found with the given credentials', response.json()['detail'])
 
@@ -45,7 +51,9 @@ class SigninTestCase(TestCase):
         """
         Check that login returns 401 for incorrect password
         """
-        response = self.client.post('/api-token/', {'username': 'santiago_garcia', 'password': 'contraseña'})
+        response = self.client.post(
+            '/api-token/', {'username': 'santiago.garcia@unal.edu.co', 'password': 'contraseña'}
+        )
         self.assertEqual(response.status_code, 401)
         self.assertEqual('No active account found with the given credentials', response.json()['detail'])
 
@@ -53,7 +61,9 @@ class SigninTestCase(TestCase):
         """
         Check that login returns 401 for incorrect username
         """
-        response = self.client.post('/api-token/', {'username': 'santiago', 'password': 'Password123'})
+        response = self.client.post(
+            '/api-token/', {'username': 'santi.garcia@unal.edu.co', 'password': 'Password123'}
+        )
         self.assertEqual(response.status_code, 401)
         self.assertEqual('No active account found with the given credentials', response.json()['detail'])
 
