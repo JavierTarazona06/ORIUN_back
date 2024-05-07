@@ -7,27 +7,30 @@ from .serializers import CallSerializerOpen, CallSerializerClosed, CallDetailsSe
 from rest_framework.views import APIView
 from rest_framework import status, generics, permissions
 import json
-from django.utils import timezone
-from django.db.models import Q
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.response import Response
-from .permissions import IsEmployee
-from employee.models import Employee
-from django.contrib.auth.models import User
-from data.constants_dict_front import constants_dict_front
 from django.views import View
+from django.db.models import Q
+from django.utils import timezone
+from employee.models import Employee
+from django.http import JsonResponse
+from .models import Call, University
+from rest_framework.views import APIView
+from django.contrib.auth.models import User
+from rest_framework.response import Response
+from .permissions import IsEmployee, IsStudent
 from django.views.decorators.csrf import csrf_exempt
-from datetime import datetime
+from rest_framework import status, generics, permissions
+from data.constants_dict_front import constants_dict_front
+from .serializers import CallSerializerOpen, CallSerializerClosed, CallDetailsSerializerOpenStudent, \
+    CallDetailsSerializerClosedStudent, CallSerializer, UniversitySerializer
 
 
 
 class OpenCallsStudent(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsStudent]
     def get(self, request):
-
         try:
             if not request.user.is_authenticated:
                 return JsonResponse({'error': 'Unauthenticated user'}, status=status.HTTP_401_UNAUTHORIZED)
-            student = request.user.student
 
             student_papa = request.user.student.PAPA
             student_study_level = request.user.student.study_level
@@ -36,6 +39,9 @@ class OpenCallsStudent(APIView):
             countries = request.GET.get('countries')
             languages = request.GET.get('languages')
             university_name = request.GET.get('name_university')
+            deadline = request.GET.get('deadline')
+            call_id = request.GET.get('id')
+            region = request.GET.get('region')
 
             if university_name:
                 university_name = university_name.lower()
@@ -44,11 +50,22 @@ class OpenCallsStudent(APIView):
             open_calls = Call.objects.filter(active=True)
 
             if countries:
-                open_calls = open_calls.filter(university__country__in=countries.split(','))
+                open_calls = open_calls.filter(university__country__icontains=countries)
             if languages:
                 open_calls = open_calls.filter(language__in=languages.split(','))
             if university_name:
                 open_calls = open_calls.filter(university__name__icontains=university_name)
+                open_calls = open_calls.filter(university_id__name__icontains=university_name)
+            if deadline:
+                # Filter calls with a deadline before or equal to the specified parameter
+                current_date = timezone.now()
+                open_calls = open_calls.filter(deadline__gte=current_date)
+                open_calls = open_calls.filter(deadline__lte=deadline)
+
+            if call_id:
+                open_calls = open_calls.filter(id=call_id)
+            if region:
+                open_calls = open_calls.filter(university_id__region=region)
 
             open_calls = open_calls.filter(min_papa__lte=student_papa)
             open_calls = open_calls.filter(study_level=student_study_level)
@@ -66,24 +83,24 @@ class OpenCallsStudent(APIView):
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
-
 class ClosedCallsStudent(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsStudent]
     def get(self, request):
         try:
             if not request.user.is_authenticated:
                 return JsonResponse({'error': 'Unauthenticated user'}, status=status.HTTP_401_UNAUTHORIZED)
-            student = request.user.student
 
             country = request.GET.get('country')
             language = request.GET.get('language')
             name_university = request.GET.get('name_university')
             min_papa_winner = request.GET.get('minimum_papa_winner')
+            region = request.GET.get('region')
 
             # Filter calls based on provided criteria (CLOSED CALLS)
             closed_calls = Call.objects.filter(active=False)
 
             if country:
-                closed_calls = closed_calls.filter(university__country=country)
+                closed_calls = closed_calls.filter(university__country__icontains=country)
 
             if language:
                 closed_calls = closed_calls.filter(language=language)
@@ -93,6 +110,9 @@ class ClosedCallsStudent(APIView):
 
             if min_papa_winner:
                 closed_calls = closed_calls.filter(minimum_papa_winner__gte=float(min_papa_winner))
+
+            if region:
+                closed_calls = closed_calls.filter(university__region=region)
 
             # Serialize the data
             serializer_closed = CallSerializerClosed(closed_calls, many=True)
@@ -109,11 +129,12 @@ class ClosedCallsStudent(APIView):
 
 
 class OpenCallDetailStudent(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsStudent]
     def get(self, request, id):
         try:
             if not request.user.is_authenticated:
                 return JsonResponse({'error': 'Unauthenticated user'}, status=status.HTTP_401_UNAUTHORIZED)
-            student = request.user.student
+
 
             # obtain the specific open call by its ID
             open_call = Call.objects.filter(id=id, active=True).first()
@@ -130,11 +151,12 @@ class OpenCallDetailStudent(APIView):
 
 
 class ClosedCallDetailStudent(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsStudent]
     def get(self, request, id):
         try:
             if not request.user.is_authenticated:
                 return JsonResponse({'error': 'Unauthenticated user'}, status=status.HTTP_401_UNAUTHORIZED)
-            student = request.user.student
+
 
             # obtain the specific open call by its ID
             close_call = Call.objects.filter(id=id, active=False).first()
@@ -378,7 +400,7 @@ class CallsFilterSearch(APIView):
                     active = "F" + active[1:]
                 queryset = queryset.filter(active=active)
             if call_id:
-                queryset = queryset.filter(id=2)
+                queryset = queryset.filter(id=call_id)
             if university_id:
                 queryset = queryset.filter(university__id=university_id)
             if deadline:
