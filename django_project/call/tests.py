@@ -17,11 +17,9 @@ class CallsTestCase2(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        qset_students = Student.objects.all()
-        if not qset_students:
-            # Populate DB
-            comm = Command()
-            comm.handle(path=r"data\data_csv")
+        if Call.objects.count() == 0:
+            command = Command()
+            command.handle(path=os.path.join('data', 'data_csv'))
 
     def setUp(self):
         # User auth
@@ -84,7 +82,7 @@ class CallsTestCase2(TestCase):
         """
         Return OPEN CALLS applying any filter
         """
-        print("TEST: test_get_calls_filter")
+        print("TEST: test_get_open_calls_filter")
 
         authorization_header = {"HTTP_AUTHORIZATION": f"Bearer {self.bearer_token_std}"}
 
@@ -96,16 +94,16 @@ class CallsTestCase2(TestCase):
             'region': 'AN',
         }
 
-        response = self.client.get(reverse("call:open-call-detail"), data=data, **authorization_header)
+        response = self.client.get(reverse("call:open-call-detail",args=[1]), data=data, **authorization_header)
         print(response.json())
 
         self.assertEqual(response.status_code, 200)
 
     def test_get_closed_calls_filter(self):
         """
-        Return open calls with all filters allowed
+        Return closed calls with all filters allowed
         """
-        print("TEST: test_get_calls_details_any_filter")
+        print("TEST: test_get_closed_calls_filter")
 
         authorization_header = {"HTTP_AUTHORIZATION": f"Bearer {self.bearer_token_std}"}
 

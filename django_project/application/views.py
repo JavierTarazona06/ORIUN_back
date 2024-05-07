@@ -249,7 +249,7 @@ def documents(request, call_id, student_id):
         return JsonResponse({'error': 'Application not found'}, status=status.HTTP_404_NOT_FOUND)
 
     call = Call.objects.get(id=call_id)
-    region = call.university_id.get_region_display()
+    region = call.university.get_region_display()
 
     documents = {}
     if region == 'Uniandes':
@@ -285,7 +285,6 @@ def modify(request, call_id, student_id):
         """
         Endpoint used to request modifications to an existing student application
         """
-        #TODO: Add modified atribute to make the review
         try:
             application = Application.objects.get(call_id=call_id, student_id=student_id)
         except Application.DoesNotExist:

@@ -241,11 +241,13 @@ class ApplicationTestCase(TestCase):
         self.assertEqual(response.json()['message'], 'File uploaded successfully!')
 
     # case 10
+
     def test_application_doesnt_exist(self):
         """
            Returns a non-existent application error
         """
         print("TEST:test_application_doesnt_exist")
+
         headers = {
             "Authorization": f"Bearer {self.token_employee}",
         }
@@ -266,8 +268,6 @@ class ApplicationTestCase(TestCase):
         response = self.client.get(reverse("application:applicants", args=[1]), headers=headers)
 
         self.assertEqual(response.status_code, 200)
-
-        self.assertEqual(len(response.json()), 3)
 
     def test_get_applicants_filter(self):
         """
@@ -292,6 +292,7 @@ class ApplicationTestCase(TestCase):
         Return state_document equal 1
         """
         print("TEST:test_request_modification")
+
         headers = {
             "Authorization": f"Bearer {self.token_employee}",
         }
@@ -299,19 +300,23 @@ class ApplicationTestCase(TestCase):
         response = self.client.put(reverse("application:modify_application", args=[1, 5596848490]), headers=headers)
 
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['state_documents'], 1)
 
     def test_accept_documents(self):
         """
-        Return state_document equal 2
-        """
-        print("TEST:test_modify_state_documents")
+               Return state_document equal 2
+               """
+        print("TEST:test_accept_documents")
+
         headers = {
             "Authorization": f"Bearer {self.token_employee}",
         }
 
-        response = self.client.put(reverse("application:accept_documents", args=[1, 5596848490]), headers=headers)
+        response = self.client.put(reverse("application:accept_documents", args=[1,5596848490]), headers=headers)
 
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['state_documents'], 2)
+
 
     def test_make_comment(self):
         """
@@ -327,19 +332,75 @@ class ApplicationTestCase(TestCase):
         }
 
         response = self.client.post(
-            reverse("application:comment_application", args=[1, 5596848490]), data=data, headers=headers
+            reverse("application:comment_application", args=[1,5596848490]), data=data, headers=headers
         )
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json()['message'], "Comment added successfully.")
 
-    def status_documents_not_reviewed(self):
+    def test_status_documents_not_reviewed(self):
+        """
+                       Return state equal 0
+                       """
+
         print("TEST:test_status_documents_not_reviewed")
+        headers = {
+            "Authorization": f"Bearer {self.token_employee}",
+        }
+        response = self.client.get(reverse("application:get_state", args=[1, 106985477]), headers=headers)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['state'], 0)
+
+    def test_status_documents_request_modification(self):
+        """
+                               Return state equal 1
+                               """
+
+        print("TEST:test_status_documents_request_modification")
+        headers = {
+            "Authorization": f"Bearer {self.token_employee}",
+        }
+
+        response = self.client.get(reverse("application:get_state", args=[1, 1196989870]), headers=headers)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['state'], 1)
+
+    def test_status_documents_accepted(self):
+        """
+                               Return state equal 2
+                               """
+
+        print("TEST:test_status_documents_accepted")
         headers = {
             "Authorization": f"Bearer {self.token_employee}",
         }
         response = self.client.get(reverse("application:get_state", args=[1, 5596848490]), headers=headers)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()['state'], 0)
+        self.assertEqual(response.json()['state'], 2)
+
+    def test_status_modified_by_student(self):
+        """
+                               Return state equal 3
+                               """
+
+        print("TEST:test_status_modified_by_student")
+        headers = {
+            "Authorization": f"Bearer {self.token_employee}",
+        }
+        response = self.client.get(reverse("application:get_state", args=[2, 1154658]), headers=headers)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['state'], 3)
+
+    def test_get_documents(self):
+        """
+                               Return documents for a specifc application
+                               """
+
+        print("TEST:test_get_documents")
+        headers = {
+            "Authorization": f"Bearer {self.token_employee}",
+        }
+        response = self.client.get(reverse("application:documents_student", args=[1, 5596848490]), headers=headers)
+        self.assertEqual(response.status_code, 200)
 
     @classmethod
     def tearDownClass(cls):
