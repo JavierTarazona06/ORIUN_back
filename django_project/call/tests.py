@@ -8,6 +8,7 @@ from data.management.commands.populate_data import Command
 from call.serializers import CallSerializer, UniversitySerializer
 from django.utils import timezone
 from django.db.models import Q
+from student.models import Student
 
 import requests
 
@@ -16,20 +17,22 @@ class CallsTestCase2(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        # Populate DB
-        comm = Command()
-        comm.handle(path=r"data\data_csv")
+        qset_students = Student.objects.all()
+        if not qset_students:
+            # Populate DB
+            comm = Command()
+            comm.handle(path=r"data\data_csv")
 
     def setUp(self):
         # User auth
         # cur_user = Employee.objects.get(user__username='maria_alvarez')
-        response = self.client.post('/api-token/', {'username': 'maria_alvarez', 'password': 'Maria#1234'})
+        response = self.client.post('/api-token/', {'username': 'maria.alvarez@unal.edu.co', 'password': 'Maria#1234'})
         self.assertEqual(response.status_code, 200)
 
         response_body = json.loads(response.content.decode('utf-8'))
         self.bearer_token = response_body['access']
 
-        response = self.client.post('/api-token/', {'username': 'santiago_garcia', 'password': 'Password123'})
+        response = self.client.post('/api-token/', {'username': 'santiago.garcia@unal.edu.co', 'password': 'Password123'})
         self.assertEqual(response.status_code, 200)
 
         response_body = json.loads(response.content.decode('utf-8'))

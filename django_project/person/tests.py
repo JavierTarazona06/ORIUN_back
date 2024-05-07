@@ -18,14 +18,12 @@ def sep_test_request_verif_code(id, email):
     url = "http://localhost:8000/person/code/"
     response = requests.post(url, json=data, headers=headers)
 
-    print(response)
-    print(response.status_code)
     print(response.json())
 
     if not (response.status_code == 200):
          raise ValueError("In sep_test_request_verif_code: response.status_code != 200")
-    if not (response.json() == {'mensaje': 'Se envió el código de verificación al correo indicado'}):
-        raise ValueError("In sep_test_request_verif_code: response.json() != {'mensaje': 'Se envió el código de verificación al correo indicado'")
+    if not (response.json() == {'mensaje': 'Se envió el código de verificación al correo {}'.format(email)}):
+        raise ValueError("In sep_test_request_verif_code: response.json() != {'mensaje': 'Se envió el código de verificación al correo {}".format(email))
 
 
 # class PersonTestCase(TestCase):

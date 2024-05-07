@@ -2,18 +2,25 @@ import time
 import fitz
 import re
 import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 import os
 from dotenv import load_dotenv, find_dotenv
 import threading
 import random
 import string
 
+
 def delete_verif_code(path):
     time.sleep(300)  # Esperar 5 minutos (5 minutos * 60 segundos/minuto)
     if os.path.exists(path):
         os.remove(path)
 
-def sent_email_verif_code(to:str, id):
+
+def sent_email_verif_code(to: str, id):
+    if not "@unal.edu.co" in to:
+        raise ValueError("El correo no es dominio @unal.edu.co")
+
     dotenv_path = find_dotenv()
     load_dotenv(dotenv_path)
 
@@ -27,24 +34,58 @@ def sent_email_verif_code(to:str, id):
         smtp.ehlo()
         smtp.starttls()
         smtp.ehlo()
-
+        print("All Good1")
         smtp.login(MAIL, MAIL_PASSWORD)
 
-        subject = "ORIUN Verification Code"
-        headers = f"From: {MAIL}\r\nTo: {to}\r\nSubject: {subject}\r\n"
-        msg = f"{headers}\r\nCordial saludo,\n\nSu codigo de verificacion para acceder a la plataforma es: {verif_code}.\nRecuerde que el codigo solo dura 5 minutos activo desde la primera solicitud.\n\nAtentamente,\nEquipo ORIUN."
+        #---------
 
-        smtp.sendmail(MAIL, to, msg)
+        # subject = "ORIUN Verification Code"
+        # headers = f"From: {MAIL}\r\nTo: {to}\r\nSubject: {subject}\r\n"
+        # msg = f"{headers}\r\nCordial saludo,\n\nSu codigo de verificacion para acceder a la plataforma es: {verif_code}.\nRecuerde que el codigo solo dura 5 minutos activo desde la primera solicitud.\n\nAtentamente,\nEquipo ORIUN."
+        #smtp.sendmail(MAIL, to, msg)
+
+        #--------------
+
+        # Crear el objeto MIMEMultipart para el mensaje
+        msg = MIMEMultipart()
+        print("All Good2")
+        msg["From"] = MAIL
+        msg["To"] = to
+        msg["Subject"] = "ORIUN Verification Code"
+
+        # Contenido del mensaje en formato HTML
+        print("All Good3")
+        body = f"""\
+        <html>
+          <body>
+            <p>Cordial saludo,</p>
+            <p>Su código de verificación para acceder a la plataforma es: {verif_code}.</p>
+            <p>Recuerde que el código solo dura 5 minutos activo desde la primera solicitud.</p>
+            <p>Atentamente,<br>Equipo ORIUN</p>
+          </body>
+        </html>
+        """
+        print("All Good4")
+        # Adjuntar el contenido del mensaje al objeto MIMEText
+        msg.attach(MIMEText(body, "html", "utf-8"))
+        print("All Good5")
+        smtp.sendmail(MAIL, to, msg.as_string())
+        print("All Good6")
+        #------------
 
     file_name = r"data/{}_verif_code.txt".format(id)
+    print("All Good7")
     with open(file_name, "w") as file:
         file.write(verif_code)
+    print("All Good8")
+
     borrar_thread = threading.Thread(target=delete_verif_code, args=(file_name,))
     borrar_thread.start()
-
+    print("All Good9")
     return 0
 
-#sent_email_verif_code("javitar06@gmail.com", 1021632167)
+
+#sent_email_verif_code("jtarazonaj@unal.edu.co", 1021632167)
 
 
 def get_data_grades_certificate(path: str):
@@ -111,6 +152,7 @@ def get_data_grades_certificate(path: str):
 
     return ans
 
+
 def get_data_student_certificate(path: str):
     """
     Get metadata from student certificate from fitz.
@@ -146,6 +188,7 @@ def get_data_student_certificate(path: str):
         raise KeyError("No match for 'Avance de Estudiante'")
 
     return ans
+
 
 def get_data_student_payment(path: str):
     """
@@ -193,7 +236,6 @@ def get_data_student_payment(path: str):
         raise KeyError("No match for 'Tipo de admisión de Estudiante'")
 
     return ans
-
 
 # print(get_data_grades_certificate("data/forms/templates/Certificado_Notas.pdf"))
 # print(get_data_student_certificate("data/forms/templates/Matricula_Unal.pdf"))

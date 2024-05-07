@@ -8,6 +8,7 @@ urlpatterns = [
     path('call/', include(('call.urls', 'call'), namespace='call')),
     path('student/', include(('student.urls', 'student'), namespace='student')),
     path('person/', include(('person.urls', 'person'), namespace='person')),
+    path('employee/', include(('employee.urls', 'employee'), namespace='employee')),
     path('application/', include('application.urls')),
     path('api-token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api-token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),

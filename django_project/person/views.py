@@ -17,6 +17,6 @@ class post_verif_code(APIView):
 
             helpers.sent_email_verif_code(input_params["email"], input_params["id"])
 
-            return JsonResponse({'mensaje': 'Se envió el código de verificación al correo indicado'}, status=status.HTTP_200_OK)
+            return JsonResponse({'mensaje': f'Se envió el código de verificación al correo {input_params["email"]}'}, status=status.HTTP_200_OK)
         except Exception as e:
             return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)

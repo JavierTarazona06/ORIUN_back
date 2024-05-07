@@ -1,9 +1,7 @@
-import json
 import os
 
 from call.models import Call
-from call.serializers import CallSerializer
-from rest_framework import status, viewsets
+from rest_framework import status
 from rest_framework.exceptions import ValidationError
 
 from .models import Student
@@ -14,11 +12,9 @@ from datetime import datetime, timezone
 from rest_framework.views import APIView
 from application.models import Application
 from rest_framework.response import Response
-from .serializers import StudentApplicationSerializer, StudentSerializer, StudentSerializerGeneral, StudentGetSerializer
+from .serializers import StudentApplicationSerializer, StudentSerializer, StudentGetSerializer
 from django.contrib.auth.models import User
-from person.serializers import UserSerializerShort
 from application.helpers import upload_object, get_link_file
-from application.serializers import ApplicationSerializer
 from data import helpers
 from data.constants import Constants
 
@@ -87,7 +83,7 @@ class ApplicationDataView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class read_user_student(APIView):
+class ReadUserStudent(APIView):
     permission_classes = [permissions.IsAuthenticated, IsStudent]
 
     def get(self, request, pk):
