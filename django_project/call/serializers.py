@@ -6,15 +6,21 @@ from data.constants import Constants
 class CallSerializerOpen(serializers.ModelSerializer):
     university_name = serializers.CharField(source='university.name')
     country = serializers.CharField(source='university.country')
-    language = serializers.CharField()
+    language =  serializers.SerializerMethodField()
     deadline = serializers.DateField(format='%Y-%m-%d')
+    region = serializers.SerializerMethodField()
+    def get_language(self, obj):
+        return obj.get_language_display()
+
+    def get_region(self,obj):
+        return obj.university.get_region_display()
 
     class Meta:
         model = Call
-        fields = ('id', 'university_name', 'country', 'language', 'deadline')
-
+        fields = ('id','university_name', 'country', 'language', 'deadline','region')
 
 class CallSerializerClosed(CallSerializerOpen):
+
     class Meta(CallSerializerOpen.Meta):
         fields = CallSerializerOpen.Meta.fields + ('minimum_papa_winner',)
 
@@ -22,16 +28,22 @@ class CallSerializerClosed(CallSerializerOpen):
 class CallDetailsSerializerOpenStudent(serializers.ModelSerializer):
     university_name = serializers.CharField(source='university.name')
     country = serializers.CharField(source='university.country')
-    #language = serializers.ChoiceField(choices=Call.language_choices)
+    language =  serializers.SerializerMethodField()
     deadline = serializers.DateField(format='%Y-%m-%d')
     min_advance = serializers.FloatField()
     min_papa = serializers.FloatField()
-    format = serializers.CharField()
+    format = serializers.SerializerMethodField()
     year = serializers.IntegerField()
     semester = serializers.IntegerField()
     description = serializers.CharField(allow_null=True)
     available_slots = serializers.IntegerField()
     note = serializers.CharField(allow_null=True)
+
+    def get_language(self, obj):
+        return obj.get_language_display()
+
+    def get_format(self,obj):
+        return obj.get_format_display()
 
     class Meta:
         model = Call
@@ -78,3 +90,4 @@ class UniversitySerializerPost(serializers.ModelSerializer):
     class Meta:
         model = University
         fields = '__all__'
+

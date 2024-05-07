@@ -164,6 +164,7 @@ cython_debug/
 testy.py
 test
 test.py
+testy.py
 
 django_project/data/test_files
 

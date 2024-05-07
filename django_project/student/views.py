@@ -48,7 +48,7 @@ class EligibilityView(APIView):
         if student.PAPA < call.min_papa:
             return JsonResponse({'eligibility': False, 'message': 'PAPA insuficiente'})
         if student.study_level != call.study_level:
-            return JsonResponse({'eligibility': False, 'message': 'Usted pertenece al nivel de estudios necesario'})
+            return JsonResponse({'eligibility': False, 'message': 'Usted no pertenece al nivel de estudios necesario'})
 
         if call.university.get_region_display() == 'Uniandes':
             if student.num_semesters < 2:
@@ -57,7 +57,7 @@ class EligibilityView(APIView):
                 )
         else:
             if student.advance < call.min_advance:
-                return JsonResponse({'eligibility': False, 'message': 'PAPA insuficiente'})
+                return JsonResponse({'eligibility': False, 'message': 'Avance insuficiente'})
 
         return JsonResponse({'eligibility': True, 'message': ''})
 

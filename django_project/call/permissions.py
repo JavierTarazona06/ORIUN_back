@@ -8,3 +8,9 @@ class IsEmployee(permissions.BasePermission):
         if isinstance(user, User):
             return Employee.objects.filter(user=user).exists()
         return False
+
+class IsStudent(permissions.BasePermission):
+    message = 'Current user is not a student'
+
+    def has_permission(self, request, view):
+        return hasattr(request.user, 'student')
