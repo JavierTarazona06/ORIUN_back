@@ -160,7 +160,7 @@
 
 ## 5. Endpoint to Accept Documents for a Specific Student's Application
 
-*URL:** `application/accept-documents/<int:student_id>/<int:call_id>'`
+*URL:** `application/accept-documents/<int:call_id>/<int:student_id>'`
 
 **Method:** `PUT`
 
