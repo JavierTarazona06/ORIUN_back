@@ -47,15 +47,15 @@ class StudentTestCase(TestCase):
     def test_post_students(self):
         print("TEST: test_post_students")
 
-        with open("data/forms/templates/Certificado_Notas.pdf", 'rb') as grades_file:
+        with open("data/test_files/Certificado_Notas.pdf", 'rb') as grades_file:
             grades_data = grades_file.read()
             grades_obj = SimpleUploadedFile("Certificado_Notas.pdf", grades_data)
 
-        with open("data/forms/templates/Matricula_Unal.pdf", 'rb') as student_file:
+        with open("data/test_files/Matricula_Unal.pdf", 'rb') as student_file:
             student_data = student_file.read()
             student_obj = SimpleUploadedFile("Certificado_Matricula_Estudiante.pdf", student_data)
 
-        with open("data/forms/templates/ReciboPago.pdf", 'rb') as payment_file:
+        with open("data/test_files/ReciboPago.pdf", 'rb') as payment_file:
             payment_data = payment_file.read()
             payment_obj = SimpleUploadedFile("Recibo_Pago.pdf", payment_data)
 

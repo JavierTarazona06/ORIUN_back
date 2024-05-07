@@ -34,7 +34,6 @@ def sent_email_verif_code(to: str, id):
         smtp.ehlo()
         smtp.starttls()
         smtp.ehlo()
-        print("All Good1")
         smtp.login(MAIL, MAIL_PASSWORD)
 
         #---------
@@ -48,13 +47,11 @@ def sent_email_verif_code(to: str, id):
 
         # Crear el objeto MIMEMultipart para el mensaje
         msg = MIMEMultipart()
-        print("All Good2")
         msg["From"] = MAIL
         msg["To"] = to
         msg["Subject"] = "ORIUN Verification Code"
 
         # Contenido del mensaje en formato HTML
-        print("All Good3")
         body = f"""\
         <html>
           <body>
@@ -65,23 +62,17 @@ def sent_email_verif_code(to: str, id):
           </body>
         </html>
         """
-        print("All Good4")
         # Adjuntar el contenido del mensaje al objeto MIMEText
         msg.attach(MIMEText(body, "html", "utf-8"))
-        print("All Good5")
         smtp.sendmail(MAIL, to, msg.as_string())
-        print("All Good6")
         #------------
 
     file_name = r"data/{}_verif_code.txt".format(id)
-    print("All Good7")
     with open(file_name, "w") as file:
         file.write(verif_code)
-    print("All Good8")
 
     borrar_thread = threading.Thread(target=delete_verif_code, args=(file_name,))
     borrar_thread.start()
-    print("All Good9")
     return 0
 
 

@@ -166,6 +166,8 @@ testy.py
 test
 test.py
 
+django_project/data/test_files
+
 **/.DS_Store
 
 # Documentation
@@ -173,3 +175,6 @@ docs/Deployment-back.md
 
 # GCP info
 django_project/credentials.json
+
+# Verifications codes
+*_verif_code.txt
