@@ -435,7 +435,7 @@
 
 **URL:** `/call/university_api/<int:pk>/`.
 
-**Method:** `PUT`
+**Method:** `GET`
 
 **Description:** Get a university according to given ID.
 
