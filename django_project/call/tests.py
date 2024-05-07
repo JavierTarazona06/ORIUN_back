@@ -95,7 +95,6 @@ class CallsTestCase2(TestCase):
         }
 
         response = self.client.get(reverse("call:open-call-detail",args=[1]), data=data, **authorization_header)
-        print(response.json())
 
         self.assertEqual(response.status_code, 200)
 
@@ -780,7 +779,6 @@ class CallsTestCase2(TestCase):
         }
 
         response = self.client.get(reverse("call:univ_list"), **headers)
-        print(response.json())
 
         qset = University.objects.all()
         qset = UniversitySerializer(qset, many=True).data
