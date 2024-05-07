@@ -10,6 +10,8 @@ from student.views import ApplicationDataView
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.decorators import api_view, permission_classes, parser_classes
 
+from call.models import Call
+
 
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated, IsStudent])
@@ -20,7 +22,7 @@ def get_region_call(request: Request):
     """
     call_id = request.query_params['call']
     call = Call.objects.get(id=call_id)
-    region = call.university_id.get_region_display()
+    region = call.university.get_region_display()
     if region == 'Uniandes':
         return JsonResponse({'region': 'Uniandes'}, status=status.HTTP_200_OK)
     elif region == 'Convenio Sigueme/Nacional':

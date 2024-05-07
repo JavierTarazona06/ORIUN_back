@@ -33,7 +33,7 @@
         {"value": "Ciencias Agrarias", "display": "Facultad de Ciencias Agrarias"},
         {"value": "Ciencias Económicas", "display": "Facultad de Ciencias Económicas"},
         {"value": "Ciencias Humanas", "display": "Facultad de Ciencias Humanas"},
-        {"value": " Ciencias", "display": "Facultad de Ciencias"},
+        {"value": "Ciencias", "display": "Facultad de Ciencias"},
         {"value": "Ciencias Agropecuarias", "display": "Facultad de Ciencias Agropecuarias"},
         {"value": "Derecho, Ciencias Políticas y Sociales", "display": "Facultad de Derecho, Ciencias Políticas y Sociales"},
         {"value": "Ingeniería", "display": "Facultad de Ingeniería"},
@@ -130,7 +130,7 @@
         {"value": "LA", "display": "Latinoamérica"},
         {"value": "EU", "display": "Europa"},
         {"value": "OC", "display": "Oceanía"},
-        {"value": "AS", "display": "Oceanía"},
+        {"value": "AS", "display": "Asia"},
         {"value": "AN", "display": "Uniandes"},
         {"value": "SG", "display": "Convenio Sigueme/Nacional"}
     ],

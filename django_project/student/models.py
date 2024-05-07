@@ -20,9 +20,8 @@ class Student(Person):
     PAPA = models.FloatField()
     PBM = models.SmallIntegerField()
     advance = models.FloatField()
-    calls_done = models.ManyToManyField('call.Call')
     is_enrolled = models.BooleanField()
-    date_banned_mobility = models.DateField(default=date(2000, 1, 1))
+    date_banned_mobility = models.DateField(default=date(2000, 1, 1), null=True)
     num_semesters = models.SmallIntegerField()
     contact_person = models.ForeignKey(ContactPerson, on_delete=models.SET_NULL, null=True)
     diseases = models.TextField(null=True, blank=True)
@@ -39,6 +38,8 @@ class Student(Person):
 
     study_level_choices = [(choice['value'], _(choice['display'])) for choice in Constants.STUDY_LEVEL_CHOICES]
     study_level = models.CharField(max_length=10, choices=study_level_choices)
+
+    certificates = ['certificate_grades.pdf', 'certificate_student.pdf', 'payment_receipt.pdf']
 
     def __str__(self):
         return f'Student: {self.user.first_name} with ID {self.id}.'
