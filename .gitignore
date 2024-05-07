@@ -163,7 +163,7 @@ cython_debug/
 # Testing files for stupid code that should not be visible :)
 test.py
 testy.py
-
+django_project/data/test_files
 
 **/.DS_Store
 
