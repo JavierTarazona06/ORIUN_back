@@ -8,6 +8,7 @@ from .models import Employee
 from django.http import JsonResponse
 from rest_framework import status, permissions
 from .permissions import IsEmployee
+from data.constants import Constants
 
 
 class PostUserEmployee(APIView):
@@ -33,6 +34,19 @@ class PostUserEmployee(APIView):
                         input_params[key] = value[0]
                     else:
                         input_params[key] = value
+
+            flag = False
+            for mail in Constants.EMPLOYEES_MAILS['ORI']:
+                if mail == input_params["email"] and input_params["dependency"] == 'ORI':
+                    flag = True
+                    break
+            if not flag:
+                for mail in Constants.EMPLOYEES_MAILS['DRE']:
+                    if mail == input_params["email"] and input_params["dependency"] == 'DRE':
+                        flag = True
+                        break
+            if not flag:
+                raise ValueError("El correo ingresado no corresponde a un funcionario de la ORI/DRE o ingresó mal la dependencia")
 
             # Creating User -----
             input_params['username'] = input_params["email"]
