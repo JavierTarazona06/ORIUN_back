@@ -1,21 +1,23 @@
-from .helpers import *
-from . import serializers
-from call.models import Call
-from .models import Application
-from rest_framework import status
-from .helpers import get_link_file
-from .serializers import Applicants
-from django.http import JsonResponse
-from rest_framework import permissions
 from datetime import datetime, timezone
+from google.cloud import exceptions as gcloud_exceptions
+from django.http import JsonResponse
+
+from rest_framework import permissions
 from rest_framework import status, generics
 from rest_framework.response import Response
-from student.views import ApplicationDataView
-from .permissions import IsStudent, IsEmployee
-from google.cloud import exceptions as gcloud_exceptions
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.decorators import api_view, permission_classes, parser_classes
-from .serializers import ApplicationSerializer,ApplicationModifySerializer, StateSerializer
+from rest_framework import status
+from rest_framework.views import APIView
+
+from student.views import ApplicationDataView
+from .permissions import IsStudent, IsEmployee
+from .serializers import ApplicationSerializer, ApplicationModifySerializer, StateSerializer, \
+    ApplicationDetailSerializer, ApplicationOrdersSerializer
+from .helpers import *
+from . import serializers
+from .serializers import Applicants
+from .models import Application
 from call.models import Call
 
 
@@ -382,3 +384,16 @@ def add_comment(request, call_id, student_id):
     application.comment = comment
     application.save()
     return Response({"message": "Comment added successfully."}, status=status.HTTP_201_CREATED)
+
+
+class OrderDocs(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsEmployee]
+
+    def get(self, request, pk):
+        try:
+            applications = Application.objects.filter(call=pk).order_by('-state_documents')
+            applications = ApplicationOrdersSerializer(applications, many=True).data
+
+            return JsonResponse(applications, status=status.HTTP_200_OK, safe=False)
+        except Exception as e:
+            return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)

@@ -1,6 +1,7 @@
 from . import views
 from django.urls import path
 
+from .views import OrderDocs
 
 urlpatterns = [
     path('region_call/', views.get_region_call, name='region_call'),
@@ -18,4 +19,5 @@ urlpatterns = [
     path('student-info/<int:call_id>/<int:student_id>/', views.get_student_info, name= 'student_info'),
     path('get-state/<int:call_id>/<int:student_id>/', views.get_state, name='get_state'),
     path('add-comment/<int:call_id>/<int:student_id>/', views.add_comment, name='comment_application'),
+    path('order_docs/<int:pk>/', OrderDocs.as_view(), name='order_apps_by_docs'),
 ]

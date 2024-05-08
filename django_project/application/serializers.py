@@ -84,3 +84,24 @@ class StateSerializer(serializers.Serializer):
 
     class Meta:
         fields = ['student_id', 'call_id', 'state']
+
+class ApplicationOrdersSerializer(serializers.ModelSerializer):
+    student_id = serializers.CharField(source='student.id')
+    student_name = serializers.SerializerMethodField()
+    student_PAPA = serializers.FloatField(source='student.PAPA')
+    student_advance = serializers.FloatField(source='student.advance')
+    student_headquarter = serializers.CharField(source='student.headquarter')
+    language = serializers.SerializerMethodField()
+    student_PBM = serializers.IntegerField(source='student.PBM')
+    class Meta:
+        model = Application
+        fields = ['id', 'student_id', 'student_name', 'state_documents', 'student_PAPA', 'student_advance', 'student_headquarter', 'language', 'student_PBM']
+
+    def get_student_name(self, obj):
+        return f"{obj.student.user.first_name} {obj.student.user.last_name}"
+
+    def get_language(self, obj):
+        if (obj.state_documents == 2):
+            return True
+        else:
+            return False
