@@ -563,3 +563,36 @@ class UpdateUniversityView(View):
 
     def handle_exception(self, exc):
         return JsonResponse({'error': str(exc)}, status=500)
+
+
+class SetClosed(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsEmployee]
+
+    def post(self, request):
+        try:
+            input_params = request.data
+
+            # Close the call
+            this_call = Call.objects.get(id=input_params["call_id"])
+            this_call.active = False
+            this_call.save()
+
+            return JsonResponse({"message":f"Se cerró la convocatoria con ID: {this_call.id} de la universidad: {this_call.university.name} en el periodo: {this_call.year}-{this_call.semester}."}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+class SetOpen(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsEmployee]
+
+    def post(self, request):
+        try:
+            input_params = request.data
+
+            # Close the call
+            this_call = Call.objects.get(id=input_params["call_id"])
+            this_call.active =True
+            this_call.save()
+
+            return JsonResponse({"message":f"Se abrió la convocatoria con ID: {this_call.id} de la universidad: {this_call.university.name} en el periodo: {this_call.year}-{this_call.semester}."}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
