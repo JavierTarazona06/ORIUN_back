@@ -16,7 +16,6 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('--path', type=str, default='data/data_csv', help='Path to the CSV folder')
-        parser.add_argument('--upload', type=bool, default=False, help='Whether or not upload the docs to GCP')
 
     def open_csv(self, csv_abs_path, name_file):
         path_file = os.path.join(csv_abs_path, name_file)
@@ -70,7 +69,7 @@ class Command(BaseCommand):
         """
         base_docs = Application.name_docs
         call = Call.objects.get(id=call_id)
-        region = call.university_id.get_region_display()
+        region = call.university.get_region_display()
         if region == 'Uniandes':
             pass
         elif region == 'Convenio Sigueme/Nacional':
@@ -117,11 +116,9 @@ class Command(BaseCommand):
 
         # Populate applications
         data_applications = self.open_csv(csv_abs_path, 'applications_data.csv')
-        upload = options.get('upload')
 
         for info in data_applications:
-            if upload:
-                self.upload_docs(info['student'], info['call'])
+            self.upload_docs(info['student'], info['call'])
             info['year'], month = datetime.now(timezone.utc).strftime('%Y %m').split(" ")
             info['semester'] = '1' if int(month) <= 6 else '2'
             s = ApplicationSerializer(data=info)
