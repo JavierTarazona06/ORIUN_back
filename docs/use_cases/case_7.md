@@ -206,10 +206,10 @@
 
 **Inputs:** In body request
 
-| Field Name       | Required | Type          | Description                                                   |
-|------------------|----------|---------------|---------------------------------------------------------------|
-| `application_id` | YES      | integer       | A unique integer value identifying this application.          |
-| `student_id`     | YES      | integer       | A unique integer value identifying the student who is winner. |
+| Field Name   | Required | Type          | Description                                                   |
+|--------------|----------|---------------|---------------------------------------------------------------|
+| `call_id`    | YES      | integer       | A unique integer value identifying this application.          |
+| `student_id` | YES      | integer       | A unique integer value identifying the student who is winner. |
 
 **Outputs:**
 
@@ -218,23 +218,23 @@
 | `message`  | string | "El estudiante con id {student_id} fue seleccionado para la convocatoria {call_id}" or EXCEPTION |
 
 
-# 8. Remover Ganador
+# 8. Remover Ganador o dejarlo como no ganador
 <span style="color: green; font-weight: bold;"> DONE </span>
 
 **URL:** `/application/not_winner/`.
 
 **Method:** `POST`
 
-**Description:** Remove as winner the student with application ID that equals to the given student ID.
+**Description:** Remove as winner (or set not winner) the student with application ID that equals to the given student ID.
 
 **Permissions:** Employee.
 
 **Inputs:** In body.
 
-| Field Name       | Required | Type        | Description                                                               |
-|------------------|----------|-------------|---------------------------------------------------------------------------|
-| `application_id` | YES      | integer     | A unique integer value identifying this application.                      |
-| `student_id`     | YES      | integer     | A unique integer value identifying the student who is no longer a winner. |
+| Field Name   | Required | Type        | Description                                                               |
+|--------------|----------|-------------|---------------------------------------------------------------------------|
+| `call_id`    | YES      | integer     | A unique integer value identifying this application.                      |
+| `student_id` | YES      | integer     | A unique integer value identifying the student who is no longer a winner. |
 
 **Outputs:**
 

@@ -19,6 +19,8 @@ from . import serializers
 from .serializers import Applicants
 from .models import Application
 from call.models import Call
+from data.helpers import send_email_winner, send_email_not_winner
+from student.models import Student
 
 
 @api_view(['GET'])
@@ -476,11 +478,29 @@ class SetWinner(APIView):
     def post(self, request):
         try:
             input_params = request.data
+            this_application = Application.objects.get(call__id=input_params['call_id'], student_id=input_params['student_id'])
 
-            this_application = Application.objects.get(id=input_params['application_id'], student_id=input_params['student_id'])
+            # Check Available Slots
+            call_applications = Application.objects.filter(call=this_application.call_id)
+            quant_stud_approved = 0
+            for i in range(len(call_applications)):
+                if (call_applications[i].approved):
+                    quant_stud_approved += 1
+            if this_application.call.available_slots < (quant_stud_approved+1):
+                raise AttributeError(f"No se pueden aceptar mas estudiantes. Estudiantes ya Aceptados: {quant_stud_approved}. Cupos: {this_application.call.available_slots}")
+
+            # Set Winner
             this_application.approved = True
-
             this_application.save()
+
+            # Close the call
+            this_call = Call.objects.get(id=this_application.call_id)
+            this_call.active = False
+            this_call.save()
+
+            # Send email
+            student_winner = Student.objects.get(id=this_application.student.id)
+            send_email_winner(student_winner.user.email, str(student_winner.user.first_name)+' '+str(student_winner.user.last_name), this_call.id, this_call.university.name, this_call.year, this_call.semester)
 
             return JsonResponse({"mesage":f"El estudiante con ID {input_params["student_id"]} fue seleccionado para la convocatoria {this_application.call_id}"}, status=status.HTTP_200_OK, safe=False)
         except Exception as e:
@@ -493,10 +513,14 @@ class RemoveWinner(APIView):
         try:
             input_params = request.data
 
-            this_application = Application.objects.get(id=input_params['application_id'], student_id=input_params['student_id'])
+            this_application = Application.objects.get(call__id=input_params['call_id'], student_id=input_params['student_id'])
             this_application.approved = False
-
             this_application.save()
+
+            # Send email
+            student_not_winner = Student.objects.get(id=this_application.student.id)
+            this_call = Call.objects.get(id=this_application.call_id)
+            send_email_not_winner(student_not_winner.user.email, str(student_not_winner.user.first_name)+' '+str(student_not_winner.user.last_name), this_call.id, this_call.university.name, this_call.year, this_call.semester)
 
             return JsonResponse({"mesage":f"El estudiante con ID {input_params["student_id"]} fue des-seleccionado para la convocatoria {this_application.call_id}"}, status=status.HTTP_200_OK, safe=False)
         except Exception as e:
