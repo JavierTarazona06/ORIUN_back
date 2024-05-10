@@ -9,6 +9,7 @@ from django.http import JsonResponse
 from rest_framework import status, permissions
 from .permissions import IsEmployee
 from data.constants import Constants
+from traceability.models import Traceability
 
 
 class PostUserEmployee(APIView):
@@ -87,6 +88,17 @@ class PostUserEmployee(APIView):
             # Create Employee -----
             Employee.objects.create(**input_params)
 
+            this_employee = Employee.objects.get(id=input_params['id'])
+            this_user = this_employee.user
+            data_trace = {
+                "user": this_user,
+                "time": datetime.now(),
+                "method": request.method,
+                "view": "PostUserEmployee",
+                "given_data": f"Se creó el empleado con id: {this_employee.id} y correo {this_employee.user.email}. ID de usuario: {this_employee.user.id}",
+            }
+            Traceability.objects.create(**data_trace)
+
             return JsonResponse({'mensaje': 'Funcionario creado exitosamente'}, status=status.HTTP_200_OK)
         except Exception as e:
             try:
@@ -108,6 +120,16 @@ class ReadUserEmployee(APIView):
                 raise ValidationError("El usuario {} no tiene permiso para ver la información del usuario solicitado".format(request.user))
             my_employee_qset = Employee.objects.filter(pk=pk)
             my_employee_sr = EmployeeGetSerializer(my_employee_qset, many=True).data[0]
+
+            this_user = request.user
+            data_trace = {
+                "user": this_user,
+                "time": datetime.now(),
+                "method": request.method,
+                "view": "ReadUserEmployee",
+                "given_data": f"El usuario solicitó la información del emploeado con id {myEmployee.id}."
+            }
+            Traceability.objects.create(**data_trace)
 
             return JsonResponse(my_employee_sr, status=status.HTTP_200_OK)
         except Exception as e:

@@ -1,9 +1,12 @@
+from datetime import datetime, timezone
+
 from django.http import JsonResponse
 from django.shortcuts import render
 from rest_framework import status
 
 from rest_framework.views import APIView
 from data import helpers
+from traceability.models import Traceability
 
 
 class post_verif_code(APIView):

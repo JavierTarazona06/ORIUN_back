@@ -43,7 +43,7 @@ class StudentTestCase(TestCase):
         response_body = json.loads(response.content.decode('utf-8'))
         self.bearer_token_std_vale = response_body['access']
 
-    #TODO: add data_banned_mobility and max_applications
+    # TODO: add data_banned_mobility and max_applications
 
     def test_eligibility_authentication(self):
         """

@@ -21,6 +21,7 @@ from .models import Application
 from call.models import Call
 from data.helpers import send_email_winner, send_email_not_winner
 from student.models import Student
+from traceability.models import Traceability
 
 
 @api_view(['GET'])
@@ -401,6 +402,16 @@ class OrderDocs(APIView):
             applications = Application.objects.filter(call=pk).order_by('-state_documents')
             applications = ApplicationOrdersSerializer(applications, many=True).data
 
+            this_user = request.user
+            data_trace = {
+                "user": this_user,
+                "time": datetime.now(),
+                "method": request.method,
+                "view": self.__class__.__name__,
+                "given_data": f"El usuario solicitó las aplicaciones a la convocatoria {pk} ordenadas por estado de documentación de los estudiantes."
+            }
+            Traceability.objects.create(**data_trace)
+
             return JsonResponse(applications, status=status.HTTP_200_OK, safe=False)
         except Exception as e:
             return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -413,6 +424,16 @@ class OrderPAPA(APIView):
         try:
             applications = Application.objects.filter(call=pk).order_by('-student__PAPA')
             applications = ApplicationOrdersSerializer(applications, many=True).data
+
+            this_user = request.user
+            data_trace = {
+                "user": this_user,
+                "time": datetime.now(),
+                "method": request.method,
+                "view": self.__class__.__name__,
+                "given_data": f"El usuario solicitó las aplicaciones a la convocatoria {pk} ordenadas por PAPA descendente de los estudiantes."
+            }
+            Traceability.objects.create(**data_trace)
 
             return JsonResponse(applications, status=status.HTTP_200_OK, safe=False)
         except Exception as e:
@@ -427,6 +448,16 @@ class OrderAdvance(APIView):
             applications = Application.objects.filter(call=pk).order_by('-student__advance')
             applications = ApplicationOrdersSerializer(applications, many=True).data
 
+            this_user = request.user
+            data_trace = {
+                "user": this_user,
+                "time": datetime.now(),
+                "method": request.method,
+                "view": self.__class__.__name__,
+                "given_data": f"El usuario solicitó las aplicaciones a la convocatoria {pk} ordenadas por porcentaje de avance de carrera de los estudiantes."
+            }
+            Traceability.objects.create(**data_trace)
+
             return JsonResponse(applications, status=status.HTTP_200_OK, safe=False)
         except Exception as e:
             return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -439,6 +470,16 @@ class OrderLanguage(APIView):
         try:
             applications = Application.objects.filter(call=pk).order_by('-state_documents')
             applications = ApplicationOrdersSerializer(applications, many=True).data
+
+            this_user = request.user
+            data_trace = {
+                "user": this_user,
+                "time": datetime.now(),
+                "method": request.method,
+                "view": self.__class__.__name__,
+                "given_data": f"El usuario solicitó las aplicaciones a la convocatoria {pk} ordenadas por cumplimiento del requisito de idioma de los estudiantes."
+            }
+            Traceability.objects.create(**data_trace)
 
             return JsonResponse(applications, status=status.HTTP_200_OK, safe=False)
         except Exception as e:
@@ -453,6 +494,16 @@ class OrderPBM(APIView):
             applications = Application.objects.filter(call=pk).order_by('student__PBM')
             applications = ApplicationOrdersSerializer(applications, many=True).data
 
+            this_user = request.user
+            data_trace = {
+                "user": this_user,
+                "time": datetime.now(),
+                "method": request.method,
+                "view": self.__class__.__name__,
+                "given_data": f"El usuario solicitó las aplicaciones a la convocatoria {pk} ordenadas por PBM ascendente de los estudiantes."
+            }
+            Traceability.objects.create(**data_trace)
+
             return JsonResponse(applications, status=status.HTTP_200_OK, safe=False)
         except Exception as e:
             return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -466,6 +517,16 @@ class OrderGeneral(APIView):
             applications = Application.objects.filter(call=pk).order_by('-state_documents', '-student__PAPA',
                                                                         '-student__advance', 'student__PBM')
             applications = ApplicationOrdersSerializer(applications, many=True).data
+
+            this_user = request.user
+            data_trace = {
+                "user": this_user,
+                "time": datetime.now(),
+                "method": request.method,
+                "view": self.__class__.__name__,
+                "given_data": f"El usuario solicitó las aplicaciones a la convocatoria {pk} ordenadas por estado de la documentación, PAPA, Avance, Idioma y PBM de los estudiantes (Orden General)."
+            }
+            Traceability.objects.create(**data_trace)
 
             return JsonResponse(applications, status=status.HTTP_200_OK, safe=False)
         except Exception as e:
@@ -502,6 +563,16 @@ class SetWinner(APIView):
             student_winner = Student.objects.get(id=this_application.student.id)
             send_email_winner(student_winner.user.email, str(student_winner.user.first_name)+' '+str(student_winner.user.last_name), this_call.id, this_call.university.name, this_call.year, this_call.semester)
 
+            this_user = request.user
+            data_trace = {
+                "user": this_user,
+                "time": datetime.now(),
+                "method": request.method,
+                "view": self.__class__.__name__,
+                "given_data": f"El usuario seleccionó al estudiante con id {student_winner.id} como ganador de la convocatoria {this_call.id}."
+            }
+            Traceability.objects.create(**data_trace)
+
             return JsonResponse({"message":f"El estudiante con ID {input_params["student_id"]} fue seleccionado para la convocatoria {this_application.call_id}"}, status=status.HTTP_200_OK)
         except Exception as e:
             return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -521,6 +592,16 @@ class RemoveWinner(APIView):
             student_not_winner = Student.objects.get(id=this_application.student.id)
             this_call = Call.objects.get(id=this_application.call_id)
             send_email_not_winner(student_not_winner.user.email, str(student_not_winner.user.first_name)+' '+str(student_not_winner.user.last_name), this_call.id, this_call.university.name, this_call.year, this_call.semester)
+
+            this_user = request.user
+            data_trace = {
+                "user": this_user,
+                "time": datetime.now(),
+                "method": request.method,
+                "view": self.__class__.__name__,
+                "given_data": f"El usuario des-seleccionó al estudiante con id {student_not_winner.id} como ganador de la convocatoria {this_call.id}."
+            }
+            Traceability.objects.create(**data_trace)
 
             return JsonResponse({"message":f"El estudiante con ID {input_params["student_id"]} fue des-seleccionado para la convocatoria {this_application.call_id}"}, status=status.HTTP_200_OK)
         except Exception as e:
