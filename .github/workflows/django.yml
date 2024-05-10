@@ -31,6 +31,8 @@ jobs:
       run: |
         #!/bin/bash
         set -e  # Exit on errors
+        
+        mkdir -p $GITHUB_WORKSPACE/django_project/data/test_files
 
         source_dir="$GITHUB_WORKSPACE/django_project/data/test_files_gpg"
         target_dir="$GITHUB_WORKSPACE/django_project/data/test_files"
