@@ -1,22 +1,26 @@
-from .helpers import *
-from . import serializers
-from call.models import Call
-from .models import Application
-from rest_framework import status
-from .helpers import get_link_file
-from .serializers import Applicants
-from django.http import JsonResponse
-from rest_framework import permissions
 from datetime import datetime, timezone
+from google.cloud import exceptions as gcloud_exceptions
+from django.http import JsonResponse
+
+from rest_framework import permissions
 from rest_framework import status, generics
 from rest_framework.response import Response
-from student.views import ApplicationDataView
-from .permissions import IsStudent, IsEmployee
-from google.cloud import exceptions as gcloud_exceptions
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.decorators import api_view, permission_classes, parser_classes
-from .serializers import ApplicationSerializer,ApplicationModifySerializer, StateSerializer
+from rest_framework import status
+from rest_framework.views import APIView
+
+from student.views import ApplicationDataView
+from .permissions import IsStudent, IsEmployee
+from .serializers import ApplicationSerializer, ApplicationModifySerializer, StateSerializer, \
+    ApplicationDetailSerializer, ApplicationOrdersSerializer
+from .helpers import *
+from . import serializers
+from .serializers import Applicants
+from .models import Application
 from call.models import Call
+from data.helpers import send_email_winner, send_email_not_winner
+from student.models import Student
 
 
 @api_view(['GET'])
@@ -207,6 +211,7 @@ def edit_application(request: Request):
 
     return Response({'message': 'Document updated'}, status=status.HTTP_200_OK)
 
+
 #case10
 
 @api_view(['GET'])
@@ -236,6 +241,7 @@ def applicants(request, call_id):
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated, IsEmployee])
 def documents(request, call_id, student_id):
@@ -249,7 +255,7 @@ def documents(request, call_id, student_id):
         return JsonResponse({'error': 'Application not found'}, status=status.HTTP_404_NOT_FOUND)
 
     call = Call.objects.get(id=call_id)
-    region = call.university_id.get_region_display()
+    region = call.university.get_region_display()
 
     documents = {}
     if region == 'Uniandes':
@@ -282,22 +288,21 @@ def documents(request, call_id, student_id):
 @api_view(['PUT'])
 @permission_classes([permissions.IsAuthenticated, IsEmployee])
 def modify(request, call_id, student_id):
-        """
+    """
         Endpoint used to request modifications to an existing student application
         """
-        #TODO: Add modified atribute to make the review
-        try:
-            application = Application.objects.get(call_id=call_id, student_id=student_id)
-        except Application.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+    try:
+        application = Application.objects.get(call_id=call_id, student_id=student_id)
+    except Application.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
-        data = {'state_documents':'1', 'modified': False}
-        serializer = ApplicationModifySerializer(application, data=data, partial=True)
+    data = {'state_documents': '1', 'modified': False}
+    serializer = ApplicationModifySerializer(application, data=data, partial=True)
 
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['PUT'])
@@ -312,13 +317,14 @@ def accept_documents(request, call_id, student_id):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     # Set the value of state_documents to 2 for accepting documents
-    data = {'state_documents': 2, 'modified': False }
+    data = {'state_documents': 2, 'modified': False}
     serializer = ApplicationModifySerializer(application, data=data, partial=True)
 
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated, IsEmployee])
@@ -361,12 +367,14 @@ def get_state(request, call_id, student_id):
         else:
             state = None
 
-        serializer = StateSerializer(data={'call': application.call_id, 'student_id': application.student_id, 'state': state})
+        serializer = StateSerializer(
+            data={'call': application.call_id, 'student_id': application.student_id, 'state': state})
         serializer.is_valid()
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     except Application.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
+
 
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated, IsEmployee])
@@ -383,3 +391,137 @@ def add_comment(request, call_id, student_id):
     application.comment = comment
     application.save()
     return Response({"message": "Comment added successfully."}, status=status.HTTP_201_CREATED)
+
+
+class OrderDocs(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsEmployee]
+
+    def get(self, request, pk):
+        try:
+            applications = Application.objects.filter(call=pk).order_by('-state_documents')
+            applications = ApplicationOrdersSerializer(applications, many=True).data
+
+            return JsonResponse(applications, status=status.HTTP_200_OK, safe=False)
+        except Exception as e:
+            return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class OrderPAPA(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsEmployee]
+
+    def get(self, request, pk):
+        try:
+            applications = Application.objects.filter(call=pk).order_by('-student__PAPA')
+            applications = ApplicationOrdersSerializer(applications, many=True).data
+
+            return JsonResponse(applications, status=status.HTTP_200_OK, safe=False)
+        except Exception as e:
+            return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class OrderAdvance(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsEmployee]
+
+    def get(self, request, pk):
+        try:
+            applications = Application.objects.filter(call=pk).order_by('-student__advance')
+            applications = ApplicationOrdersSerializer(applications, many=True).data
+
+            return JsonResponse(applications, status=status.HTTP_200_OK, safe=False)
+        except Exception as e:
+            return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class OrderLanguage(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsEmployee]
+
+    def get(self, request, pk):
+        try:
+            applications = Application.objects.filter(call=pk).order_by('-state_documents')
+            applications = ApplicationOrdersSerializer(applications, many=True).data
+
+            return JsonResponse(applications, status=status.HTTP_200_OK, safe=False)
+        except Exception as e:
+            return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class OrderPBM(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsEmployee]
+
+    def get(self, request, pk):
+        try:
+            applications = Application.objects.filter(call=pk).order_by('student__PBM')
+            applications = ApplicationOrdersSerializer(applications, many=True).data
+
+            return JsonResponse(applications, status=status.HTTP_200_OK, safe=False)
+        except Exception as e:
+            return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class OrderGeneral(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsEmployee]
+
+    def get(self, request, pk):
+        try:
+            applications = Application.objects.filter(call=pk).order_by('-state_documents', '-student__PAPA',
+                                                                        '-student__advance', 'student__PBM')
+            applications = ApplicationOrdersSerializer(applications, many=True).data
+
+            return JsonResponse(applications, status=status.HTTP_200_OK, safe=False)
+        except Exception as e:
+            return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SetWinner(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsEmployee]
+
+    def post(self, request):
+        try:
+            input_params = request.data
+            this_application = Application.objects.get(call__id=input_params['call_id'], student_id=input_params['student_id'])
+
+            # Check Available Slots
+            call_applications = Application.objects.filter(call=this_application.call_id)
+            quant_stud_approved = 0
+            for i in range(len(call_applications)):
+                if (call_applications[i].approved):
+                    quant_stud_approved += 1
+            if this_application.call.available_slots < (quant_stud_approved+1):
+                raise AttributeError(f"No se pueden aceptar mas estudiantes. Estudiantes ya Aceptados: {quant_stud_approved}. Cupos: {this_application.call.available_slots}")
+
+            # Set Winner
+            this_application.approved = True
+            this_application.save()
+
+            # Close the call
+            this_call = Call.objects.get(id=this_application.call_id)
+            this_call.active = False
+            this_call.save()
+
+            # Send email
+            student_winner = Student.objects.get(id=this_application.student.id)
+            send_email_winner(student_winner.user.email, str(student_winner.user.first_name)+' '+str(student_winner.user.last_name), this_call.id, this_call.university.name, this_call.year, this_call.semester)
+
+            return JsonResponse({"mesage":f"El estudiante con ID {input_params["student_id"]} fue seleccionado para la convocatoria {this_application.call_id}"}, status=status.HTTP_200_OK, safe=False)
+        except Exception as e:
+            return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+class RemoveWinner(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsEmployee]
+
+    def post(self, request):
+        try:
+            input_params = request.data
+
+            this_application = Application.objects.get(call__id=input_params['call_id'], student_id=input_params['student_id'])
+            this_application.approved = False
+            this_application.save()
+
+            # Send email
+            student_not_winner = Student.objects.get(id=this_application.student.id)
+            this_call = Call.objects.get(id=this_application.call_id)
+            send_email_not_winner(student_not_winner.user.email, str(student_not_winner.user.first_name)+' '+str(student_not_winner.user.last_name), this_call.id, this_call.university.name, this_call.year, this_call.semester)
+
+            return JsonResponse({"mesage":f"El estudiante con ID {input_params["student_id"]} fue des-seleccionado para la convocatoria {this_application.call_id}"}, status=status.HTTP_200_OK, safe=False)
+        except Exception as e:
+            return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)

@@ -89,6 +89,8 @@ class ReadUserStudent(APIView):
     def get(self, request, pk):
         try:
             my_student = Student.objects.get(pk=pk)
+            if not (request.user.email == my_student.user.email):
+                raise ValidationError("El usuario {} no tiene permiso para ver la información del usuario solicitado".format(request.user))
             my_student_qset = Student.objects.filter(pk=pk)
             my_student_sr = StudentGetSerializer(my_student_qset, many=True).data[0]
 

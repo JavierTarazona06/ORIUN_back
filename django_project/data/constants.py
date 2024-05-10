@@ -10,6 +10,9 @@ class Constants:
     with open(os.path.join(base_dir, 'info_faculties.json'), 'r', encoding='UTF-8') as file:
         INFO_FACULTIES = json.load(file)
 
+    with open(os.path.join(base_dir, 'employees.json'), 'r', encoding='UTF-8') as file:
+        EMPLOYEES_MAILS = json.load(file)
+
     # Person
     SEX_CHOICES = constants_dict["sex_en"]
     TYPE_DOC_CHOICES = constants_dict["typ_doc_en"]
@@ -30,3 +33,6 @@ class Constants:
     LANGUAGE_CHOICES = constants_dict["language_en"]
     SEMESTER_CHOICES = constants_dict["semester_en"]
     STATE_DOCS_CHOICES = constants_dict["state_documents_en"]
+
+    # Employees Emails
+    EMPLOYEES_MAILS = EMPLOYEES_MAILS
