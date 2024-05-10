@@ -27,7 +27,7 @@ jobs:
         pip install -r requirements.txt
     - name: Decode SIA files
       env:
-        GOOGLE_API_PW: ${{ secrets.GOOGLE_API_PW }}
+        FILES_PW: ${{ secrets.FILES_PW }}
       run: |
         #!/bin/bash
         set -e  # Exit on errors
@@ -38,7 +38,7 @@ jobs:
         for file in "$source_dir"/*; do
           if [[ -f "$file" ]]; then
             filename="${file##*/}"  # Extract filename
-            gpg --quiet --batch --yes --decrypt --passphrase=$GOOGLE_API_PW \
+            gpg --quiet --batch --yes --decrypt --passphrase=$FILES_PW \
               --output "$target_dir/$filename" "$file"
             echo "Encrypted $filename"
           fi
