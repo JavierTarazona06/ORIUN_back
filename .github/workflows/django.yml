@@ -30,7 +30,7 @@ jobs:
         GOOGLE_API_PW: ${{ secrets.GOOGLE_API_PW }}
       run: |
         gpg --quiet --batch --yes --decrypt --passphrase="$GOOGLE_API_PW" \
-        --output $GITHUB_WORKSPACE/django_project/credentials.json credentials.json.gpg
+        --output $GITHUB_WORKSPACE/django_project/credentials.json $GITHUB_WORKSPACE/django_project/credentials.json.gpg
     - name: Run Tests
       env:
         DATABASE_ENGINE: ${{ secrets.DATABASE_ENGINE }}
