@@ -1,5 +1,7 @@
 # Case 7: Elegir ganadores de una convocatoria
 
+Códigos Axios: https://docs.google.com/document/d/1dAn8UFItyqq34QpMD-qJw1PwswaAh9L6zcSQaDYI02Y/edit#heading=h.986fwnir0p28
+
 # 1. Ver pre-resultados de los postulantes, Orden General
 <span style="color: green; font-weight: bold;"> DONE </span>
 
@@ -208,7 +210,7 @@
 
 | Field Name   | Required | Type          | Description                                                   |
 |--------------|----------|---------------|---------------------------------------------------------------|
-| `call_id`    | YES      | integer       | A unique integer value identifying this application.          |
+| `call_id`    | YES      | integer       | A unique integer value identifying this call application.     |
 | `student_id` | YES      | integer       | A unique integer value identifying the student who is winner. |
 
 **Outputs:**
@@ -233,7 +235,7 @@
 
 | Field Name   | Required | Type        | Description                                                               |
 |--------------|----------|-------------|---------------------------------------------------------------------------|
-| `call_id`    | YES      | integer     | A unique integer value identifying this application.                      |
+| `call_id`    | YES      | integer     | A unique integer value identifying this call application.                 |
 | `student_id` | YES      | integer     | A unique integer value identifying the student who is no longer a winner. |
 
 **Outputs:**
@@ -241,3 +243,50 @@
 | Field Name | Type   | Description                                                                                          |
 |------------|--------|------------------------------------------------------------------------------------------------------|
 | `message`  | string | "El estudiante con id {student_id} fue des-seleccionado para la convocatoria {call_id}" or EXCEPTION |
+
+
+# 9. Cerrar Convocatoria
+<span style="color: green; font-weight: bold;"> DONE </span>
+
+**URL:** `/call/set_closed/`.
+
+**Method:** `POST`
+
+**Description:** Set a call as closed.
+
+**Permissions:** Employee.
+
+**Inputs:** In body.
+
+| Field Name   | Required | Type        | Description                                   |
+|--------------|----------|-------------|-----------------------------------------------|
+| `call_id`    | YES      | integer     | A unique integer value identifying this call. |
+
+**Outputs:**
+
+| Field Name | Type   | Description                                                                                                                                     |
+|------------|--------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| `message`  | string | "Se cerró la convocatoria con ID: {call_id} de la universidad: {call.university_name} en el periodo: {call.year}-{call.semester}." or EXCEPTION |
+
+# 10. Abrir Convocatoria
+<span style="color: green; font-weight: bold;"> DONE </span>
+
+**URL:** `/call/set_open/`.
+
+**Method:** `POST`
+
+**Description:** Set a call as open.
+
+**Permissions:** Employee.
+
+**Inputs:** In body.
+
+| Field Name   | Required | Type        | Description                                   |
+|--------------|----------|-------------|-----------------------------------------------|
+| `call_id`    | YES      | integer     | A unique integer value identifying this call. |
+
+**Outputs:**
+
+| Field Name | Type   | Description                                                                                                                                     |
+|------------|--------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| `message`  | string | "Se abrió la convocatoria con ID: {call_id} de la universidad: {call.university_name} en el periodo: {call.year}-{call.semester}." or EXCEPTION |
