@@ -25,6 +25,10 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+    - name: Check something
+      run: |
+        echo "GOOGLE_API_PW: $GOOGLE_API_PW"
+        ls -l $GITHUB_WORKSPACE/django_project
     - name: Decode credentials
       env:
         GOOGLE_API_PW: ${{ secrets.GOOGLE_API_PW }}
