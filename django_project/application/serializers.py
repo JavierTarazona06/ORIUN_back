@@ -31,7 +31,7 @@ class ApplicationDetailSerializer(serializers.ModelSerializer):
 class ApplicationComments(serializers.ModelSerializer):
     comment = serializers.SerializerMethodField()
 
-    def get_comment_docs(self, obj):
+    def get_comment(self, obj):
         if obj.comment is None:
             return 'No hay comentarios con respecto a los documentos subidos.'
         return obj.comment

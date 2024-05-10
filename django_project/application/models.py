@@ -17,7 +17,7 @@ class Application(models.Model):
     state_documents_choices = [(choice['value'], _(choice['display'])) for choice in Constants.STATE_DOCS_CHOICES]
     state_documents = models.SmallIntegerField(default=0, choices=state_documents_choices)
     modified = models.BooleanField(default=False)
-    approved = models.BooleanField(null=True, default=False)
+    approved = models.BooleanField(default=False)
     training_session = ArrayField(models.DateTimeField(), null=True)
 
     # Name of the base documents and name of the documents of each region
