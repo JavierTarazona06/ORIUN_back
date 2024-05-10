@@ -81,6 +81,7 @@ class EmployeeTestCase(TestCase):
 
         headers = {}
         response = self.client.post(reverse("employee:post_user_employee"), data=data, headers=headers)
+        print(response.json())
 
         qset = Employee.objects.filter(id=1003825162)
         qset = EmployeeSerializerGeneral(qset, many=True).data[0]
