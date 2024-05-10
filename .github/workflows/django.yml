@@ -25,6 +25,12 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+    - name: Decode credentials
+      env:
+        GOOGLE_API_PW: ${{ secrets.GOOGLE_API_PW }}
+      run: |
+        gpg --quiet --batch --yes --decrypt --passphrase="$GOOGLE_API_PW" \
+        --output $GITHUB_WORKSPACE/django_project/credentials.json credentials.json.gpg
     - name: Run Tests
       env:
         DATABASE_ENGINE: ${{ secrets.DATABASE_ENGINE }}
