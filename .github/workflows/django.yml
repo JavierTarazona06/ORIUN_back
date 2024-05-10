@@ -2,13 +2,12 @@ name: Django CI
 
 on:
   push:
-    branches: [ "testing" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "testing" ]
+    branches: [ "main" ]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     environment: Testing
     strategy:
@@ -26,13 +25,28 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-    - name: Check something
+    - name: Decode SIA files
       env:
         GOOGLE_API_PW: ${{ secrets.GOOGLE_API_PW }}
-        DATABASE_ENGINE: ${{ secrets.DATABASE_ENGINE }}
       run: |
-        echo "GOOGLE_API_PW: $GOOGLE_API_PW $DATABASE_ENGINE"
-        ls -l $GITHUB_WORKSPACE/django_project
+        #!/bin/bash
+        set -e  # Exit on errors
+
+        source_dir="$GITHUB_WORKSPACE/django_project/data/test_files_gpg"
+        target_dir="$GITHUB_WORKSPACE/django_project/data/test_files"
+
+        for file in "$source_dir"/*; do
+          if [[ -f "$file" ]]; then
+            filename="${file##*/}"  # Extract filename
+            gpg --quiet --batch --yes --decrypt --passphrase=$GOOGLE_API_PW \
+              --output "$target_dir/$filename" "$file"
+            echo "Encrypted $filename"
+          fi
+        done
+        
+        ls -l $source_dir
+        ls -l $target_dir
+
     - name: Decode credentials
       env:
         GOOGLE_API_PW: ${{ secrets.GOOGLE_API_PW }}
