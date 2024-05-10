@@ -7,6 +7,7 @@ from rest_framework.exceptions import ValidationError
 from .models import Student
 from .permissions import IsStudent
 from django.http import JsonResponse
+from django.core.files.uploadedfile import SimpleUploadedFile
 from rest_framework import permissions
 from datetime import datetime, timezone
 from rest_framework.views import APIView
@@ -142,10 +143,27 @@ class post_user_student(APIView):
 
     def post(self, request):
         input_params = request.data
+        input_params = dict(input_params)
+
+        for key, value in input_params.items():
+            input_params[key] = value[0]
+
         username = input_params["email"]
         try:
             if not "@unal.edu.co" in input_params["email"]:
                 raise ValueError("El correo no es dominio @unal.edu.co")
+
+            # Verification Code -----
+            if "verif_code" not in input_params:
+                raise ValueError("No se envío el código de verificación enviado al correo")
+            else:
+                verif_code_sent = input_params["verif_code"]
+                del input_params["verif_code"]
+                code_file_name = r"data/{}_verif_code.txt".format(input_params["id"])
+                with open(code_file_name, "r") as file:
+                    code_stored = file.read()
+                if not (code_stored==verif_code_sent):
+                    raise ValidationError("El código de verificación de acceso enviado al correo no concuerda con el ingresado")
 
             # Creating User -----
             input_params['username'] = input_params["email"]
@@ -164,68 +182,59 @@ class post_user_student(APIView):
             del input_params["last_name"]
 
             # Dividing certificates -----
-            if input_params["certificate_grades"].size > 3_000_000:
-                raise ValidationError("File grades is too big. It must be smaller than 3 MB")
-            if input_params["certificate_student"].size > 3_000_000:
-                raise ValidationError("File student is too big. It must be smaller than 3 MB")
-            if input_params["payment_receipt"].size > 3_000_000:
-                raise ValidationError("File payment is too big. It must be smaller than 3 MB")
-            certificates = {
-                "grades": input_params["certificate_grades"].file,
-                "student": input_params["certificate_student"].file,
-                "payment": input_params["payment_receipt"].file
-            }
+            # if input_params["certificate_grades"].size > 3_000_000:
+            #     raise ValidationError("File grades is too big. It must be smaller than 3 MB")
+            # if input_params["certificate_student"].size > 3_000_000:
+            #     raise ValidationError("File student is too big. It must be smaller than 3 MB")
+            # if input_params["payment_receipt"].size > 3_000_000:
+            #     raise ValidationError("File payment is too big. It must be smaller than 3 MB")
+            # certificates = {
+            #     "grades": input_params["certificate_grades"].file,
+            #     "student": input_params["certificate_student"].file,
+            #     "payment": input_params["payment_receipt"].file
+            # }
+
+
+            # Divide and Upload Certificates
+            grades_file_name = str(input_params["id"]) + '_' + str(Student.certificates[0])
+            helpers.base_64_to_pdf(input_params["certificate_grades"], grades_file_name)
+            with open(grades_file_name, 'rb') as grades_file:
+                grades_data = grades_file.read()
+                grades_obj = SimpleUploadedFile("Certificado_Notas.pdf", grades_data)
+
+            student_file_name = str(input_params["id"]) + '_' + str(Student.certificates[1])
+            helpers.base_64_to_pdf(input_params["certificate_student"], student_file_name)
+            with open(student_file_name, 'rb') as student_file:
+                student_data = student_file.read()
+                student_obj = SimpleUploadedFile("Certificado_Matricula_Estudiante.pdf", student_data)
+
+            payment_file_name = str(input_params["id"]) + '_' + str(Student.certificates[2])
+            helpers.base_64_to_pdf(input_params["payment_receipt"], payment_file_name)
+            with open(payment_file_name, 'rb') as payment_file:
+                payment_data = payment_file.read()
+                payment_obj = SimpleUploadedFile("Recibo_Pago.pdf", payment_data)
+
             del input_params["certificate_grades"]
             del input_params["certificate_student"]
             del input_params["payment_receipt"]
 
-            # Verification Code -----
-            if "verif_code" not in input_params:
-                raise ValueError("No se envío el código de verificación enviado al correo")
-            else:
-                verif_code_sent = input_params["verif_code"]
-                del input_params["verif_code"]
-                code_file_name = r"data/{}_verif_code.txt".format(input_params["id"])
-                with open(code_file_name, "r") as file:
-                    code_stored = file.read()
-                if not (code_stored==verif_code_sent):
-                    raise ValidationError("El código de verificación de acceso enviado al correo no concuerda con el ingresado")
+            certificates = {
+                "grades": grades_obj.file,
+                "student": student_obj.file,
+                "payment": payment_obj.file
+            }
 
-            # Data Validation -----
-            input_params['birth_date'] = datetime.strptime(input_params['birth_date'], '%Y-%m-%d').date()
-            input_params = dict(input_params)
-            for key, value in input_params.items():
-                if str(type(value)) == "<class 'datetime.date'>":
-                    input_params[key] = value.strftime("%Y-%m-%d")
-                if str(type(value)) == "<class 'int'>":
-                    input_params[key] = str(value)
-                else:
-                    input_params[key] = value[0]
-
-            # Validation Serializer -----
-            serializer = StudentSerializer(data=input_params)
-            if not serializer.is_valid():
-                errors = serializer.errors
-                raise ValueError(str(errors))
-            input_params["user"] = user
-
-            # Upload Certificates
-            grades_file_name = str(input_params["id"]) + '_' + str(Student.certificates[0])
             upload_object('student_certificates', certificates["grades"], grades_file_name)
-
-            student_file_name = str(input_params["id"]) + '_' + str(Student.certificates[1])
             upload_object('student_certificates', certificates["student"], student_file_name)
-
-            payment_file_name = str(input_params["id"]) + '_' + str(Student.certificates[2])
             upload_object('student_certificates', certificates["payment"], payment_file_name)
 
             # Certificates Validation
-            with open(grades_file_name, "wb") as pdf_file:
-                pdf_file.write(certificates["grades"].getvalue())
-            with open(student_file_name, "wb") as pdf_file:
-                pdf_file.write(certificates["student"].getvalue())
-            with open(payment_file_name, "wb") as pdf_file:
-                pdf_file.write(certificates["payment"].getvalue())
+            # with open(grades_file_name, "wb") as pdf_file:
+            #     pdf_file.write(certificates["grades"].getvalue())
+            # with open(student_file_name, "wb") as pdf_file:
+            #     pdf_file.write(certificates["student"].getvalue())
+            # with open(payment_file_name, "wb") as pdf_file:
+            #     pdf_file.write(certificates["payment"].getvalue())
 
             data_from_grades = helpers.get_data_grades_certificate(grades_file_name)
             data_from_student = helpers.get_data_student_certificate(student_file_name)
@@ -234,6 +243,26 @@ class post_user_student(APIView):
             os.remove(student_file_name)
             os.remove(payment_file_name)
 
+
+            # Data Validation -----
+            # input_params['birth_date'] = datetime.strptime(input_params['birth_date'], '%Y-%m-%d').date()
+            # input_params = dict(input_params)
+            # for key, value in input_params.items():
+            #     if str(type(value)) == "<class 'datetime.date'>":
+            #         input_params[key] = value.strftime("%Y-%m-%d")
+            #     if str(type(value)) == "<class 'int'>":
+            #         input_params[key] = str(value)
+            #     else:
+            #         input_params[key] = value[0]
+
+            # Validation Serializer -----
+            serializer = StudentSerializer(data=input_params)
+            if not serializer.is_valid():
+                errors = serializer.errors
+                raise ValueError(str(errors))
+            input_params["user"] = user
+
+            # Validate PDFs
             valid_id = ((data_from_grades['id'] == input_params['id']) and (
                         data_from_student['id'] == input_params['id'])
                         and (data_from_payment['id'] == input_params['id']))
@@ -271,9 +300,9 @@ class post_user_student(APIView):
             data_from_payment['admission'] = data_from_payment['admission'].upper()
             if "PAES" in data_from_payment['admission']:
                 val_admi = "PAES"
-            if "PEAMA" in data_from_payment['admission']:
+            elif "PEAMA" in data_from_payment['admission']:
                 val_admi = "PEAMA"
-            if (len(data_from_payment['admission']) > 5) or ("REGUL" in data_from_payment['admission']):
+            elif "REGUL" in data_from_payment['admission']:
                 val_admi = "REGUL"
             else:
                 raise ValueError("El string de admisión no se reconoció como PAES/PEAMA/REGUL.")
