@@ -28,8 +28,9 @@ jobs:
     - name: Check something
       env:
         GOOGLE_API_PW: ${{ secrets.GOOGLE_API_PW }}
+        DATABASE_ENGINE: ${{ secrets.DATABASE_ENGINE }}
       run: |
-        echo "GOOGLE_API_PW: $GOOGLE_API_PW"
+        echo "GOOGLE_API_PW: $GOOGLE_API_PW $DATABASE_ENGINE"
         ls -l $GITHUB_WORKSPACE/django_project
     - name: Decode credentials
       env:
