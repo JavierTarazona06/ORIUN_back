@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'data.apps.DataConfig',
     'application.apps.ApplicationConfig',
     "employee.apps.EmployeeConfig",
+    "traceability.apps.TraceabilityConfig",
     "signin.apps.SignInConfig",
     'django.contrib.admin',
     'django.contrib.auth',
