@@ -349,6 +349,7 @@ class CallsTestCase2(TestCase):
 
         response = self.client.put(reverse("call:calls_update_by_id", args=[2]), data=data,
                                    content_type='application/json', **headers)
+        print(response.json())
 
         queryset = Call.objects.get(pk=2)
         serializer = CallSerializer(queryset, many=False)
@@ -968,6 +969,33 @@ class CallsTestCase2(TestCase):
 
         self.assertEqual(err, 'University matching query does not exist.')
 
+    def test_set_call_closed(self):
+        print("TEST: test_set_call_closed")
+
+        headers = {"Authorization": f"Bearer {self.bearer_token}"}
+
+        data = {
+            "call_id": 1
+        }
+
+        response = self.client.post(reverse("call:set_call_closed"), data=data, headers=headers)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {'message': 'Se cerró la convocatoria con ID: 1 de la universidad: Universidad de los Andes en el periodo: 2024-2.'})
+
+    def test_set_call_open(self):
+        print("TEST: test_set_call_open")
+
+        headers = {"Authorization": f"Bearer {self.bearer_token}"}
+
+        data = {
+            "call_id": 1
+        }
+
+        response = self.client.post(reverse("call:set_call_open"), data=data, headers=headers)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {'message': 'Se abrió la convocatoria con ID: 1 de la universidad: Universidad de los Andes en el periodo: 2024-2.'})
 
     def tearDown(self):
         pass

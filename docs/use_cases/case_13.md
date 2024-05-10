@@ -1,5 +1,7 @@
 # Case 13: Registro de Usuarios
 
+Códigos Axios: https://docs.google.com/document/d/1dAn8UFItyqq34QpMD-qJw1PwswaAh9L6zcSQaDYI02Y/edit#heading=h.986fwnir0p28
+
 # 0. Request Verification Code
 <span style="color: green; font-weight: bold;"> Done </span>
 
@@ -136,44 +138,44 @@ Yes - Required Together (N): This indicates that if at least one of these fields
 
 **Outputs:** 
 
-| Field Name             | Type                     | Description                                                                         |
-|------------------------|--------------------------|-------------------------------------------------------------------------------------|
-| `email`                | string                   | Email with @unal.edu.co domain.                                                     |
-| `id`                   | integer                  | Cédula del estudiante.                                                              |
-| `first_name`           | string                   | Student First Name                                                                  |
-| `last_name`            | string                   | Student Last Name                                                                   |
-| `type_document`        | enum                     | Tipo del documento (CC, CE, PA).                                                    |
-| `birth_place`          | string                   | Ciudad de nacimiento.                                                               |
-| `birth_date`           | date (YYY-MM-DD)         | Fecha de nacimiento del estudiante.                                                 |
-| `country`              | string                   | País de residencia.                                                                 |
-| `city`                 | string                   | Ciudad de residencia.                                                               |
-| `phone`                | string                   | Teléfono de longitud de 3 a 12 carácteres numéricos.                                |
-| `address`              | string                   | Dirección de residencia del estudiante.                                             |
-| `sex`                  | enum                     | Sexo del estudiante (M, F).                                                         |
-| `ethnicity`            | enum                     | Etnia del estudiante (IN, AF, RG, NA).                                              |
-| `headquarter`          | enum                     | Sede del estudiante (BO, AM, CA, MA, ME, OR, PA, TU, LP).                           |
-| `PAPA`                 | float                    | Promedio estudiante [0, 5.0]                                                        |
-| `PBM`                  | Int                      | Puntaje matrícula estudiante [0,100]                                                |
-| `advance`              | float                    | Porcentaje avance estudiante [0,100]                                                |
-| `calls_done`           | list of dict [{}, {}...] | Convocatorias realizadas por el estudiante                                          |
-| {`call_id`             | int                      | ID de la convocatoria                                                               |
-| `university_name`      | string                   | Nombre de la universidad de la convocatoria                                         |
-| `study_level`          | enum                     | Nivel de estudio de la convocatoria: Ver opciones en el link de constantes.*        |
-| `year`                 | int                      | Año de la convocatoria                                                              |
-| `semester`             | int                      | Semestre de la convocatoria                                                         |
-| `description`}         | string                   | Descripción de la convocatoria                                                      |
-| `is_enrolled`          | bool                     | ¿Está matriculado a la Universidad? true or false                                   |
-| `date_banned_mobility` | date                     | Si fue vetado, fecha del último veto                                                |
-| `num_semesters`        | Int                      | Número de semestre/matrícula actual                                                 |
-| `diseases`             | String                   | Detalle enfermedades del estudiante.                                                |
-| `medication`           | String                   | Detalle medicamentos que toma el estudiante.                                        |
-| `faculty`              | enum                     | Facultad: Ver opciones en el link de constantes.*                                   |
-| `major`                | enum                     | Programa: Ver opciones en el link de constantes.*                                   |
-| `admission`            | enum                     | Tipo de admisión: Ver opciones en el link de constantes.*                           |
-| `study_level`          | enum                     | Nivel de estudio: Ver opciones en el link de constantes.*                           |
-| `certificate_grades`   | string                   | Link Documento pdf del certificado de notas expedido por el SIA                     |
-| `certificate_student`  | string                   | Link Documento pdf del certificado de matricula expedido por el SIA                 |
-| `payment_receipt`      | string                   | Link Documento pdf del recibo de pago por el SIA                                    |
+| Field Name               | Type                     | Description                                                                         |
+|--------------------------|--------------------------|-------------------------------------------------------------------------------------|
+| `email`                  | string                   | Email with @unal.edu.co domain.                                                     |
+| `id`                     | integer                  | Cédula del estudiante.                                                              |
+| `first_name`             | string                   | Student First Name                                                                  |
+| `last_name`              | string                   | Student Last Name                                                                   |
+| `type_document`          | enum                     | Tipo del documento (CC, CE, PA).                                                    |
+| `birth_place`            | string                   | Ciudad de nacimiento.                                                               |
+| `birth_date`             | date (YYY-MM-DD)         | Fecha de nacimiento del estudiante.                                                 |
+| `country`                | string                   | País de residencia.                                                                 |
+| `city`                   | string                   | Ciudad de residencia.                                                               |
+| `phone`                  | string                   | Teléfono de longitud de 3 a 12 carácteres numéricos.                                |
+| `address`                | string                   | Dirección de residencia del estudiante.                                             |
+| `sex`                    | enum                     | Sexo del estudiante (M, F).                                                         |
+| `ethnicity`              | enum                     | Etnia del estudiante (IN, AF, RG, NA).                                              |
+| `headquarter`            | enum                     | Sede del estudiante (BO, AM, CA, MA, ME, OR, PA, TU, LP).                           |
+| `PAPA`                   | float                    | Promedio estudiante [0, 5.0]                                                        |
+| `PBM`                    | Int                      | Puntaje matrícula estudiante [0,100]                                                |
+| `advance`                | float                    | Porcentaje avance estudiante [0,100]                                                |
+| `calls_done`             | list of dict [{}, {}...] | Convocatorias realizadas por el estudiante                                          |
+| {`call__id`              | int                      | ID de la convocatoria                                                               |
+| `call__university__name` | string                   | Nombre de la universidad de la convocatoria                                         |
+| `call__study_level`      | enum                     | Nivel de estudio de la convocatoria: Ver opciones en el link de constantes.*        |
+| `call__year`             | int                      | Año de la convocatoria                                                              |
+| `call__semester`         | int                      | Semestre de la convocatoria                                                         |
+| `call__description`}     | string                   | Descripción de la convocatoria                                                      |
+| `is_enrolled`            | bool                     | ¿Está matriculado a la Universidad? true or false                                   |
+| `date_banned_mobility`   | date                     | Si fue vetado, fecha del último veto                                                |
+| `num_semesters`          | Int                      | Número de semestre/matrícula actual                                                 |
+| `diseases`               | String                   | Detalle enfermedades del estudiante.                                                |
+| `medication`             | String                   | Detalle medicamentos que toma el estudiante.                                        |
+| `faculty`                | enum                     | Facultad: Ver opciones en el link de constantes.*                                   |
+| `major`                  | enum                     | Programa: Ver opciones en el link de constantes.*                                   |
+| `admission`              | enum                     | Tipo de admisión: Ver opciones en el link de constantes.*                           |
+| `study_level`            | enum                     | Nivel de estudio: Ver opciones en el link de constantes.*                           |
+| `certificate_grades`     | string                   | Link Documento pdf del certificado de notas expedido por el SIA                     |
+| `certificate_student`    | string                   | Link Documento pdf del certificado de matricula expedido por el SIA                 |
+| `payment_receipt`        | string                   | Link Documento pdf del recibo de pago por el SIA                                    |
 
 * Vea más info de los enums en el archivo de constantes del repo de Back (https://github.com/JavierTarazona06/ORIUN_back/blob/main/django_project/data/constants.json)
 

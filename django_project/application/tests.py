@@ -1,12 +1,15 @@
 import os
 import student
-from call.models import Call
+
 from django.urls import reverse
 from django.test import TestCase
 from student.models import ContactPerson
 from data.management.commands.populate_data import Command
 from django.core.files.uploadedfile import SimpleUploadedFile
 
+from call.models import Call
+from .models import Application
+from .serializers import ApplicationSerializer
 
 class ApplicationTestCase(TestCase):
     @classmethod
@@ -128,7 +131,7 @@ class ApplicationTestCase(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         changed_contact_person = student.serializers.ContactPersonSerializer(ContactPerson.objects.get(id=1))
-        self.assertEquals(changed_contact_person.data, contact_person)
+        self.assertEqual(changed_contact_person.data, contact_person)
 
     def test_create_form_missing_contact_person(self):
         """
@@ -164,7 +167,7 @@ class ApplicationTestCase(TestCase):
             '/application/create_forms/', headers=headers, data=data, content_type='application/json'
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEquals(response.json()['message'], 'Forms filled successfully')
+        self.assertEqual(response.json()['message'], 'Forms filled successfully')
 
     def test_download_no_found(self):
         """
@@ -182,7 +185,7 @@ class ApplicationTestCase(TestCase):
             '/application/download/', headers=headers, data=data, content_type='application/json'
         )
         self.assertEqual(response.status_code, 404)
-        self.assertEquals(response.json()['message'], 'form not found')
+        self.assertEqual(response.json()['message'], 'form not found')
 
     def test_download_found(self):
         """
@@ -401,6 +404,169 @@ class ApplicationTestCase(TestCase):
         }
         response = self.client.get(reverse("application:documents_student", args=[1, 5596848490]), headers=headers)
         self.assertEqual(response.status_code, 200)
+
+    def test_get_order_apps_by_docs(self):
+        print("TEST: test_get_order_apps_by_docs")
+
+        headers = {"Authorization": f"Bearer {self.token_employee}"}
+        response = self.client.get(reverse("application:order_apps_by_docs", args=[1]), headers=headers)
+
+        qset = response.json()
+        qsetr = [
+            {'id': 1, 'student_id': '5596848490', 'student_name': 'Santiago García', 'state_documents': 2, 'student_PAPA': 4.8, 'student_advance': 92.0, 'student_headquarter': 'BO', 'language': True, 'student_PBM': 2},
+            {'id': 6, 'student_id': '1013691479', 'student_name': 'Valeria Mora', 'state_documents': 2, 'student_PAPA': 4.6, 'student_advance': 55.8, 'student_headquarter': 'BO', 'language': True,'student_PBM': 42},
+            {'id': 2, 'student_id': '1196989870', 'student_name': 'Valentina Rodríguez', 'state_documents': 1, 'student_PAPA': 4.8, 'student_advance': 86.0, 'student_headquarter': 'BO', 'language': False, 'student_PBM': 9},
+            {'id': 3, 'student_id': '106985477', 'student_name': 'Isabella Gonzalez', 'state_documents': 0, 'student_PAPA': 3.0, 'student_advance': 10.0, 'student_headquarter': 'BO', 'language': False, 'student_PBM': 50}
+        ]
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(qset, qsetr)
+
+    def test_get_order_apps_by_papa(self):
+        print("TEST: test_get_order_apps_by_papa")
+
+        headers = {"Authorization": f"Bearer {self.token_employee}"}
+        response = self.client.get(reverse("application:order_apps_by_papa", args=[1]), headers=headers)
+
+        qset = response.json()
+        qsetr = [
+            {'id': 1, 'student_id': '5596848490', 'student_name': 'Santiago García', 'state_documents': 2, 'student_PAPA': 4.8, 'student_advance': 92.0, 'student_headquarter': 'BO', 'language': True, 'student_PBM': 2},
+            {'id': 2, 'student_id': '1196989870', 'student_name': 'Valentina Rodríguez', 'state_documents': 1, 'student_PAPA': 4.8, 'student_advance': 86.0, 'student_headquarter': 'BO', 'language': False, 'student_PBM': 9},
+            {'id': 6, 'student_id': '1013691479', 'student_name': 'Valeria Mora', 'state_documents': 2, 'student_PAPA': 4.6, 'student_advance': 55.8, 'student_headquarter': 'BO', 'language': True,'student_PBM': 42},
+            {'id': 3, 'student_id': '106985477', 'student_name': 'Isabella Gonzalez', 'state_documents': 0, 'student_PAPA': 3.0, 'student_advance': 10.0, 'student_headquarter': 'BO', 'language': False, 'student_PBM': 50}
+        ]
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(qset, qsetr)
+
+    def test_get_order_apps_by_advance(self):
+        print("TEST: test_get_order_apps_by_advance")
+
+        headers = {"Authorization": f"Bearer {self.token_employee}"}
+        response = self.client.get(reverse("application:order_apps_by_advance", args=[1]), headers=headers)
+
+        qset = response.json()
+        qsetr = [
+            {'id': 1, 'student_id': '5596848490', 'student_name': 'Santiago García', 'state_documents': 2, 'student_PAPA': 4.8, 'student_advance': 92.0, 'student_headquarter': 'BO', 'language': True, 'student_PBM': 2},
+            {'id': 2, 'student_id': '1196989870', 'student_name': 'Valentina Rodríguez', 'state_documents': 1, 'student_PAPA': 4.8, 'student_advance': 86.0, 'student_headquarter': 'BO', 'language': False, 'student_PBM': 9},
+            {'id': 6, 'student_id': '1013691479', 'student_name': 'Valeria Mora', 'state_documents': 2, 'student_PAPA': 4.6, 'student_advance': 55.8, 'student_headquarter': 'BO', 'language': True, 'student_PBM': 42},
+            {'id': 3, 'student_id': '106985477', 'student_name': 'Isabella Gonzalez', 'state_documents': 0, 'student_PAPA': 3.0, 'student_advance': 10.0, 'student_headquarter': 'BO', 'language': False, 'student_PBM': 50}
+        ]
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(qset, qsetr)
+
+    def test_get_order_apps_by_language(self):
+        print("TEST: test_get_order_apps_by_language")
+
+        headers = {"Authorization": f"Bearer {self.token_employee}"}
+        response = self.client.get(reverse("application:order_apps_by_language", args=[1]), headers=headers)
+
+        qset = response.json()
+        qsetr = [
+            {'id': 1, 'student_id': '5596848490', 'student_name': 'Santiago García', 'state_documents': 2, 'student_PAPA': 4.8, 'student_advance': 92.0, 'student_headquarter': 'BO', 'language': True, 'student_PBM': 2},
+            {'id': 6, 'student_id': '1013691479', 'student_name': 'Valeria Mora', 'state_documents': 2, 'student_PAPA': 4.6, 'student_advance': 55.8, 'student_headquarter': 'BO', 'language': True, 'student_PBM': 42},
+            {'id': 2, 'student_id': '1196989870', 'student_name': 'Valentina Rodríguez', 'state_documents': 1, 'student_PAPA': 4.8, 'student_advance': 86.0, 'student_headquarter': 'BO', 'language': False, 'student_PBM': 9},
+            {'id': 3, 'student_id': '106985477', 'student_name': 'Isabella Gonzalez', 'state_documents': 0, 'student_PAPA': 3.0, 'student_advance': 10.0, 'student_headquarter': 'BO', 'language': False, 'student_PBM': 50}
+        ]
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(qset, qsetr)
+
+    def test_get_order_apps_by_pbm(self):
+        print("TEST: test_get_order_apps_by_pbm")
+
+        headers = {"Authorization": f"Bearer {self.token_employee}"}
+        response = self.client.get(reverse("application:order_apps_by_pbm", args=[1]), headers=headers)
+
+        qset = response.json()
+        qsetr = [
+            {'id': 1, 'student_id': '5596848490', 'student_name': 'Santiago García', 'state_documents': 2, 'student_PAPA': 4.8, 'student_advance': 92.0, 'student_headquarter': 'BO', 'language': True, 'student_PBM': 2},
+            {'id': 2, 'student_id': '1196989870', 'student_name': 'Valentina Rodríguez', 'state_documents': 1, 'student_PAPA': 4.8, 'student_advance': 86.0, 'student_headquarter': 'BO', 'language': False, 'student_PBM': 9},
+            {'id': 6, 'student_id': '1013691479', 'student_name': 'Valeria Mora', 'state_documents': 2, 'student_PAPA': 4.6, 'student_advance': 55.8, 'student_headquarter': 'BO', 'language': True, 'student_PBM': 42},
+            {'id': 3, 'student_id': '106985477', 'student_name': 'Isabella Gonzalez', 'state_documents': 0, 'student_PAPA': 3.0, 'student_advance': 10.0, 'student_headquarter': 'BO', 'language': False, 'student_PBM': 50}
+        ]
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(qset, qsetr)
+
+    def test_get_order_apps_general(self):
+        print("TEST: test_get_order_apps_general")
+
+        headers = {"Authorization": f"Bearer {self.token_employee}"}
+        response = self.client.get(reverse("application:order_apps_general", args=[1]), headers=headers)
+
+        qset = response.json()
+        qsetr = [
+            {'id': 1, 'student_id': '5596848490', 'student_name': 'Santiago García', 'state_documents': 2, 'student_PAPA': 4.8, 'student_advance': 92.0, 'student_headquarter': 'BO', 'language': True, 'student_PBM': 2},
+            {'id': 6, 'student_id': '1013691479', 'student_name': 'Valeria Mora', 'state_documents': 2, 'student_PAPA': 4.6, 'student_advance': 55.8, 'student_headquarter': 'BO', 'language': True, 'student_PBM': 42},
+            {'id': 2, 'student_id': '1196989870', 'student_name': 'Valentina Rodríguez', 'state_documents': 1, 'student_PAPA': 4.8, 'student_advance': 86.0, 'student_headquarter': 'BO', 'language': False, 'student_PBM': 9},
+            {'id': 3, 'student_id': '106985477', 'student_name': 'Isabella Gonzalez', 'state_documents': 0, 'student_PAPA': 3.0, 'student_advance': 10.0, 'student_headquarter': 'BO', 'language': False, 'student_PBM': 50}
+        ]
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(qset, qsetr)
+
+    def test_set_winner(self):
+        print("TEST: test_set_winner")
+
+        data = {
+            "call_id": 1,
+            "student_id": 1013691479
+        }
+
+        headers = {"Authorization": f"Bearer {self.token_employee}"}
+        response = self.client.post(reverse("application:set_winner"), data=data, headers=headers)
+
+        qset = Application.objects.filter(call__id=data['call_id'], student_id=data['student_id'])
+        qset = ApplicationSerializer(qset, many=True).data[0]
+        qsetr = {
+            'id': 6,
+            'year': 2024,
+            'semester': '1',
+            'is_extension': False,
+            'comment': None,
+            'state_documents': 2,
+            'modified': False,
+            'approved': True,
+            'training_session': None,
+            'call': 1, 'student': 1013691479}
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(qset, qsetr)
+        self.assertEqual(response.json(), {"message":f"El estudiante con ID {data["student_id"]} fue seleccionado para la convocatoria {qset["call"]}"})
+
+    def test_not_winner(self):
+        print("TEST: test_not_winner")
+
+        data = {
+            "call_id": 1,
+            "student_id": 5596848490
+        }
+
+        headers = {"Authorization": f"Bearer {self.token_employee}"}
+        response = self.client.post(reverse("application:not_winner"), data=data, headers=headers)
+
+        qset = Application.objects.filter(call__id=data['call_id'], student_id=data['student_id'])
+        qset = ApplicationSerializer(qset, many=True).data[0]
+        qsetr = {
+            'id': 1,
+            'year': 2024,
+            'semester': '1',
+            'is_extension': False,
+            'comment': None,
+            'state_documents': 2,
+            'modified': False,
+            'approved': False,
+            'training_session': None,
+            'call': 1, 'student': 5596848490}
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(qset, qsetr)
+        self.assertEqual(response.json(), {"message":f"El estudiante con ID {data["student_id"]} fue des-seleccionado para la convocatoria {qset["call"]}"})
+
+    def tearDown(self):
+        pass
 
     @classmethod
     def tearDownClass(cls):

@@ -30,16 +30,18 @@ class EmployeeTestCase(TestCase):
         # cur_user = Employee.objects.get(user__username='maria_alvarez')
         response = self.client.post('/api-token/', {'username': 'maria.alvarez@unal.edu.co', 'password': 'Maria#1234'})
         self.assertEqual(response.status_code, 200)
-
         response_body = json.loads(response.content.decode('utf-8'))
         self.bearer_token = response_body['access']
 
         response = self.client.post('/api-token/', {'username': 'santiago.garcia@unal.edu.co', 'password': 'Password123'})
         self.assertEqual(response.status_code, 200)
-
         response_body = json.loads(response.content.decode('utf-8'))
-        self.bearer_token_std = response_body['access']
-        pass
+        self.bearer_token_emp = response_body['access']
+
+        response = self.client.post('/api-token/', {'username': 'camunozv@unal.edu.co', 'password': '123456'})
+        self.assertEqual(response.status_code, 200)
+        response_body = json.loads(response.content.decode('utf-8'))
+        self.bearer_token_emp_cal = response_body['access']
 
     def test_get_employees(self):
         print("TEST: test_get_employees")
@@ -79,6 +81,7 @@ class EmployeeTestCase(TestCase):
 
         headers = {}
         response = self.client.post(reverse("employee:post_user_employee"), data=data, headers=headers)
+        print(response.json())
 
         qset = Employee.objects.filter(id=1003825162)
         qset = EmployeeSerializerGeneral(qset, many=True).data[0]
@@ -108,7 +111,7 @@ class EmployeeTestCase(TestCase):
     def test_get_employee_by_id(self):
         print("TEST: test_get_employee_by_id")
 
-        headers = {"Authorization": f"Bearer {self.bearer_token}"}
+        headers = {"Authorization": f"Bearer {self.bearer_token_emp_cal}"}
         response = self.client.get(reverse("employee:read_user_employee", args=[1003235916]), headers=headers)
 
         qset = response.json()

@@ -1,4 +1,3 @@
-#from rest_framework import viewsets
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 from .models import Call, University
@@ -7,22 +6,25 @@ from .serializers import CallSerializerOpen, CallSerializerClosed, CallDetailsSe
 from rest_framework.views import APIView
 from rest_framework import status, generics, permissions
 import json
+from datetime import datetime, timezone
+
 from django.views import View
 from django.db.models import Q
 from django.utils import timezone
-from employee.models import Employee
 from django.http import JsonResponse
-from .models import Call, University
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
 from rest_framework.response import Response
-from .permissions import IsEmployee, IsStudent
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status, generics, permissions
+
+from employee.models import Employee
+from .models import Call, University
+from .permissions import IsEmployee, IsStudent
 from data.constants_dict_front import constants_dict_front
 from .serializers import CallSerializerOpen, CallSerializerClosed, CallDetailsSerializerOpenStudent, \
     CallDetailsSerializerClosedStudent, CallSerializer, UniversitySerializer
-
+from traceability.models import Traceability
 
 
 class OpenCallsStudent(APIView):
@@ -188,6 +190,17 @@ class CallView(generics.ListCreateAPIView):
         queryset = self.get_queryset()
 
         serializer = self.get_serializer(queryset, many=True)
+
+        this_user = request.user
+        data_trace = {
+            "user": this_user,
+            "time": datetime.now(),
+            "method": request.method,
+            "view": self.__class__.__name__,
+            "given_data": f"El usuario solicitó todas las convocatorias."
+        }
+        Traceability.objects.create(**data_trace)
+
         return JsonResponse(serializer.data, safe=False)
 
     def post(self, request, *args, **kwargs):
@@ -201,6 +214,16 @@ class CallView(generics.ListCreateAPIView):
 
         if serializer.is_valid():
             call_instance = serializer.save()
+
+            this_user = request.user
+            data_trace = {
+                "user": this_user,
+                "time": datetime.now(),
+                "method": request.method,
+                "view": self.__class__.__name__,
+                "given_data": f"El usuario creo una convocatoria con id {call_instance.id}."
+            }
+            Traceability.objects.create(**data_trace)
 
             return JsonResponse({'mensaje': 'Convocatoria creada exitosamente', 'id': call_instance.id}, status=201)
         else:
@@ -228,6 +251,17 @@ class CallDetails(generics.RetrieveUpdateDestroyAPIView):
         instance.language = constants_dict_front["language"][str(instance.language)]
 
         serializer = self.get_serializer(instance)
+
+        this_user = request.user
+        data_trace = {
+            "user": this_user,
+            "time": datetime.now(),
+            "method": request.method,
+            "view": self.__class__.__name__,
+            "given_data": f"El usuario solicitó todas las convocatorias."
+        }
+        Traceability.objects.create(**data_trace)
+
         return JsonResponse(serializer.data)
 
     def put(self, request, pk):
@@ -239,13 +273,36 @@ class CallDetails(generics.RetrieveUpdateDestroyAPIView):
         serializer = CallSerializer(instance=call, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+
+            this_user = request.user
+            data_trace = {
+                "user": this_user,
+                "time": datetime.now(),
+                "method": request.method,
+                "view": self.__class__.__name__,
+                "given_data": f"El usuario actualizó la convocatoria con id {call.id}. Los datos fueron: {request.data}."
+            }
+            Traceability.objects.create(**data_trace)
+
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, *args, **kwargs):
         try:
             instance = self.get_object()
+            ide = instance.id
             self.perform_destroy(instance)
+
+            this_user = request.user
+            data_trace = {
+                "user": this_user,
+                "time": datetime.now(),
+                "method": request.method,
+                "view": self.__class__.__name__,
+                "given_data": f"El usuario eliminó la convocatoria con id {ide}."
+            }
+            Traceability.objects.create(**data_trace)
+
             return JsonResponse({'mensaje': 'Convocatoria eliminada satisfactoriamente'}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -312,6 +369,17 @@ class UpdateCallsView(View):
                 call.selected = data['selected']
 
             call.save()
+
+            # this_user = request.user
+            # data_trace = {
+            #     "user": this_user,
+            #     "time": datetime.now(),
+            #     "method": request.method,
+            #     "view": self.__class__.__name__,
+            #     "given_data": f"El usuario actualizó la convocatoria con id {call.id}. Los datos fueron: {data}."
+            # }
+            # Traceability.objects.create(**data_trace)
+
             return JsonResponse({'mensaje': 'Convocatoria actualizada exitosamente'}, status=200)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Solicitud JSON no válida'}, status=400)
@@ -342,6 +410,17 @@ class OpenCalls(generics.ListCreateAPIView):
             call.language = constants_dict_front["language"][str(call.language)]
 
         serializer = self.get_serializer(queryset, many=True)
+
+        this_user = request.user
+        data_trace = {
+            "user": this_user,
+            "time": datetime.now(),
+            "method": request.method,
+            "view": self.__class__.__name__,
+            "given_data": f"El usuario solicitó las convocatorias abiertas."
+        }
+        Traceability.objects.create(**data_trace)
+
         return JsonResponse(serializer.data, safe=False)
 
 
@@ -365,6 +444,17 @@ class ClosedCalls(generics.ListCreateAPIView):
             call.language = constants_dict_front["language"][str(call.language)]
 
         serializer = self.get_serializer(queryset, many=True)
+
+        this_user = request.user
+        data_trace = {
+            "user": this_user,
+            "time": datetime.now(),
+            "method": request.method,
+            "view": self.__class__.__name__,
+            "given_data": f"El usuario solicitó las convocatorias cerradas."
+        }
+        Traceability.objects.create(**data_trace)
+
         return JsonResponse(serializer.data, safe=False)
 
 
@@ -393,19 +483,25 @@ class CallsFilterSearch(APIView):
             # Construct queryset based on parameters
             queryset = Call.objects.all()
 
+            data = {}
+
             if active:
                 if (active == "true"):
                     active = "T" + active[1:]
                 if (active == "false"):
                     active = "F" + active[1:]
                 queryset = queryset.filter(active=active)
+                data["active"] = active
             if call_id:
                 queryset = queryset.filter(id=call_id)
+                data["call_id"] = call_id
             if university_id:
                 queryset = queryset.filter(university__id=university_id)
+                data["university_id"] = university_id
             if deadline:
                 queryset = queryset.filter(deadline__lte=deadline)
                 queryset = queryset.filter(deadline__gte=timezone.now().date())
+                data["deadline"] = deadline
             if format:
                 if format == "P":
                     queryset = queryset.filter(format='P')
@@ -414,20 +510,28 @@ class CallsFilterSearch(APIView):
                 elif format == "M":
                     queryset = queryset.filter(format='M')
                 #queryset = queryset.filter(format=format)
+                data["format"] = format
             if study_level:
                 queryset = queryset.filter(study_level=study_level)
+                data["study_level"] = study_level
             if year:
                 queryset = queryset.filter(year=year)
+                data["year"] = year
             if semester:
                 queryset = queryset.filter(semester=semester)
+                data["semester"] = semester
             if region:
                 queryset = queryset.filter(university__region=region)
+                data["region"] = region
             if country:
                 queryset = queryset.filter(university__country__icontains=country)
+                data["country"] = country
             if language:
                 queryset = queryset.filter(language=language)
+                data["language"] = language
             if university_name:
                 queryset = queryset.filter(university__name__icontains=university_name)
+                data["university_name"] = university_name
 
             if not queryset.exists():
                 return JsonResponse({'message': 'No calls match the provided criteria'},
@@ -439,7 +543,18 @@ class CallsFilterSearch(APIView):
                 call.language = constants_dict_front["language"][str(call.language)]
 
             serializer = CallSerializer(queryset, many=True)
-            return JsonResponse(serializer.data, safe=False)
+
+            this_user = request.user
+            data_trace = {
+                "user": this_user,
+                "time": datetime.now(),
+                "method": request.method,
+                "view": self.__class__.__name__,
+                "given_data": f"El usuario solicitó las convocatorias bajo el filtro de {data}."
+            }
+            Traceability.objects.create(**data_trace)
+
+            return JsonResponse(serializer.data, safe=False, status=status.HTTP_200_OK)
 
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
@@ -462,6 +577,17 @@ class UniversityView(generics.ListCreateAPIView):
             university.region = constants_dict_front["region"][str(university.region)]
 
         serializer = self.get_serializer(queryset, many=True)
+
+        this_user = request.user
+        data_trace = {
+            "user": this_user,
+            "time": datetime.now(),
+            "method": request.method,
+            "view": self.__class__.__name__,
+            "given_data": f"El usuario solicitó todas las universidades."
+        }
+        Traceability.objects.create(**data_trace)
+
         return JsonResponse(serializer.data, safe=False)
 
     def post(self, request, *args, **kwargs):
@@ -471,6 +597,16 @@ class UniversityView(generics.ListCreateAPIView):
 
         if serializer.is_valid():
             uni_instance = serializer.save()
+
+            this_user = request.user
+            data_trace = {
+                "user": this_user,
+                "time": datetime.now(),
+                "method": request.method,
+                "view": self.__class__.__name__,
+                "given_data": f"El usuario creo una universidad con el ID {uni_instance.id}."
+            }
+            Traceability.objects.create(**data_trace)
 
             return JsonResponse({'mensaje': 'Universidad creada exitosamente', 'id': uni_instance.id}, status=201)
         else:
@@ -499,7 +635,18 @@ class UniversityDetails(generics.RetrieveUpdateDestroyAPIView):
         serializer = UniversitySerializer(instance=university, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+
+            this_user = request.user
+            data_trace = {
+                "user": this_user,
+                "time": datetime.now(),
+                "method": request.method,
+                "view": self.__class__.__name__,
+                "given_data": f"El usuario actualizó la universidad con id {pk}. Datos: {request.data}"
+            }
+            Traceability.objects.create(**data_trace)
+
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, *args, **kwargs):
@@ -508,12 +655,35 @@ class UniversityDetails(generics.RetrieveUpdateDestroyAPIView):
         instance.region = constants_dict_front["region"][str(instance.region)]
 
         serializer = self.get_serializer(instance)
-        return JsonResponse(serializer.data)
+
+        this_user = request.user
+        data_trace = {
+            "user": this_user,
+            "time": datetime.now(),
+            "method": request.method,
+            "view": self.__class__.__name__,
+            "given_data": f"El usuario solicitó todas las universidades."
+        }
+        Traceability.objects.create(**data_trace)
+
+        return JsonResponse(serializer.data, status=status.HTTP_200_OK)
 
     def delete(self, request, *args, **kwargs):
         try:
             instance = self.get_object()
+            ide = instance.id
             self.perform_destroy(instance)
+
+            this_user = request.user
+            data_trace = {
+                "user": this_user,
+                "time": datetime.now(),
+                "method": request.method,
+                "view": self.__class__.__name__,
+                "given_data": f"El usuario eliminó la universidad con id {ide}."
+            }
+            Traceability.objects.create(**data_trace)
+
             return JsonResponse({'mensaje': 'Universidad eliminada satisfactoriamente'}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -555,7 +725,18 @@ class UpdateUniversityView(View):
                 university.exchange_info = data['exchange_info']
 
             university.save()
-            return JsonResponse({'mensaje': 'Universidad actualizada exitosamente'})
+
+            # this_user = request.user
+            # data_trace = {
+            #     "user": this_user,
+            #     "time": datetime.now(),
+            #     "method": request.method,
+            #     "view": self.__class__.__name__,
+            #     "given_data": f"El usuario actualizo la universidad con id {university.id}. Datos: {data}"
+            # }
+            # Traceability.objects.create(**data_trace)
+
+            return JsonResponse({'mensaje': 'Universidad actualizada exitosamente'}, status=status.HTTP_200_OK)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Solicitud JSON no válida'}, status=400)
         except Exception as e:
@@ -563,3 +744,56 @@ class UpdateUniversityView(View):
 
     def handle_exception(self, exc):
         return JsonResponse({'error': str(exc)}, status=500)
+
+
+class SetClosed(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsEmployee]
+
+    def post(self, request):
+        try:
+            input_params = request.data
+
+            # Close the call
+            this_call = Call.objects.get(id=input_params["call_id"])
+            this_call.active = False
+            this_call.save()
+
+            this_user = request.user
+            data_trace = {
+                "user": this_user,
+                "time": datetime.now(),
+                "method": request.method,
+                "view": self.__class__.__name__,
+                "given_data": f"El usuario cerró la convocatoria con ID: {this_call.id} de la universidad: {this_call.university.name} en el periodo: {this_call.year}-{this_call.semester}."
+            }
+            Traceability.objects.create(**data_trace)
+
+            return JsonResponse({"message":f"Se cerró la convocatoria con ID: {this_call.id} de la universidad: {this_call.university.name} en el periodo: {this_call.year}-{this_call.semester}."}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+class SetOpen(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsEmployee]
+
+    def post(self, request):
+        try:
+            input_params = request.data
+
+            # Close the call
+            this_call = Call.objects.get(id=input_params["call_id"])
+            this_call.active =True
+            this_call.save()
+
+            this_user = request.user
+            data_trace = {
+                "user": this_user,
+                "time": datetime.now(),
+                "method": request.method,
+                "view": self.__class__.__name__,
+                "given_data": f"El usuario abrió la convocatoria con ID: {this_call.id} de la universidad: {this_call.university.name} en el periodo: {this_call.year}-{this_call.semester}."
+            }
+            Traceability.objects.create(**data_trace)
+
+            return JsonResponse({"message":f"Se abrió la convocatoria con ID: {this_call.id} de la universidad: {this_call.university.name} en el periodo: {this_call.year}-{this_call.semester}."}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)

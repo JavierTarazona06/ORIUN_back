@@ -3,6 +3,7 @@ import fitz
 import re
 import smtplib
 from email.mime.text import MIMEText
+from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 import os
 from dotenv import load_dotenv, find_dotenv
@@ -10,6 +11,14 @@ import threading
 import random
 import string
 
+
+PET_IMG_PATH = "data/img/owl.png"
+LINK_URL = 'https://oriun-preguntas-frecuentes.vercel.app/'
+FOOT = f"""\
+        <p>Atentamente,<br><a href="{LINK_URL}">Equipo ORIUN</a></p>
+        <img src="cid:owl_image" alt="Owl icons created by Freepik - Flaticon" width="70">
+    """
+PET_IMG_ATTACH_NAME='ORIUN_pet.png'
 
 def delete_verif_code(path):
     time.sleep(300)  # Esperar 5 minutos (5 minutos * 60 segundos/minuto)
@@ -58,12 +67,19 @@ def sent_email_verif_code(to: str, id):
             <p>Cordial saludo,</p>
             <p>Su código de verificación para acceder a la plataforma es: {verif_code}.</p>
             <p>Recuerde que el código solo dura 5 minutos activo desde la primera solicitud.</p>
-            <p>Atentamente,<br>Equipo ORIUN</p>
+            {FOOT}
           </body>
         </html>
         """
         # Adjuntar el contenido del mensaje al objeto MIMEText
         msg.attach(MIMEText(body, "html", "utf-8"))
+
+        # Adjuntar la imagen como un archivo MIME
+        with open(PET_IMG_PATH, "rb") as f:
+            image = MIMEImage(f.read(), name=PET_IMG_ATTACH_NAME)
+            image.add_header('Content-ID', '<owl_image>')
+            msg.attach(image)
+
         smtp.sendmail(MAIL, to, msg.as_string())
         #------------
 
@@ -77,6 +93,103 @@ def sent_email_verif_code(to: str, id):
 
 
 #sent_email_verif_code("jtarazonaj@unal.edu.co", 1021632167)
+
+def send_email_winner(to: str, student_name, call_id: str, university_name: str, year, semester):
+    if not "@unal.edu.co" in to:
+        raise ValueError("El correo no es dominio @unal.edu.co")
+
+    dotenv_path = find_dotenv()
+    load_dotenv(dotenv_path)
+
+    MAIL = "jtarazonaj@unal.edu.co"
+    MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
+
+    with (smtplib.SMTP("smtp.gmail.com", 587) as smtp):
+        smtp.ehlo()
+        smtp.starttls()
+        smtp.ehlo()
+        smtp.login(MAIL, MAIL_PASSWORD)
+        #--------------
+
+        # Crear el objeto MIMEMultipart para el mensaje
+        msg = MIMEMultipart()
+        msg["From"] = MAIL
+        msg["To"] = to
+        msg["Subject"] = f"Seleccionado(a) para la convocatoria {call_id} - {university_name} - {year}-{semester}"
+
+        # Contenido del mensaje en formato HTML
+        body = f"""\
+        <html>
+          <body>
+            <p>Cordial saludo, {student_name}.</p>
+            <p>Nos complace informarle que fue seleccionado(a) para la convocatoria número {call_id} de intercambio académico en: {university_name} en el semestre {year}-{semester}.</p>
+            <p>Este atento(a) a su correo para recibir las notificaciones de la universidad de destino y continuar con su proceso.</p>
+            {FOOT}
+          </body>
+        </html>
+        """
+        # Adjuntar el contenido del mensaje al objeto MIMEText
+        msg.attach(MIMEText(body, "html", "utf-8"))
+
+        # Adjuntar la imagen como un archivo MIME
+        with open(PET_IMG_PATH, "rb") as f:
+            image = MIMEImage(f.read(), name=PET_IMG_ATTACH_NAME)
+            image.add_header('Content-ID', '<owl_image>')
+            msg.attach(image)
+
+        smtp.sendmail(MAIL, to, msg.as_string())
+        #------------
+
+    return 0
+
+def send_email_not_winner(to: str, student_name, call_id: str, university_name: str, year, semester):
+    if not "@unal.edu.co" in to:
+        raise ValueError("El correo no es dominio @unal.edu.co")
+
+    dotenv_path = find_dotenv()
+    load_dotenv(dotenv_path)
+
+    MAIL = "jtarazonaj@unal.edu.co"
+    MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
+
+    with (smtplib.SMTP("smtp.gmail.com", 587) as smtp):
+        smtp.ehlo()
+        smtp.starttls()
+        smtp.ehlo()
+        smtp.login(MAIL, MAIL_PASSWORD)
+        #--------------
+
+        # Crear el objeto MIMEMultipart para el mensaje
+        msg = MIMEMultipart()
+        msg["From"] = MAIL
+        msg["To"] = to
+        msg["Subject"] = f"Resultado convocatoria {call_id} - {university_name} - {year}-{semester}"
+
+        # Contenido del mensaje en formato HTML
+        body = f"""\
+        <html>
+          <body>
+            <p>Cordial saludo, {student_name}.</p>
+            <p>Lamentamos informarle que su postulación para la convocatoria número {call_id} de intercambio académico en: {university_name} en el semestre {year}-{semester} ha sido rechazada.</p>
+            <p>Para más detalle, se puede dirigir a las oficinas de la ORI en el Campus Universitario.</p>
+            {FOOT}
+          </body>
+        </html>
+        """
+        # Adjuntar el contenido del mensaje al objeto MIMEText
+        msg.attach(MIMEText(body, "html", "utf-8"))
+
+
+        # Adjuntar la imagen como un archivo MIME
+        with open(PET_IMG_PATH, "rb") as f:
+            image = MIMEImage(f.read(), name=PET_IMG_ATTACH_NAME)
+            image.add_header('Content-ID', '<owl_image>')
+            msg.attach(image)
+
+        smtp.sendmail(MAIL, to, msg.as_string())
+        #------------
+
+    return 0
 
 
 def get_data_grades_certificate(path: str):

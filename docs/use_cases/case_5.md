@@ -14,13 +14,13 @@
 
 **Outputs:** list where each JSON consists of:
 
-| Name                 | Type            | Description                                                                                                                                                                                                                                                                    |
-|----------------------|-----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `call`               | Integer         | Id of the call.                                                                                                                                                                                                                                                                |
-| `university_name`    | String          | Name of the university.                                                                                                                                                                                                                                                        |
-| `university_country` | String          | Country of the university.                                                                                                                                                                                                                                                     |
-| `state_documents`    | Integer         | It indicated whether an employee has check the documents or not. If it is 0 it means the documents have not been checked, if it is 2 then it means the docs have been approved and if it is 1 then the docs were disapproved. This can be shown with a color, instead of text. |
-| `approved`           | null or boolean | It indicated whether an employee has approved the application, in other words if the student won the mobility or not, the idea with `null` and the boolean values is the same as the previous one.                                                                             |
+| Name                 | Type    | Description                                                                                                                                                                                                                                                                    |
+|----------------------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `call`               | Integer | Id of the call.                                                                                                                                                                                                                                                                |
+| `university_name`    | String  | Name of the university.                                                                                                                                                                                                                                                        |
+| `university_country` | String  | Country of the university.                                                                                                                                                                                                                                                     |
+| `state_documents`    | Integer | It indicated whether an employee has check the documents or not. If it is 0 it means the documents have not been checked, if it is 2 then it means the docs have been approved and if it is 1 then the docs were disapproved. This can be shown with a color, instead of text. |
+| `approved`           | boolean | It indicated whether an employee has approved the application, in other words if the student won the mobility or not.                                                                                                                                                          |
 
 <hr style="border:2px solid gray">
 
@@ -66,9 +66,9 @@
 
 **Outputs:**
 
-| Name           | Type   | Description                                                                                                                     |
-|----------------|--------|---------------------------------------------------------------------------------------------------------------------------------|
-| `comment_docs` | String | Comment from the employee, if there were no comments, then it shows "No hay comentarios con respecto a los documentos subidos". | 
+| Name      | Type   | Description                                                                                                                     |
+|-----------|--------|---------------------------------------------------------------------------------------------------------------------------------|
+| `comment` | String | Comment from the employee, if there were no comments, then it shows "No hay comentarios con respecto a los documentos subidos". | 
 
 <hr style="border:2px solid gray">
 

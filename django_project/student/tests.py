@@ -29,16 +29,20 @@ class StudentTestCase(TestCase):
         # cur_user = Employee.objects.get(user__username='maria_alvarez')
         response = self.client.post('/api-token/', {'username': 'maria.alvarez@unal.edu.co', 'password': 'Maria#1234'})
         self.assertEqual(response.status_code, 200)
-
         response_body = json.loads(response.content.decode('utf-8'))
         self.bearer_token = response_body['access']
 
         response = self.client.post('/api-token/',
                                     {'username': 'santiago.garcia@unal.edu.co', 'password': 'Password123'})
         self.assertEqual(response.status_code, 200)
-
         response_body = json.loads(response.content.decode('utf-8'))
         self.bearer_token_std = response_body['access']
+
+        response = self.client.post('/api-token/', {'username': 'vmoras@unal.edu.co', 'password': '123456'})
+        self.assertEqual(response.status_code, 200)
+        response_body = json.loads(response.content.decode('utf-8'))
+        self.bearer_token_std_vale = response_body['access']
+
     # TODO: add data_banned_mobility and max_applications
 
     def test_eligibility_authentication(self):
@@ -247,7 +251,7 @@ class StudentTestCase(TestCase):
     def test_get_student_by_id(self):
         print("TEST: test_get_student_by_id")
 
-        headers = {"Authorization": f"Bearer {self.bearer_token_std}"}
+        headers = {"Authorization": f"Bearer {self.bearer_token_std_vale}"}
         response = self.client.get(reverse("student:read_user_student", args=[1013691479]), headers=headers)
 
         qset = response.json()
@@ -264,7 +268,8 @@ class StudentTestCase(TestCase):
             'address': 'Carrera 45 # 27-12', 'birth_date': '1999-06-15', 'type_document': 'CC', 'sex': 'F', 'ethnicity': 'NA', 'headquarter': 'BO',
             'PAPA': 4.6, 'PBM': 42, 'advance': 55.8, 'is_enrolled': True, 'date_banned_mobility': '2000-01-01',
             'num_semesters': 5, 'diseases': None, 'medication': None, 'faculty': 'Ingeniería', 'major': 'ISCO', 'admission': 'REGUL',
-            'study_level': 'PRE', 'calls_done': [], 'certificate_grades': '', 'certificate_student': '', 'payment_receipt': ''
+            'study_level': 'PRE', 'calls_done': [{'call__id': 1, 'call__university__name': 'Universidad de los Andes', 'call__study_level': 'PRE', 'call__year': 2024, 'call__semester': '2', 'call__description': 'Realizar una actividad académica reconocible dentro del plan de estudios que cursa el\nestudiante en la Universidad Nacional de Colombia. Las actividades académicas están\ndescritas y reglamentadas por la Resolución 13 del 9 de julio de 2021 de la Vicerrectoría\nAcadémica: http://www.legal.unal.edu.co/rlunal/home/doc.jsp?d_i=98445.'}],
+            'certificate_grades': '', 'certificate_student': '', 'payment_receipt': ''
         }
 
         self.assertEqual(response.status_code, 200)

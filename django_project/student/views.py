@@ -17,6 +17,9 @@ from django.contrib.auth.models import User
 from application.helpers import upload_object, get_link_file
 from data import helpers
 from data.constants import Constants
+from person.serializers import UserSerializerShort
+from traceability.models import Traceability
+from traceability.serializers import TraceabilitySerializer
 
 
 class EligibilityView(APIView):
@@ -89,6 +92,8 @@ class ReadUserStudent(APIView):
     def get(self, request, pk):
         try:
             my_student = Student.objects.get(pk=pk)
+            if not (request.user.email == my_student.user.email):
+                raise ValidationError("El usuario {} no tiene permiso para ver la información del usuario solicitado".format(request.user))
             my_student_qset = Student.objects.filter(pk=pk)
             my_student_sr = StudentGetSerializer(my_student_qset, many=True).data[0]
 
@@ -115,6 +120,16 @@ class ReadUserStudent(APIView):
             my_student_sr[certificates[0][:-4]] = certificates_links[0]
             my_student_sr[certificates[1][:-4]] = certificates_links[1]
             my_student_sr[certificates[2][:-4]] = certificates_links[2]
+
+            this_user = request.user
+            data_trace = {
+                "user": this_user,
+                "time": datetime.now(),
+                "method": request.method,
+                "view": "ReadUserStudent",
+                "given_data": f"El usuario solicito la información del estudiante con id {my_student.id}."
+            }
+            Traceability.objects.create(**data_trace)
 
             return JsonResponse(my_student_sr, status=status.HTTP_200_OK)
         except Exception as e:
@@ -268,6 +283,17 @@ class post_user_student(APIView):
 
             # Create Student -----
             Student.objects.create(**input_params)
+
+            this_student = Student.objects.get(id=input_params['id'])
+            this_user = this_student.user
+            data_trace = {
+                "user": this_user,
+                "time": datetime.now(),
+                "method": request.method,
+                "view": "PostUserEmployee",
+                "given_data": f"Se creó al usuario estudiante con id {this_student.id} con correo {this_student.user.email} e id usuario {this_student.user.id}."
+            }
+            Traceability.objects.create(**data_trace)
 
             return JsonResponse({'mensaje': 'Estudiante creado exitosamente'}, status=status.HTTP_200_OK)
         except Exception as e:
