@@ -354,6 +354,26 @@ class CallsTestCase2(TestCase):
         serializer = CallSerializer(queryset, many=False)
         study_level2 = serializer.data['study_level']
 
+        data2 = {
+            "format": "P",
+            "study_level": "PRE",
+            "language": "es",
+            "active": True,
+            "begin_date": "2024-02-20",
+            "deadline": "2024-06-20",
+            "min_advance": 15.0,
+            "min_papa": 4.0,
+            "year": 2020,
+            "semester": "1",
+            "description": "Realizar una actividad académica reconocible dentro del plan de estudios que cursa el estudiante en la Universidad Nacional de Colombia. Las actividades académicas están descritas y reglamentadas por la Resolución 13 del 9 de julio de 2021 de la Vicerrectoría Académica: http://www.legal.unal.edu.co/rlunal/home/doc.jsp?d_i=98445.",
+            "available_slots": 30,
+            "note": None,
+            "highest_papa_winner": 4.5,
+            "minimum_papa_winner": 4.1,
+            "selected": 5,
+            "university": 4
+        }
+
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {"mensaje": "Convocatoria actualizada exitosamente"})
         self.assertNotEqual(study_level1, study_level2)
