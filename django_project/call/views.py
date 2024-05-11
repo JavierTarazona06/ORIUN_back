@@ -308,7 +308,7 @@ class CallDetails(generics.RetrieveUpdateDestroyAPIView):
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-class UpdateCallsView(View):
+class UpdateCallsView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticated, IsEmployee]
     @csrf_exempt
     def dispatch(self, request, *args, **kwargs):
@@ -370,15 +370,15 @@ class UpdateCallsView(View):
 
             call.save()
 
-            # this_user = request.user
-            # data_trace = {
-            #     "user": this_user,
-            #     "time": datetime.now(),
-            #     "method": request.method,
-            #     "view": self.__class__.__name__,
-            #     "given_data": f"El usuario actualizó la convocatoria con id {call.id}. Los datos fueron: {data}."
-            # }
-            # Traceability.objects.create(**data_trace)
+            this_user = request.user
+            data_trace = {
+                "user": this_user,
+                "time": datetime.now(),
+                "method": request.method,
+                "view": self.__class__.__name__,
+                "given_data": f"El usuario actualizó la convocatoria con id {call.id}. Los datos fueron: {data}."
+            }
+            Traceability.objects.create(**data_trace)
 
             return JsonResponse({'mensaje': 'Convocatoria actualizada exitosamente'}, status=200)
         except json.JSONDecodeError:
@@ -689,7 +689,7 @@ class UniversityDetails(generics.RetrieveUpdateDestroyAPIView):
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-class UpdateUniversityView(View):
+class UpdateUniversityView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticated, IsEmployee]
     @csrf_exempt
     def dispatch(self, request, *args, **kwargs):
@@ -726,15 +726,15 @@ class UpdateUniversityView(View):
 
             university.save()
 
-            # this_user = request.user
-            # data_trace = {
-            #     "user": this_user,
-            #     "time": datetime.now(),
-            #     "method": request.method,
-            #     "view": self.__class__.__name__,
-            #     "given_data": f"El usuario actualizo la universidad con id {university.id}. Datos: {data}"
-            # }
-            # Traceability.objects.create(**data_trace)
+            this_user = request.user
+            data_trace = {
+                "user": this_user,
+                "time": datetime.now(),
+                "method": request.method,
+                "view": self.__class__.__name__,
+                "given_data": f"El usuario actualizo la universidad con id {university.id}. Datos: {data}"
+            }
+            Traceability.objects.create(**data_trace)
 
             return JsonResponse({'mensaje': 'Universidad actualizada exitosamente'}, status=status.HTTP_200_OK)
         except json.JSONDecodeError:

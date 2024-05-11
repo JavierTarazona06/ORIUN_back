@@ -349,7 +349,6 @@ class CallsTestCase2(TestCase):
 
         response = self.client.put(reverse("call:calls_update_by_id", args=[2]), data=data,
                                    content_type='application/json', **headers)
-        print(response.json())
 
         queryset = Call.objects.get(pk=2)
         serializer = CallSerializer(queryset, many=False)
