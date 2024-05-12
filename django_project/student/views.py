@@ -146,7 +146,8 @@ class post_user_student(APIView):
         input_params = dict(input_params)
 
         for key, value in input_params.items():
-            input_params[key] = value[0]
+            if str(type(value)) == "<class 'list'>":
+                input_params[key] = value[0]
 
         username = input_params["email"]
         try:
@@ -263,13 +264,13 @@ class post_user_student(APIView):
             input_params["user"] = user
 
             # Validate PDFs
-            valid_id = ((data_from_grades['id'] == input_params['id']) and (
-                        data_from_student['id'] == input_params['id'])
-                        and (data_from_payment['id'] == input_params['id']))
+            valid_id = ((str(data_from_grades['id']) == str(input_params['id'])) and (
+                        data_from_student['id'] == str(input_params['id']))
+                        and (data_from_payment['id'] == str(input_params['id'])))
             if not valid_id:
                 raise ValueError("El ID no concuerda con el certificado.")
 
-            valid_average = (data_from_grades['average'] == input_params['PAPA'])
+            valid_average = (data_from_grades['average'] == str(input_params['PAPA']))
             if not valid_average:
                 raise ValueError("El promedio no concuerda con el certificado.")
 
@@ -288,11 +289,11 @@ class post_user_student(APIView):
                 raise ValueError(
                     "La facultad no concuerda con el certificado o hay problema con la lista almacenada de facultades.")
 
-            valid_advance = (data_from_student['advance'] == input_params['advance'])
+            valid_advance = (data_from_student['advance'] == str(input_params['advance']))
             if not valid_advance:
                 raise ValueError("El avance no concuerda con el certificado.")
 
-            valid_pbm = (data_from_payment['pbm'] == input_params['PBM'])
+            valid_pbm = (data_from_payment['pbm'] == str(input_params['PBM']))
             if not valid_pbm:
                 raise ValueError("El valor de PBM no concuerda con el certificado.")
 
