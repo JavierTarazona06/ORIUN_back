@@ -21,7 +21,7 @@ from data.constants import Constants
 from person.serializers import UserSerializerShort
 from traceability.models import Traceability
 from traceability.serializers import TraceabilitySerializer
-
+from employee.permissions import IsEmployee
 
 class EligibilityView(APIView):
     """
@@ -127,7 +127,7 @@ class ReadUserStudent(APIView):
                 "user": this_user,
                 "time": datetime.now(),
                 "method": request.method,
-                "view": "ReadUserStudent",
+                "view": str(self.__class__.__name__),
                 "given_data": f"El usuario solicito la información del estudiante con id {my_student.id}."
             }
             Traceability.objects.create(**data_trace)
@@ -136,6 +136,28 @@ class ReadUserStudent(APIView):
         except Exception as e:
             return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
+class DeleteUserStudent(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsEmployee]
+
+    def delete(self, request, pk):
+        try:
+            my_student = Student.objects.get(pk=pk)
+            ide = my_student.id
+            my_student.delete()
+
+            this_user = request.user
+            data_trace = {
+                "user": this_user,
+                "time": datetime.now(),
+                "method": request.method,
+                "view": str(self.__class__.__name__),
+                "given_data": f"El usuario eliminó al estudiante con id {ide}."
+            }
+            Traceability.objects.create(**data_trace)
+
+            return JsonResponse({"message": f"Se eliminó con éxito al estudiante con id {ide}"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class post_user_student(APIView):
     permission_classes = []
@@ -320,7 +342,7 @@ class post_user_student(APIView):
                 "user": this_user,
                 "time": datetime.now(),
                 "method": request.method,
-                "view": "PostUserEmployee",
+                "view": str(self.__class__.__name__),
                 "given_data": f"Se creó al usuario estudiante con id {this_student.id} con correo {this_student.user.email} e id usuario {this_student.user.id}."
             }
             Traceability.objects.create(**data_trace)
