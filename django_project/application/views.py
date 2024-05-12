@@ -1,3 +1,5 @@
+import io
+import base64
 from datetime import datetime, timezone
 from google.cloud import exceptions as gcloud_exceptions
 from django.http import JsonResponse
@@ -5,7 +7,7 @@ from django.http import JsonResponse
 from rest_framework import permissions
 from rest_framework import status, generics
 from rest_framework.response import Response
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.decorators import api_view, permission_classes, parser_classes
 from rest_framework import status
 from rest_framework.views import APIView
@@ -101,24 +103,25 @@ def download_file(request: Request):
 
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated, IsStudent])
-@parser_classes([MultiPartParser, FormParser])
+@parser_classes([MultiPartParser, FormParser, JSONParser])
 def upload_file(request: Request):
     """
     Endpoint used to upload a file to GCP. The new name is composed of the name parameter (in query),
     the id of the student, the id of the call and the original extension of the file.
     """
     # Check size of document
-    if request.data['document'].size > 9_000_000:
+    '''if request.data['document'].size > 9_000_000:
         return Response(
             {'error': 'File is too big. It must be smaller than 9 MB'}, status=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE
         )
-
+    '''
     student = request.user.student
     call = Call.objects.get(id=request.data['call'])
-    source_file = request.data['document'].file
-    file_extension = request.data['document'].name.split('.')[-1]
-    name_file = request.data['name_file']
 
+    info, data = request.data['document'].split(',')
+    source_file = io.BytesIO(base64.b64decode(data))
+    file_extension = info.split('/')[1].split(';')[0]
+    name_file = request.data['name_file']
     new_name = f'{name_file}_{student.id}_{call.id}.{file_extension}'
 
     upload_object('complete_doc', source_file, new_name)
