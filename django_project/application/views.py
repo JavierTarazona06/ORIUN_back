@@ -120,9 +120,8 @@ def upload_file(request: Request):
 
     info, data = request.data['document'].split(',')
     source_file = io.BytesIO(base64.b64decode(data))
-    file_extension = info.split('/')[1].split(';')[0]
     name_file = request.data['name_file']
-    new_name = f'{name_file}_{student.id}_{call.id}.{file_extension}'
+    new_name = f'{name_file}_{student.id}_{call.id}.pdf'
 
     upload_object('complete_doc', source_file, new_name)
     return Response({'message': 'File uploaded successfully!'}, status=status.HTTP_200_OK)

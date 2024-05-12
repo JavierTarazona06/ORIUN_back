@@ -199,7 +199,10 @@ def check_docs(student: Student, call: Call) -> tuple[bool, list[str]]:
 
     # Check national or international documents, if needed
     region = call.university.get_region_display()
+    print(region, name_documents, student)
     logger.info("Initial name_documents: %s %s", region, name_documents)
+    logger.debug("Initial name_documents: %s %s", region, name_documents)
+    logger.error("Initial name_documents: %s %s", region, name_documents)
     if region == 'Convenio Sigueme/Nacional':
         name_documents.extend(Application.national_name_docs)
 
