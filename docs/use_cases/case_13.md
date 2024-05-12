@@ -179,8 +179,31 @@ Yes - Required Together (N): This indicates that if at least one of these fields
 
 * Vea más info de los enums en el archivo de constantes del repo de Back (https://github.com/JavierTarazona06/ORIUN_back/blob/main/django_project/data/constants.json)
 
+# 4. Delete User Student
+<span style="color: green; font-weight: bold;"> DONE </span>
 
-# 4. Post User Employee
+**URL:** `/student/delete/<int:pk>/`.
+
+**Method:** `DELETE`
+
+**Description:** Deletes student according to the given ID.
+
+**Permissions:** Is Employee.
+
+**Inputs:**
+
+| Field Name           | Required      | Type          | Description                                      |
+|----------------------|---------------|---------------|--------------------------------------------------|
+| `id`                 | YES - In Path | integer       | A unique integer value identifying this student. |
+
+**Outputs:**
+
+| Field Name       | Type         | Description                                                     |
+|------------------|--------------|-----------------------------------------------------------------|
+| `message`        | JSONResponse | {"message": "Se eliminó con éxito al estudiante con id {ide}"}  |
+
+
+# 5. Post User Employee
 <span style="color: green; font-weight: bold;"> DONE </span>
 
 **URL:** `/employee/post/`.
@@ -223,7 +246,7 @@ Yes - Required Together (N): This indicates that if at least one of these fields
 |------------|---------------------|--------------------------------------------------------------------------------------|
 | `mensaje`  | string              | "Funcionario creado exitosamente", "El correo no es dominio unal.edu.co", EXCEPTIONS |
 
-# 5. Update User Employee
+# 6. Update User Employee
 <span style="color: gray; font-weight: bold;"> PAUSED: NOT URGENT </span>
 
 **URL:** `/employee/put/<int:pk>/`.
@@ -252,7 +275,7 @@ Yes - Required Together (N): This indicates that if at least one of these fields
 |------------|---------------------|----------------------------------------------------|
 | `mensaje`  | string              | "Funcionario actualizado exitosamente", EXCEPTIONS |
 
-# 6. Read User Employee
+# 7. Read User Employee
 <span style="color: green; font-weight: bold;"> DONE </span>
 
 **URL:** `/employee/get/<int:pk>/`.
@@ -290,3 +313,26 @@ Yes - Required Together (N): This indicates that if at least one of these fields
 
 
 * Vea más info de los enums en el archivo de constantes del repo de Back (https://github.com/JavierTarazona06/ORIUN_back/blob/main/django_project/data/constants.json)
+
+# 8. Delete User Employee
+<span style="color: green; font-weight: bold;"> DONE </span>
+
+**URL:** `/employee/delete/<int:pk>/`.
+
+**Method:** `DELETE`
+
+**Description:** Deletes employee according to the given ID.
+
+**Permissions:** Is Employee.
+
+**Inputs:**
+
+| Field Name           | Required      | Type          | Description                                      |
+|----------------------|---------------|---------------|--------------------------------------------------|
+| `id`                 | YES - In Path | integer       | A unique integer value identifying this student. |
+
+**Outputs:**
+
+| Field Name       | Type         | Description                                                  |
+|------------------|--------------|--------------------------------------------------------------|
+| `message`        | JSONResponse | {"message": "Se eliminó con éxito al empleado con id {ide}"} |

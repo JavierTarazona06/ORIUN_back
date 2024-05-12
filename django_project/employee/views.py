@@ -94,7 +94,7 @@ class PostUserEmployee(APIView):
                 "user": this_user,
                 "time": datetime.now(),
                 "method": request.method,
-                "view": "PostUserEmployee",
+                "view": str(self.__class__.__name__),
                 "given_data": f"Se creó el empleado con id: {this_employee.id} y correo {this_employee.user.email}. ID de usuario: {this_employee.user.id}",
             }
             Traceability.objects.create(**data_trace)
@@ -126,11 +126,35 @@ class ReadUserEmployee(APIView):
                 "user": this_user,
                 "time": datetime.now(),
                 "method": request.method,
-                "view": "ReadUserEmployee",
+                "view": str(self.__class__.__name__),
                 "given_data": f"El usuario solicitó la información del emploeado con id {myEmployee.id}."
             }
             Traceability.objects.create(**data_trace)
 
             return JsonResponse(my_employee_sr, status=status.HTTP_200_OK)
+        except Exception as e:
+            return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class DeleteUserEmployee(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsEmployee]
+
+    def delete(self, request, pk):
+        try:
+            myEmployee = Employee.objects.get(pk=pk)
+            ide = myEmployee.id
+            myEmployee.delete()
+
+            this_user = request.user
+            data_trace = {
+                "user": this_user,
+                "time": datetime.now(),
+                "method": request.method,
+                "view": str(self.__class__.__name__),
+                "given_data": f"El usuario eliminó al empleado con id {ide}."
+            }
+            Traceability.objects.create(**data_trace)
+
+            return JsonResponse({"message": f"Se eliminó con éxito al empleado con id {ide}"}, status=status.HTTP_200_OK)
         except Exception as e:
             return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
