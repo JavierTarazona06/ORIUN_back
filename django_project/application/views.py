@@ -118,7 +118,10 @@ def upload_file(request: Request):
     student = request.user.student
     call = Call.objects.get(id=request.data['call'])
 
-    info, data = request.data['document'].split(',')
+    try:
+        _, data = request.data['document'].split(',')
+    except ValueError:
+        data = request.data['document']
     source_file = io.BytesIO(base64.b64decode(data))
     name_file = request.data['name_file']
     new_name = f'{name_file}_{student.id}_{call.id}.pdf'

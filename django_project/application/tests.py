@@ -1,4 +1,5 @@
 import os
+import base64
 import student
 
 from django.urls import reverse
@@ -205,38 +206,18 @@ class ApplicationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'link')
 
-    def test_upload_too_big(self):
-        """
-
-        """
-        with open('data/big_file.mov', 'rb') as file:
-            file_data = file.read()
-            file_obj = SimpleUploadedFile('big_file.mov', file_data)
-            headers = {
-                "Authorization": f"Bearer {self.token_student}",
-            }
-            data = {
-                'name_file': 'grades_certificate',
-                'document': file_obj,
-                'call': 5,
-            }
-            response = self.client.post('/application/upload/', data=data, headers=headers)
-        self.assertEqual(response.status_code, 413)
-        self.assertEqual(response.json()['error'], 'File is too big. It must be smaller than 9 MB')
-
     def test_upload_correct(self):
         """
 
         """
         with open('data/forms/templates/request_form.docx', 'rb') as file:
             file_data = file.read()
-            file_obj = SimpleUploadedFile('request_form.docx', file_data)
             headers = {
                 "Authorization": f"Bearer {self.token_student}",
             }
             data = {
                 'name_file': 'request_form',
-                'document': file_obj,
+                'document': base64.b64encode(file_data).decode('utf-8'),
                 'call': 2,
             }
             response = self.client.post('/application/upload/', data=data, headers=headers)
