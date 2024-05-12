@@ -12,7 +12,10 @@ from student.models import Student
 from rest_framework.request import Request
 from application.models import Application
 from data.constants import Constants
+import logging
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 CREDENTIALS = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
 STORAGE_CLIENT = storage.Client.from_service_account_json(CREDENTIALS)
@@ -196,11 +199,12 @@ def check_docs(student: Student, call: Call) -> tuple[bool, list[str]]:
 
     # Check national or international documents, if needed
     region = call.university.get_region_display()
+    logger.info("Initial name_documents: %s %s", region, name_documents)
     if region == 'Convenio Sigueme/Nacional':
-        name_documents.append(Application.national_name_docs)
+        name_documents.extend(Application.national_name_docs)
 
     elif region != 'Uniandes':  # It is an international call
-        name_documents.append(Application.international_name_docs)
+        name_documents.extend(Application.international_name_docs)
 
     # Check each possible file
     missing_docs = []
