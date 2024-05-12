@@ -1,3 +1,4 @@
+import os
 import json
 
 from django.test import TestCase
@@ -22,8 +23,8 @@ class EmployeeTestCase(TestCase):
         qset_students = Student.objects.all()
         if not qset_students:
             # Populate DB
-            comm = Command()
-            comm.handle(path=r"data\data_csv")
+            command = Command()
+            command.handle(path=os.path.join('data', 'data_csv'))
 
     def setUp(self):
         # User auth

@@ -15,6 +15,7 @@ class SigninTestCase(TestCase):
         """
         Checks that login returns 2 tokens (refresh and access) and type_user is student
         """
+        print("TEST:test_login_student")
         response = self.client.post(
             '/api-token/', {'username': 'santiago.garcia@unal.edu.co', 'password': 'Password123'}
         )
@@ -28,6 +29,7 @@ class SigninTestCase(TestCase):
         """
         Checks that login returns 2 tokens (refresh and access) and type_user is employee
         """
+        print("TEST:test_login_employee")
         response = self.client.post(
             '/api-token/', {'username': 'maria.alvarez@unal.edu.co', 'password': 'Maria#1234'}
         )
@@ -41,6 +43,7 @@ class SigninTestCase(TestCase):
         """
         Check that login returns 401 for user that is not in the database
         """
+        print("TEST:test_login_no_user")
         response = self.client.post(
             '/api-token/', {'username': 'anonimo.alguien@unal.edu.co', 'password': 'contraseña'}
         )
@@ -51,6 +54,7 @@ class SigninTestCase(TestCase):
         """
         Check that login returns 401 for incorrect password
         """
+        print("TEST:test_login_incorrect_password")
         response = self.client.post(
             '/api-token/', {'username': 'santiago.garcia@unal.edu.co', 'password': 'contraseña'}
         )
@@ -61,6 +65,7 @@ class SigninTestCase(TestCase):
         """
         Check that login returns 401 for incorrect username
         """
+        print("TEST:test_login_incorrect_username")
         response = self.client.post(
             '/api-token/', {'username': 'santi.garcia@unal.edu.co', 'password': 'Password123'}
         )

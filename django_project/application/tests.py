@@ -35,6 +35,7 @@ class ApplicationTestCase(TestCase):
         """
         Current user must be authenticated and a student.
         """
+        print("TEST:test_authentication")
         response = self.client.get(
             '/application/region_call/', {'call': 1}, headers={"Authorization": f"Bearer {self.token_employee}"}
         )
@@ -45,6 +46,7 @@ class ApplicationTestCase(TestCase):
         """
         Check that call 1 return Uniandes as region
         """
+        print("TEST:test_region_call_uniandes")
         response = self.client.get(
             '/application/region_call/', {'call': 1}, headers={"Authorization": f"Bearer {self.token_student}"}
         )
@@ -56,6 +58,7 @@ class ApplicationTestCase(TestCase):
         """
         Check that call 4 return Internacional as region
         """
+        print("TEST:test_region_call_international")
         response = self.client.get(
             '/application/region_call/', {'call': 4}, headers={"Authorization": f"Bearer {self.token_student}"}
         )
@@ -66,6 +69,7 @@ class ApplicationTestCase(TestCase):
         """
         Check that when given
         """
+        print("TEST:test_create_form_missing_info_contact")
         data = {
             "contact_person": {
                 "name": "nombre",
@@ -88,6 +92,7 @@ class ApplicationTestCase(TestCase):
         """
         Check that when given
         """
+        print("TEST:test_create_form_incorrect_info_contact")
         data = {
             "contact_person": {
                 "name": "nombre",
@@ -111,6 +116,7 @@ class ApplicationTestCase(TestCase):
         """
         Check that when given
         """
+        print("TEST:test_create_form_correct_info_contact")
         contact_person = {
             "id": 1,
             "name": "Jonathan",
@@ -137,6 +143,7 @@ class ApplicationTestCase(TestCase):
         """
         Check that when given
         """
+        print("TEST:test_create_form_missing_contact_person")
         response = self.client.post(
             '/api-token/', {'username': 'valentina.rodriguez@unal.edu.co', 'password': 'TestPassword'}
         )
@@ -156,6 +163,7 @@ class ApplicationTestCase(TestCase):
         """
 
         """
+        print("TEST:test_create_form_correct")
         data = {
             "diseases": 'de todo',
             "call": 4
@@ -173,6 +181,7 @@ class ApplicationTestCase(TestCase):
         """
 
         """
+        print("TEST:test_download_no_found")
         data = {
             "call": 5,
             "name_file": "request_form",
@@ -191,6 +200,7 @@ class ApplicationTestCase(TestCase):
         """
 
         """
+        print("TEST:test_download_found")
         data = {
             "call": 4,
             "name_file": "request_form",
@@ -209,6 +219,7 @@ class ApplicationTestCase(TestCase):
         """
 
         """
+        print("TEST:test_upload_too_big")
         with open('data/big_file.mov', 'rb') as file:
             file_data = file.read()
             file_obj = SimpleUploadedFile('big_file.mov', file_data)
@@ -228,6 +239,7 @@ class ApplicationTestCase(TestCase):
         """
 
         """
+        print("TEST:test_upload_correct")
         with open('data/forms/templates/request_form.docx', 'rb') as file:
             file_data = file.read()
             file_obj = SimpleUploadedFile('request_form.docx', file_data)

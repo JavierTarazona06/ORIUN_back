@@ -49,6 +49,7 @@ class StudentTestCase(TestCase):
         """
         Makes sure only students can access their eligibility data.
         """
+        print("TEST: test_eligibility_authentication")
         response = self.client.post(
             '/api-token/', {'username': 'maria.alvarez@unal.edu.co', 'password': 'Maria#1234'}
         )
@@ -62,6 +63,7 @@ class StudentTestCase(TestCase):
         """
         Makes sure the student is enrolled.
         """
+        print("TEST: test_eligibility_registration")
         response = self.client.post(
             '/api-token/', {'username': 'nicolas.ramirez@unal.edu.co', 'password': 'shakira101'}
         )
@@ -76,6 +78,7 @@ class StudentTestCase(TestCase):
         """
         Makes sure the student has enough PAPA.
         """
+        print("TEST: test_eligibility_papa")
         response = self.client.post(
             '/api-token/', {'username': 'isabella.gonzalez@unal.edu.co', 'password': 'Pasword021'}
         )
@@ -90,6 +93,7 @@ class StudentTestCase(TestCase):
         """
         Makes sure that the student has the correct study level for the call
         """
+        print("TEST: test_eligibility_level")
         response = self.client.post(
             '/api-token/', {'username': 'camila.perez@unal.edu.co', 'password': 'qwertY'}
         )
@@ -104,6 +108,7 @@ class StudentTestCase(TestCase):
         """
         Makes sure that for Uniandes calls the student has the correct number of semesters
         """
+        print("TEST: test_eligibility_num_semesters")
         response = self.client.post(
             '/api-token/', {'username': 'juanpablo.lopez@unal.edu.co', 'password': 'abc123'}
         )
@@ -118,6 +123,7 @@ class StudentTestCase(TestCase):
         """
         Makes sure the student has enough advance
         """
+        print("TEST: test_eligibility_advance")
         response = self.client.post(
             '/api-token/', {'username': 'andres.hernandez@unal.edu.co', 'password': 'pass1234'}
         )
@@ -132,6 +138,7 @@ class StudentTestCase(TestCase):
         """
         If the student has all the requirements, they can apply
         """
+        print("TEST: test_eligibility_correct")
         response = self.client.get(
             '/student/eligible/', {'call': 1}, headers={"Authorization": f"Bearer {self.bearer_token_std}"}
         )
@@ -143,7 +150,7 @@ class StudentTestCase(TestCase):
         """
         Checks basic student info, such as contact_person, health info and info_coordinator
         """
-        response = self.client.post('/api-token/', {'username': 'santiago_garcia', 'password': 'Password123'})
+        print("TEST: test_info_student")
         response = self.client.get(
             '/student/info_application/', headers={"Authorization": f"Bearer {self.bearer_token_std}"}
         )
