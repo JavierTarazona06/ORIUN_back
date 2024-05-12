@@ -35,7 +35,7 @@ jobs:
         GOOGLE_API_PW: ${{ secrets.GOOGLE_API_PW }}
       run: |
         ./scripts/decode_credentials.sh
-    - name: Run Tests
+    - name: Run project
       env:
         DATABASE_ENGINE: ${{ secrets.DATABASE_ENGINE }}
         DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
@@ -46,4 +46,13 @@ jobs:
         GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
         MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
       run: |
-        cd django_project && python manage.py test
+        ./scripts/start_server.sh &
+    - name: Check ps
+      run: | 
+        for attempt in {1..20}; do sleep 1; done
+    - name: Check ps2
+      run: |
+        ps
+    - name: Run Tests
+      run: |
+        cd django_project && python manage.py test employee

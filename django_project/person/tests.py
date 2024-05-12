@@ -15,8 +15,8 @@ def sep_test_request_verif_code(id, email):
     }
 
     headers = {}
-    url = "https://oriun-ryhm23k6lq-uc.a.run.app/person/code/"
-    #url = "http://localhost:8000/person/code/"
+    # url = "https://oriun-ryhm23k6lq-uc.a.run.app/person/code/"
+    url = "http://localhost:8000/person/code/"
     response = requests.post(url, json=data, headers=headers)
 
     print(response.json())
