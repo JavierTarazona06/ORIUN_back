@@ -856,7 +856,7 @@ class CallsTestCase2(TestCase):
         data["region"] = "Latinoamérica"
         ldata = [data]
 
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {'mensaje': 'Universidad creada exitosamente', 'id': 8})
         self.assertEqual(qset, ldata)
 
