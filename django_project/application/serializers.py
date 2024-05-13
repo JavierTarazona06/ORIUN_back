@@ -65,7 +65,10 @@ class Applicants(serializers.ModelSerializer):
         return obj.student.get_major_display()
 
     def get_state_documents(self, obj):
-        return obj.get_state_documents_display()
+        if obj.modified:
+            return 'Modificado por estudiante'
+        else:
+            return obj.get_state_documents_display()
 
     class Meta:
         model = Application

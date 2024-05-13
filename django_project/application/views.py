@@ -1,6 +1,8 @@
 import io
 import base64
 from datetime import datetime, timezone
+from urllib.request import Request
+
 from google.cloud import exceptions as gcloud_exceptions
 from django.http import JsonResponse
 
@@ -575,8 +577,9 @@ class SetWinner(APIView):
                 "given_data": f"El usuario seleccionó al estudiante con id {student_winner.id} como ganador de la convocatoria {this_call.id}."
             }
             Traceability.objects.create(**data_trace)
-
-            return JsonResponse({"message":f"El estudiante con ID {input_params["student_id"]} fue seleccionado para la convocatoria {this_application.call_id}"}, status=status.HTTP_200_OK)
+            return JsonResponse({
+                                    "message": f"El estudiante con ID {input_params['student_id']} fue seleccionado para la convocatoria {this_application.call_id}"},
+                                status=status.HTTP_200_OK)
         except Exception as e:
             return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -606,6 +609,9 @@ class RemoveWinner(APIView):
             }
             Traceability.objects.create(**data_trace)
 
-            return JsonResponse({"message":f"El estudiante con ID {input_params["student_id"]} fue des-seleccionado para la convocatoria {this_application.call_id}"}, status=status.HTTP_200_OK)
+            return JsonResponse({
+                                    "message": f"El estudiante con ID {input_params['student_id']} fue des-seleccionado para la convocatoria {this_application.call_id}"},
+                                status=status.HTTP_200_OK)
+
         except Exception as e:
             return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)

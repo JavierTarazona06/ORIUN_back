@@ -187,21 +187,44 @@ class CallView(generics.ListCreateAPIView):
         return Call.objects.all()
 
     def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
+        try:
+            queryset = self.get_queryset()
 
-        serializer = self.get_serializer(queryset, many=True)
+            serializer = self.get_serializer(queryset, many=True)
 
-        this_user = request.user
-        data_trace = {
-            "user": this_user,
-            "time": datetime.now(),
-            "method": request.method,
-            "view": self.__class__.__name__,
-            "given_data": f"El usuario solicitó todas las convocatorias."
-        }
-        Traceability.objects.create(**data_trace)
+            this_user = request.user
+            data_trace = {
+                "user": this_user,
+                "time": datetime.now(),
+                "method": request.method,
+                "view": self.__class__.__name__,
+                "given_data": f"El usuario solicitó todas las convocatorias."
+            }
+            Traceability.objects.create(**data_trace)
 
-        return JsonResponse(serializer.data, safe=False)
+            return JsonResponse(serializer.data, safe=False, status=status.HTTP_200_OK)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request):
+        try:
+            queryset = self.get_queryset()
+
+            serializer = self.get_serializer(queryset, many=True)
+
+            this_user = request.user
+            data_trace = {
+                "user": this_user,
+                "time": datetime.now(),
+                "method": request.method,
+                "view": self.__class__.__name__,
+                "given_data": f"El usuario solicitó todas las convocatorias."
+            }
+            Traceability.objects.create(**data_trace)
+
+            return JsonResponse(serializer.data, safe=False, status=status.HTTP_200_OK)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, *args, **kwargs):
         """
@@ -571,24 +594,50 @@ class UniversityView(generics.ListCreateAPIView):
         return University.objects.all()
 
     def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
+        try:
+            queryset = self.get_queryset()
 
-        for university in queryset:
-            university.region = constants_dict_front["region"][str(university.region)]
+            for university in queryset:
+                university.region = constants_dict_front["region"][str(university.region)]
 
-        serializer = self.get_serializer(queryset, many=True)
+            serializer = self.get_serializer(queryset, many=True)
 
-        this_user = request.user
-        data_trace = {
-            "user": this_user,
-            "time": datetime.now(),
-            "method": request.method,
-            "view": self.__class__.__name__,
-            "given_data": f"El usuario solicitó todas las universidades."
-        }
-        Traceability.objects.create(**data_trace)
+            this_user = request.user
+            data_trace = {
+                "user": this_user,
+                "time": datetime.now(),
+                "method": request.method,
+                "view": self.__class__.__name__,
+                "given_data": f"El usuario solicitó todas las universidades."
+            }
+            Traceability.objects.create(**data_trace)
 
-        return JsonResponse(serializer.data, safe=False)
+            return JsonResponse(serializer.data, status=status.HTTP_200_OK, safe=False)
+        except Exception as e:
+            return JsonResponse({"Error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request):
+        try:
+            queryset = self.get_queryset()
+
+            for university in queryset:
+                university.region = constants_dict_front["region"][str(university.region)]
+
+            serializer = self.get_serializer(queryset, many=True)
+
+            this_user = request.user
+            data_trace = {
+                "user": this_user,
+                "time": datetime.now(),
+                "method": request.method,
+                "view": self.__class__.__name__,
+                "given_data": f"El usuario solicitó todas las universidades."
+            }
+            Traceability.objects.create(**data_trace)
+
+            return JsonResponse(serializer.data, status=status.HTTP_200_OK, safe=False)
+        except Exception as e:
+            return JsonResponse({"Error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)

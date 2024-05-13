@@ -515,7 +515,8 @@ class ApplicationTestCase(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(qset, qsetr)
-        self.assertEqual(response.json(), {"message":f"El estudiante con ID {data["student_id"]} fue seleccionado para la convocatoria {qset["call"]}"})
+        self.assertEqual(response.json(), {
+            "message": f"El estudiante con ID {data['student_id']} fue seleccionado para la convocatoria {qset['call']}"})
 
     def test_not_winner(self):
         print("TEST: test_not_winner")
@@ -544,7 +545,7 @@ class ApplicationTestCase(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(qset, qsetr)
-        self.assertEqual(response.json(), {"message":f"El estudiante con ID {data["student_id"]} fue des-seleccionado para la convocatoria {qset["call"]}"})
+        self.assertEqual(response.json(), {"message": f"El estudiante con ID {data['student_id']} fue des-seleccionado para la convocatoria {qset['call']}"})
 
     def tearDown(self):
         pass
