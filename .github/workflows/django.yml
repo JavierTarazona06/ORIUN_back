@@ -3,8 +3,6 @@ name: Django CI
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
   build:
@@ -94,7 +92,7 @@ jobs:
         DATABASE_HOST=${{ secrets.DATABASE_HOST }},\
         DATABASE_PORT=${{ secrets.DATABASE_PORT }},\
         GOOGLE_APPLICATION_CREDENTIALS=${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }},\
-        MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }} \
+        MAIL_PASSWORD=${{ secrets.MAIL_PASS }} \
         --region=us-central1 \
         --revision-suffix=${{  github.sha  }} \
         --project=${{  secrets.PROJECT_ID  }} \
