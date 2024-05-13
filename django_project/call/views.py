@@ -620,7 +620,7 @@ class UniversityView(generics.ListCreateAPIView):
         print("Entró al get")
         try:
             print("Esta haciendo la busqueda")
-            queryset = self.get_queryset()
+            queryset = University.objects.all()
             print("++++", queryset)
 
             for university in queryset:
