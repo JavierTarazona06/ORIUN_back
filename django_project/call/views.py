@@ -657,7 +657,7 @@ class UniversityView(generics.ListCreateAPIView):
             }
             Traceability.objects.create(**data_trace)
 
-            return JsonResponse({'mensaje': 'Universidad creada exitosamente', 'id': uni_instance.id}, status=201)
+            return JsonResponse({'mensaje': 'Universidad creada exitosamente', 'id': uni_instance.id}, status=200)
         else:
             return JsonResponse(serializer.errors, status=400)
 

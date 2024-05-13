@@ -19,7 +19,16 @@ class StudentApplicationSerializer(serializers.ModelSerializer):
         headquarter = obj.get_headquarter_display()
         faculty = obj.get_faculty_display()
         major = obj.get_major_display()
-        return Constants.INFO_FACULTIES[headquarter][faculty][major]
+        try:
+            return Constants.INFO_FACULTIES[headquarter][faculty][major]
+        except KeyError:
+            no_data = {
+                "Coordinador Curricular": 'Desconocido',
+                "Teléfono Coordinador": "Desconocido",
+                "Correo Coordinador": "Desconocido",
+                "Correo Coordinación Curricular": "Desconocido"
+            }
+            return no_data
 
     class Meta:
         model = Student
