@@ -21,7 +21,7 @@ from data.constants import Constants
 from person.serializers import UserSerializerShort
 from traceability.models import Traceability
 from traceability.serializers import TraceabilitySerializer
-
+from employee.permissions import IsEmployee
 
 class EligibilityView(APIView):
     """
@@ -127,7 +127,7 @@ class ReadUserStudent(APIView):
                 "user": this_user,
                 "time": datetime.now(),
                 "method": request.method,
-                "view": "ReadUserStudent",
+                "view": str(self.__class__.__name__),
                 "given_data": f"El usuario solicito la información del estudiante con id {my_student.id}."
             }
             Traceability.objects.create(**data_trace)
@@ -136,6 +136,28 @@ class ReadUserStudent(APIView):
         except Exception as e:
             return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
+class DeleteUserStudent(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsEmployee]
+
+    def delete(self, request, pk):
+        try:
+            my_student = Student.objects.get(pk=pk)
+            ide = my_student.id
+            my_student.delete()
+
+            this_user = request.user
+            data_trace = {
+                "user": this_user,
+                "time": datetime.now(),
+                "method": request.method,
+                "view": str(self.__class__.__name__),
+                "given_data": f"El usuario eliminó al estudiante con id {ide}."
+            }
+            Traceability.objects.create(**data_trace)
+
+            return JsonResponse({"message": f"Se eliminó con éxito al estudiante con id {ide}"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class post_user_student(APIView):
     permission_classes = []
@@ -146,7 +168,8 @@ class post_user_student(APIView):
         input_params = dict(input_params)
 
         for key, value in input_params.items():
-            input_params[key] = value[0]
+            if str(type(value)) == "<class 'list'>":
+                input_params[key] = value[0]
 
         username = input_params["email"]
         try:
@@ -263,13 +286,13 @@ class post_user_student(APIView):
             input_params["user"] = user
 
             # Validate PDFs
-            valid_id = ((data_from_grades['id'] == input_params['id']) and (
-                        data_from_student['id'] == input_params['id'])
-                        and (data_from_payment['id'] == input_params['id']))
+            valid_id = ((str(data_from_grades['id']) == str(input_params['id'])) and (
+                        data_from_student['id'] == str(input_params['id']))
+                        and (data_from_payment['id'] == str(input_params['id'])))
             if not valid_id:
                 raise ValueError("El ID no concuerda con el certificado.")
 
-            valid_average = (data_from_grades['average'] == input_params['PAPA'])
+            valid_average = (data_from_grades['average'] == str(input_params['PAPA']))
             if not valid_average:
                 raise ValueError("El promedio no concuerda con el certificado.")
 
@@ -288,11 +311,11 @@ class post_user_student(APIView):
                 raise ValueError(
                     "La facultad no concuerda con el certificado o hay problema con la lista almacenada de facultades.")
 
-            valid_advance = (data_from_student['advance'] == input_params['advance'])
+            valid_advance = (data_from_student['advance'] == str(input_params['advance']))
             if not valid_advance:
                 raise ValueError("El avance no concuerda con el certificado.")
 
-            valid_pbm = (data_from_payment['pbm'] == input_params['PBM'])
+            valid_pbm = (data_from_payment['pbm'] == str(input_params['PBM']))
             if not valid_pbm:
                 raise ValueError("El valor de PBM no concuerda con el certificado.")
 
@@ -319,7 +342,7 @@ class post_user_student(APIView):
                 "user": this_user,
                 "time": datetime.now(),
                 "method": request.method,
-                "view": "PostUserEmployee",
+                "view": str(self.__class__.__name__),
                 "given_data": f"Se creó al usuario estudiante con id {this_student.id} con correo {this_student.user.email} e id usuario {this_student.user.id}."
             }
             Traceability.objects.create(**data_trace)

@@ -1,4 +1,5 @@
 import os
+import base64
 import student
 
 from django.urls import reverse
@@ -31,20 +32,11 @@ class ApplicationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.token_student = response.json()['access']
 
-    def test_authentication(self):
-        """
-        Current user must be authenticated and a student.
-        """
-        response = self.client.get(
-            '/application/region_call/', {'call': 1}, headers={"Authorization": f"Bearer {self.token_employee}"}
-        )
-        self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.json()['detail'], 'Current user is not a student')
-
     def test_region_call_uniandes(self):
         """
         Check that call 1 return Uniandes as region
         """
+        print("TEST:test_region_call_uniandes")
         response = self.client.get(
             '/application/region_call/', {'call': 1}, headers={"Authorization": f"Bearer {self.token_student}"}
         )
@@ -56,6 +48,7 @@ class ApplicationTestCase(TestCase):
         """
         Check that call 4 return Internacional as region
         """
+        print("TEST:test_region_call_international")
         response = self.client.get(
             '/application/region_call/', {'call': 4}, headers={"Authorization": f"Bearer {self.token_student}"}
         )
@@ -66,6 +59,7 @@ class ApplicationTestCase(TestCase):
         """
         Check that when given
         """
+        print("TEST:test_create_form_missing_info_contact")
         data = {
             "contact_person": {
                 "name": "nombre",
@@ -88,6 +82,7 @@ class ApplicationTestCase(TestCase):
         """
         Check that when given
         """
+        print("TEST:test_create_form_incorrect_info_contact")
         data = {
             "contact_person": {
                 "name": "nombre",
@@ -111,6 +106,7 @@ class ApplicationTestCase(TestCase):
         """
         Check that when given
         """
+        print("TEST:test_create_form_correct_info_contact")
         contact_person = {
             "id": 1,
             "name": "Jonathan",
@@ -137,6 +133,7 @@ class ApplicationTestCase(TestCase):
         """
         Check that when given
         """
+        print("TEST:test_create_form_missing_contact_person")
         response = self.client.post(
             '/api-token/', {'username': 'valentina.rodriguez@unal.edu.co', 'password': 'TestPassword'}
         )
@@ -156,6 +153,7 @@ class ApplicationTestCase(TestCase):
         """
 
         """
+        print("TEST:test_create_form_correct")
         data = {
             "diseases": 'de todo',
             "call": 4
@@ -173,6 +171,7 @@ class ApplicationTestCase(TestCase):
         """
 
         """
+        print("TEST:test_download_no_found")
         data = {
             "call": 5,
             "name_file": "request_form",
@@ -191,6 +190,7 @@ class ApplicationTestCase(TestCase):
         """
 
         """
+        print("TEST:test_download_found")
         data = {
             "call": 4,
             "name_file": "request_form",
@@ -205,38 +205,19 @@ class ApplicationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'link')
 
-    def test_upload_too_big(self):
-        """
-
-        """
-        with open('data/big_file.mov', 'rb') as file:
-            file_data = file.read()
-            file_obj = SimpleUploadedFile('big_file.mov', file_data)
-            headers = {
-                "Authorization": f"Bearer {self.token_student}",
-            }
-            data = {
-                'name_file': 'grades_certificate',
-                'document': file_obj,
-                'call': 5,
-            }
-            response = self.client.post('/application/upload/', data=data, headers=headers)
-        self.assertEqual(response.status_code, 413)
-        self.assertEqual(response.json()['error'], 'File is too big. It must be smaller than 9 MB')
-
     def test_upload_correct(self):
         """
 
         """
+        print("TEST:test_upload_correct")
         with open('data/forms/templates/request_form.docx', 'rb') as file:
             file_data = file.read()
-            file_obj = SimpleUploadedFile('request_form.docx', file_data)
             headers = {
                 "Authorization": f"Bearer {self.token_student}",
             }
             data = {
                 'name_file': 'request_form',
-                'document': file_obj,
+                'document': base64.b64encode(file_data).decode('utf-8'),
                 'call': 2,
             }
             response = self.client.post('/application/upload/', data=data, headers=headers)

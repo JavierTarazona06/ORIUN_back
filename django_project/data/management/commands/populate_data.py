@@ -118,7 +118,7 @@ class Command(BaseCommand):
         data_applications = self.open_csv(csv_abs_path, 'applications_data.csv')
 
         for info in data_applications:
-            self.upload_docs(info['student'], info['call'])
+            # self.upload_docs(info['student'], info['call'])
             info['year'], month = datetime.now(timezone.utc).strftime('%Y %m').split(" ")
             info['semester'] = '1' if int(month) <= 6 else '2'
             s = ApplicationSerializer(data=info)

@@ -1,3 +1,4 @@
+import os
 import json
 
 from django.test import TestCase
@@ -22,8 +23,8 @@ class EmployeeTestCase(TestCase):
         qset_students = Student.objects.all()
         if not qset_students:
             # Populate DB
-            comm = Command()
-            comm.handle(path=r"data\data_csv")
+            command = Command()
+            command.handle(path=os.path.join('data', 'data_csv'))
 
     def setUp(self):
         # User auth
@@ -38,7 +39,7 @@ class EmployeeTestCase(TestCase):
         response_body = json.loads(response.content.decode('utf-8'))
         self.bearer_token_emp = response_body['access']
 
-        response = self.client.post('/api-token/', {'username': 'camunozv@unal.edu.co', 'password': '123456'})
+        response = self.client.post('/api-token/', {'username': 'maromana@unal.edu.co', 'password': '123456'})
         self.assertEqual(response.status_code, 200)
         response_body = json.loads(response.content.decode('utf-8'))
         self.bearer_token_emp_cal = response_body['access']
@@ -112,19 +113,31 @@ class EmployeeTestCase(TestCase):
         print("TEST: test_get_employee_by_id")
 
         headers = {"Authorization": f"Bearer {self.bearer_token_emp_cal}"}
-        response = self.client.get(reverse("employee:read_user_employee", args=[1003235916]), headers=headers)
+        response = self.client.get(reverse("employee:read_user_employee", args=[1003235921]), headers=headers)
 
         qset = response.json()
 
         qsetr = {
-            'email': 'camunozv@unal.edu.co', 'first_name': 'Carlos', 'last_name': 'Muñoz', 'id': 1003235916,
-            'birth_place': 'Cali', 'country': 'Colombia', 'city': 'Bogota', 'phone': '315 425 9578',
+            'email': 'maromana@unal.edu.co', 'first_name': 'Maria', 'last_name': 'Roman', 'id': 1003235921,
+            'birth_place': 'Cucuta', 'country': 'Colombia', 'city': 'Bogota', 'phone': '315 425 9578',
             'address': 'Carrera 35 # 25-35', 'birth_date': '2002-04-15', 'type_document': 'CC', 'sex': 'M',
             'ethnicity': 'NA', 'headquarter': 'BO', 'dependency': 'ORI'
         }
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(qset, qsetr)
+
+    def test_delete_employee_by_id(self):
+        print("TEST: test_delete_employee_by_id")
+
+        headers = {"Authorization": f"Bearer {self.bearer_token}"}
+        response = self.client.delete(reverse("employee:delete_user_employee", args=[16893257]), headers=headers)
+
+        resp = response.json()
+        resp_r = {'message': 'Se eliminó con éxito al empleado con id 16893257'}
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(resp, resp_r)
 
     def tearDown(self):
         pass

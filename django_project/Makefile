@@ -24,3 +24,6 @@ delete_migrations:
 
 activate:
 	source .venv/bin/activate
+
+test:
+	python manage.py test
