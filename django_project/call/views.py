@@ -623,10 +623,16 @@ class UniversityView(generics.ListCreateAPIView):
             queryset = University.objects.all()
             print("++++", queryset)
 
+            print("Va para el front")
+
             for university in queryset:
-                university.region = constants_dict_front["region"][str(university.region)]
+                university.region = constants_dict_front["region"][str(university.region).upper()]
+
+            print("Va para el serializer")
 
             serializer = self.get_serializer(queryset, many=True)
+
+            print("Va para el user")
 
             this_user = request.user
             print("Antes de trace")
