@@ -195,24 +195,22 @@ def edit_application(request: Request):
     Endpoint used to replace a document on GCP with the given document.
     """
     # Check size of document
-    if request.data['document'].size > 9_000_000:
-        return Response(
-            {'error': 'File is too big. It must be smaller than 9 MB'}, status=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE
-        )
-
     student = request.user.student
     call = Call.objects.get(id=request.data['call'])
     Application.objects.filter(student=student, call=call).update(modified=True)
 
     # Delete previous document
-    source_file = request.data['document'].file
-    file_extension = request.data['document'].name.split('.')[-1]
+    try:
+        _, data = request.data['document'].split(',')
+    except ValueError:
+        data = request.data['document']
+    source_file = io.BytesIO(base64.b64decode(data))
     name_file = request.data['name_file']
     name = f'{name_file}_{student.id}_{call.id}'
     delete_object('complete_doc', name)
 
     # Upload new document
-    new_name = f'{name_file}_{student.id}_{call.id}.{file_extension}'
+    new_name = f'{name_file}_{student.id}_{call.id}.pdf'
     upload_object('complete_doc', source_file, new_name)
 
     return Response({'message': 'Document updated'}, status=status.HTTP_200_OK)
