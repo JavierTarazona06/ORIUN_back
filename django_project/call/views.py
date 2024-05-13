@@ -623,14 +623,15 @@ class UniversityView(generics.ListCreateAPIView):
             queryset = University.objects.all()
             print("++++", queryset)
 
-            print("Va para el front")
+            print("Va para el for")
 
-            for university in queryset:
-                university.region = constants_dict_front["region"][str(university.region).upper()]
+            # for university in queryset:
+            #     university.region = constants_dict_front["region"][str(university.region).upper()]
 
             print("Va para el serializer")
 
-            serializer = self.get_serializer(queryset, many=True)
+            serializer = UniversitySerializer(queryset, many=True)
+            print(serializer.data)
 
             print("Va para el user")
 
