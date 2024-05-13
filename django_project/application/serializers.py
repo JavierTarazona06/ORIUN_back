@@ -65,7 +65,7 @@ class Applicants(serializers.ModelSerializer):
         return obj.student.get_major_display()
 
     def get_state_documents(self, obj):
-        if obj.modified:
+        if obj.modified == True:
             return 'Modificado por estudiante'
         else:
             return obj.get_state_documents_display()
@@ -73,7 +73,7 @@ class Applicants(serializers.ModelSerializer):
     class Meta:
         model = Application
         fields = ['call', 'student_id', 'university_name', 'university_country', 'year', 'semester', 'student_name',
-                  'student_major', 'state_documents']
+                  'student_major', 'state_documents', 'modified']
 
 
 class ApplicationModifySerializer(serializers.ModelSerializer):
@@ -82,7 +82,7 @@ class ApplicationModifySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Application
-        fields = ['state_documents', 'call_id', 'student_id']
+        fields = ['state_documents', 'call_id', 'student_id', 'modified']
 
 
 class StateSerializer(serializers.Serializer):
