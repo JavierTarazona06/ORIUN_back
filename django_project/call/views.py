@@ -619,24 +619,11 @@ class UniversityView(generics.ListCreateAPIView):
     def get(self, request):
         print("Entró al get")
         try:
-            print("Esta haciendo la busqueda")
             queryset = University.objects.all()
-            print("++++", queryset)
-
-            print("Va para el for")
-
-            # for university in queryset:
-            #     university.region = constants_dict_front["region"][str(university.region).upper()]
-
-            print("Va para el serializer")
 
             serializer = UniversitySerializer(queryset, many=True)
-            print(serializer.data)
-
-            print("Va para el user")
 
             this_user = request.user
-            print("Antes de trace")
             data_trace = {
                 "user": this_user,
                 "time": datetime.now(),
@@ -645,7 +632,6 @@ class UniversityView(generics.ListCreateAPIView):
                 "given_data": f"El usuario solicitó todas las universidades."
             }
             Traceability.objects.create(**data_trace)
-            print("Después de tarce")
 
             return JsonResponse(serializer.data, status=status.HTTP_200_OK, safe=False)
         except Exception as e:
