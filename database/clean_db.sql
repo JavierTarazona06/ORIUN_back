@@ -1,0 +1,20 @@
+DROP TABLE IF EXISTS application_application CASCADE;
+DROP TABLE IF EXISTS call_university CASCADE;
+DROP TABLE IF EXISTS call_call CASCADE;
+DROP TABLE IF EXISTS contact_person CASCADE;
+DROP TABLE IF EXISTS employee_employee CASCADE;
+DROP TABLE IF EXISTS student_contactperson CASCADE;
+DROP TABLE IF EXISTS student_student CASCADE;
+DROP TABLE IF EXISTS student_student_calls_done CASCADE;
+DROP TABLE IF EXISTS university CASCADE;
+
+DROP TABLE IF EXISTS django_session CASCADE;
+DROP TABLE IF EXISTS django_content_type CASCADE;
+DROP TABLE IF EXISTS django_migrations CASCADE;
+DROP TABLE IF EXISTS django_admin_log CASCADE;
+DROP TABLE IF EXISTS auth_group CASCADE;
+DROP TABLE IF EXISTS auth_permission CASCADE;
+DROP TABLE IF EXISTS auth_group_permissions CASCADE;
+DROP TABLE IF EXISTS auth_user CASCADE;
+DROP TABLE IF EXISTS auth_user_groups CASCADE;
+DROP TABLE IF EXISTS auth_user_user_permissions CASCADE;
