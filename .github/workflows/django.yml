@@ -2,9 +2,9 @@ name: Django CI
 
 on:
   push:
-    branches: [ "testing" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "testing" ]
+    branches: [ "main" ]
 
 jobs:
   build:
@@ -16,6 +16,7 @@ jobs:
         python-version: [3.12]
 
     steps:
+    # ------------------------------------------- Set up Python ------------------------------
     - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
@@ -25,6 +26,8 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+
+    # ---------------------------------------- Set up secret files ---------------------------
     - name: Decode SIA files
       env:
         FILES_PW: ${{ secrets.FILES_PW }}
@@ -35,6 +38,8 @@ jobs:
         GOOGLE_API_PW: ${{ secrets.GOOGLE_API_PW }}
       run: |
         ./scripts/decode_credentials.sh
+
+    # ----------------------------------------  Run tests -----------------------------------
     - name: Run project
       env:
         DATABASE_ENGINE: ${{ secrets.DATABASE_ENGINE }}
@@ -47,12 +52,53 @@ jobs:
         MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
       run: |
         ./scripts/start_server.sh &
-    - name: Check ps
-      run: | 
-        for attempt in {1..20}; do sleep 1; done
-    - name: Check ps2
-      run: |
-        ps
     - name: Run Tests
+      env:
+        DATABASE_ENGINE: ${{ secrets.DATABASE_ENGINE }}
+        DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+        DATABASE_USER: ${{ secrets.DATABASE_USER }}
+        DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+        DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+        DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+        MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
       run: |
-        cd django_project && python manage.py test employee
+        cd django_project && python manage.py test signin --noinput
+
+    # ---------------------------------------- Deploy ---------------------------------------
+    - name: GCP Auth
+      uses: 'google-github-actions/auth@v2'
+      with:
+        credentials_json: '${{ secrets.GCP_SA_KEY }}'
+
+    - name: Set up Cloud SDK
+      uses: 'google-github-actions/setup-gcloud@v2'
+
+    - name: Configure Docker
+      run: |
+        gcloud auth configure-docker us-central1-docker.pkg.dev
+
+    - name: Build and Push Docker Image
+      run: |
+        docker build -t ${{ secrets.DOCKER_IMAGE_URL }}:latest .
+        docker push ${{ secrets.DOCKER_IMAGE_URL }}:latest
+
+    - name: Deploy to Cloud Run
+      run: |
+        gcloud run deploy ${{  secrets.SERVICE_NAME  }} \
+        --image=${{ secrets.DOCKER_IMAGE_URL }}:latest \
+        --set-env-vars=DATABASE_ENGINE=${{ secrets.DATABASE_ENGINE }},\
+        DATABASE_NAME=${{ secrets.DATABASE_NAME }},\
+        DATABASE_USER=${{ secrets.DATABASE_USER }},\
+        DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }},\
+        DATABASE_HOST=${{ secrets.DATABASE_HOST }},\
+        DATABASE_PORT=${{ secrets.DATABASE_PORT }},\
+        GOOGLE_APPLICATION_CREDENTIALS=${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }},\
+        MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }} \
+        --region=us-central1 \
+        --revision-suffix=${{  github.sha  }} \
+        --project=${{  secrets.PROJECT_ID  }} \
+        && gcloud run services update-traffic ${{  secrets.SERVICE_NAME  }} --to-latest --region=us-central1
+
+    - name: Show Output
+      run: echo ${{ steps.deploy.outputs.url }}

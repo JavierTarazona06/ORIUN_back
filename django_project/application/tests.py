@@ -32,17 +32,6 @@ class ApplicationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.token_student = response.json()['access']
 
-    def test_authentication(self):
-        """
-        Current user must be authenticated and a student.
-        """
-        print("TEST:test_authentication")
-        response = self.client.get(
-            '/application/region_call/', {'call': 1}, headers={"Authorization": f"Bearer {self.token_employee}"}
-        )
-        self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.json()['detail'], 'Current user is not a student')
-
     def test_region_call_uniandes(self):
         """
         Check that call 1 return Uniandes as region

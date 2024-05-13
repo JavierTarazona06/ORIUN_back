@@ -27,7 +27,7 @@ from traceability.models import Traceability
 
 
 @api_view(['GET'])
-@permission_classes([permissions.IsAuthenticated, IsStudent])
+@permission_classes([permissions.IsAuthenticated])
 def get_region_call(request: Request):
     """
     Endpoint used to get the region (Uniandes, Nacional, Internacional) given a call. Lets the

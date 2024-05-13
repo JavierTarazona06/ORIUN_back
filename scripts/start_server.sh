@@ -1,1 +1,1 @@
-echo "JUEPUTA" && cd django_project && python manage.py runserver
+cd django_project && python manage.py runserver
