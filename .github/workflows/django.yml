@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: Testing
+    environment: Proves
     strategy:
       max-parallel: 4
       matrix:
@@ -63,7 +63,7 @@ jobs:
         GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
         MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
       run: |
-        cd django_project && python manage.py test signin --noinput
+        cd django_project && python manage.py test --noinput
 
     # ---------------------------------------- Deploy ---------------------------------------
     - name: GCP Auth
