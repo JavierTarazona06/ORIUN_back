@@ -14,7 +14,7 @@ import string
 
 
 PET_IMG_PATH = "data/img/owl.png"
-LINK_URL = 'https://oriun-preguntas-frecuentes.vercel.app/'
+LINK_URL = 'https://oriun-ashy.vercel.app/PreguntasFrecuentes'
 FOOT = f"""\
         <p>Atentamente,<br><a href="{LINK_URL}">Equipo ORIUN</a></p>
         <img src="cid:owl_image" alt="Owl icons created by Freepik - Flaticon" width="70">
@@ -22,7 +22,7 @@ FOOT = f"""\
 PET_IMG_ATTACH_NAME='ORIUN_pet.png'
 
 def delete_verif_code(path):
-    time.sleep(300)  # Esperar 5 minutos (5 minutos * 60 segundos/minuto)
+    time.sleep(900)  # Esperar 15 minutos (15 minutos * 60 segundos/minuto)
     if os.path.exists(path):
         os.remove(path)
 
