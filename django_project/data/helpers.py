@@ -67,7 +67,7 @@ def sent_email_verif_code(to: str, id):
           <body>
             <p>Cordial saludo,</p>
             <p>Su código de verificación para acceder a la plataforma es: {verif_code}.</p>
-            <p>Recuerde que el código solo dura 5 minutos activo desde la primera solicitud.</p>
+            <p>Recuerde que el código solo dura 15 minutos activo desde la primera solicitud.</p>
             {FOOT}
           </body>
         </html>
