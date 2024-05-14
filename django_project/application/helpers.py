@@ -107,11 +107,17 @@ def set_variables(request: Request, student: Student) -> dict[str, Union[str, li
     attributes['BIRTH_DATE'] = str(attributes['BIRTH_DATE'])
 
     # Use only the first course info
-    info_courses = attributes['INFO_COURSES'][0]
-    attributes['CODE_UNAL'] = info_courses['CODE_UNAL']
-    attributes['CODE_DESTINY'] = info_courses['CODE_DESTINY']
-    attributes['NAME_UNAL'] = info_courses['NAME_UNAL']
-    attributes['NAME_DESTINY'] = info_courses['NAME_DESTINY']
+    try:
+        info_courses = attributes['INFO_COURSES'][0]
+        attributes['CODE_UNAL'] = info_courses['CODE_UNAL']
+        attributes['CODE_DESTINY'] = info_courses['CODE_DESTINY']
+        attributes['NAME_UNAL'] = info_courses['NAME_UNAL']
+        attributes['NAME_DESTINY'] = info_courses['NAME_DESTINY']
+    except KeyError:
+        attributes['CODE_UNAL'] = ''
+        attributes['CODE_DESTINY'] = ''
+        attributes['NAME_UNAL'] = ''
+        attributes['NAME_DESTINY'] = ''
 
     return attributes
 
