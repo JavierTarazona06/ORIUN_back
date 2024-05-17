@@ -28,6 +28,17 @@ from student.models import Student
 from traceability.models import Traceability
 
 
+def save_traceability(request: Request, name_view: str, description: str) -> None:
+    data_trace = {
+        "user": request.user,
+        "time": datetime.now(),
+        "method": request.method,
+        "view": name_view,
+        "given_data": description
+    }
+    Traceability.objects.create(**data_trace)
+
+
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
 def get_region_call(request: Request):
@@ -38,6 +49,11 @@ def get_region_call(request: Request):
     call_id = request.query_params['call']
     call = Call.objects.get(id=call_id)
     region = call.university.get_region_display()
+
+    save_traceability(
+        request, 'get_region_call', f'El usuario solicito ver los documentos de la convocatoria {call_id}'
+    )
+
     if region == 'Uniandes':
         return JsonResponse({'region': 'Uniandes'}, status=status.HTTP_200_OK)
     elif region == 'Convenio Sigueme/Nacional':
@@ -62,6 +78,11 @@ def create_forms(request: Request):
     contact_person = student.contact_person
     if contact_person is None:
         return JsonResponse({'error': 'La persona de contacto no ha sido definida'}, status=status.HTTP_400_BAD_REQUEST)
+
+    save_traceability(
+        request, 'create_forms', f'El usuario actualizo sus datos personales y de contacto, y solicito'
+                                 f'crear los formularios de la convocatoria {request.data['call']}'
+    )
 
     # Set up the attributes (from student model and the ones that came in the request)
     attributes = set_variables(request, student)
@@ -96,6 +117,10 @@ def download_file(request: Request):
     else:
         name_object = f'{name_file}_{student.id}_{call.id}'
 
+    save_traceability(
+        request, 'download_file', f'El usuario solicito el archivo {name_object}'
+    )
+
     try:
         link_form = get_link_file(type_file, name_object)
         return JsonResponse({'link': link_form}, status=status.HTTP_200_OK)
@@ -128,6 +153,10 @@ def upload_file(request: Request):
     name_file = request.data['name_file']
     new_name = f'{name_file}_{student.id}_{call.id}.pdf'
 
+    save_traceability(
+        request, 'upload_file', f'El usuario subio el archivo {new_name}'
+    )
+
     upload_object('complete_doc', source_file, new_name)
     return Response({'message': 'File uploaded successfully!'}, status=status.HTTP_200_OK)
 
@@ -159,6 +188,10 @@ def submit_application(request: Request):
     serializer.is_valid(raise_exception=True)
     serializer.save()
 
+    save_traceability(
+        request, 'submit_application', f'El usuario creo una aplicacion para la convocatoria {call.id}'
+    )
+
     return Response({'message': 'Application created'}, status=status.HTTP_200_OK)
 
 
@@ -187,6 +220,10 @@ class ApplicationComments(generics.ListAPIView):
         application = Application.objects.get(student=student, call=call)
         serializer = serializers.ApplicationComments(application)
 
+        save_traceability(
+            request, 'ApplicationComments', f'El usuario solicito los comentarios de la aplicacion {application.id}'
+        )
+
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -199,7 +236,7 @@ def edit_application(request: Request):
     # Check size of document
     student = request.user.student
     call = Call.objects.get(id=request.data['call'])
-    Application.objects.filter(student=student, call=call).update(modified=True)
+    application = Application.objects.filter(student=student, call=call).update(modified=True)
 
     # Delete previous document
     try:
@@ -215,10 +252,14 @@ def edit_application(request: Request):
     new_name = f'{name_file}_{student.id}_{call.id}.pdf'
     upload_object('complete_doc', source_file, new_name)
 
+    save_traceability(
+        request, 'edit_application', f'El usuario edito el documento {name_file} de la aplicación {application.id}'
+    )
+
     return Response({'message': 'Document updated'}, status=status.HTTP_200_OK)
 
 
-#case10
+# ------------------------------------------------ case10 --------------------------------------------
 
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated, IsEmployee])
@@ -241,6 +282,11 @@ def applicants(request, call_id):
 
         applications = applications.filter(**filters)
 
+        save_traceability(
+            request, 'applicants', f'El funcionario solicito las aplicaciones de la convocatoria {call_id}'
+                                   f'con los filtros {filters}'
+        )
+
         serializer = Applicants(applications, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -252,9 +298,9 @@ def applicants(request, call_id):
 @permission_classes([permissions.IsAuthenticated, IsEmployee])
 def documents(request, call_id, student_id):
     """
-        Endpoint used to retrieves documents associated with a student's
-        application for a specific call.
-        """
+    Endpoint used to retrieves documents associated with a student's
+    application for a specific call.
+    """
     try:
         application = Application.objects.get(call_id=call_id, student_id=student_id)
     except Application.DoesNotExist:
@@ -288,6 +334,11 @@ def documents(request, call_id, student_id):
         'documents': documents
     }
 
+    save_traceability(
+        request, 'documents', f'El funcionario solicito todos los documentos de la convocatoria {call_id}'
+                              f'del estudiante {student_id}'
+    )
+
     return JsonResponse(response_data, status=status.HTTP_200_OK)
 
 
@@ -295,8 +346,8 @@ def documents(request, call_id, student_id):
 @permission_classes([permissions.IsAuthenticated, IsEmployee])
 def modify(request, call_id, student_id):
     """
-        Endpoint used to request modifications to an existing student application
-        """
+    Endpoint used to request modifications to an existing student application
+    """
     try:
         application = Application.objects.get(call_id=call_id, student_id=student_id)
     except Application.DoesNotExist:
@@ -307,6 +358,9 @@ def modify(request, call_id, student_id):
 
     if serializer.is_valid():
         serializer.save()
+        save_traceability(
+            request, 'modify', f'El funcionario solicito modificar los documentos de la aplicacion {application.id}'
+        )
         return Response(serializer.data, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -328,6 +382,9 @@ def accept_documents(request, call_id, student_id):
 
     if serializer.is_valid():
         serializer.save()
+        save_traceability(
+            request, 'accept_documents', f'El funcionario acepto los documentos de la aplicacion {application.id}'
+        )
         return Response(serializer.data, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -344,6 +401,10 @@ def get_student_info(request, student_id, call_id):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     serializer = Applicants(student)
+    save_traceability(
+        request, 'get_student_info', f'El funcionario solicito la informacion del estudiante de la '
+                                     f'aplicacion {student.id}'
+    )
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -376,6 +437,11 @@ def get_state(request, call_id, student_id):
         serializer = StateSerializer(
             data={'call': application.call_id, 'student_id': application.student_id, 'state': state})
         serializer.is_valid()
+
+        save_traceability(
+            request, 'get_state', f'El funcionario solicito el estado de la aplicacion {application.id}'
+        )
+
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     except Application.DoesNotExist:
@@ -396,6 +462,10 @@ def add_comment(request, call_id, student_id):
     comment = request.data.get('comment')
     application.comment = comment
     application.save()
+
+    save_traceability(
+        request, 'add_comment', f'El funcionario coloco el comentario {comment} en la aplicacion {application.id}'
+    )
     return Response({"message": "Comment added successfully."}, status=status.HTTP_201_CREATED)
 
 

@@ -1,5 +1,6 @@
 import os
 import re
+import pytz
 from math import ceil
 from _io import BytesIO
 from typing import Union
@@ -32,6 +33,12 @@ def set_variables(request: Request, student: Student) -> dict[str, Union[str, li
     attributes = dict()
     for attribute in student._meta.get_fields():
         try:
+            if attribute.name == 'user':  # It is the user info
+                user = getattr(student, attribute.name)
+                attributes['FIRST_NAME'] = getattr(user, 'first_name')
+                attributes['LAST_NAME'] = getattr(user, 'last_name')
+                attributes['EMAIL'] = getattr(user, 'email')
+
             if 'contact' in attribute.name:  # It is the contact person info
                 contact_person = getattr(student, attribute.name)
                 for attr_contact in contact_person._meta.get_fields():
@@ -55,10 +62,15 @@ def set_variables(request: Request, student: Student) -> dict[str, Union[str, li
     headquarter = student.get_headquarter_display()
     faculty = student.get_faculty_display()
     major = student.get_major_display()
-    info_coordinator = Constants.INFO_FACULTIES[headquarter][faculty][major]
-    attributes['NAME_COORD_UNAL'] = info_coordinator['Coordinador Curricular']
-    attributes['PHONE_COORD_UNAL'] = info_coordinator['Teléfono Coordinador']
-    attributes['EMAIL_COORD_UNAL'] = info_coordinator['Correo Coordinador']
+    try:
+        info_coordinator = Constants.INFO_FACULTIES[headquarter][faculty][major]
+        attributes['NAME_COORD_UNAL'] = info_coordinator['Coordinador Curricular']
+        attributes['PHONE_COORD_UNAL'] = info_coordinator['Teléfono Coordinador']
+        attributes['EMAIL_COORD_UNAL'] = info_coordinator['Correo Coordinador']
+    except KeyError:
+        attributes['NAME_COORD_UNAL'] = ''
+        attributes['PHONE_COORD_UNAL'] = ''
+        attributes['EMAIL_COORD_UNAL'] = ''
 
     # Info destination university
     call = Call.objects.get(id=request.data['call'])
@@ -88,7 +100,24 @@ def set_variables(request: Request, student: Student) -> dict[str, Union[str, li
                 info_course[f'{name.upper()}'] = info
             attributes['INFO_COURSES'].append(info_course)
 
-    # TODO: add date to forms (should it be UTF?)
+    time_location = pytz.timezone('America/Bogota')
+    day, month, year = datetime.now(time_location).strftime('%d.%m.%Y').split('.')
+    attributes['DATE'], attributes['MONTH'], attributes['YEAR'] = day, month, year
+
+    attributes['BIRTH_DATE'] = str(attributes['BIRTH_DATE'])
+
+    # Use only the first course info
+    try:
+        info_courses = attributes['INFO_COURSES'][0]
+        attributes['CODE_UNAL'] = info_courses['CODE_UNAL']
+        attributes['CODE_DESTINY'] = info_courses['CODE_DESTINY']
+        attributes['NAME_UNAL'] = info_courses['NAME_UNAL']
+        attributes['NAME_DESTINY'] = info_courses['NAME_DESTINY']
+    except KeyError:
+        attributes['CODE_UNAL'] = ''
+        attributes['CODE_DESTINY'] = ''
+        attributes['NAME_UNAL'] = ''
+        attributes['NAME_DESTINY'] = ''
 
     return attributes
 

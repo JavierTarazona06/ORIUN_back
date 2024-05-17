@@ -1,5 +1,6 @@
 import os
 
+from rest_framework.request import Request
 from call.models import Call
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
@@ -23,15 +24,30 @@ from traceability.models import Traceability
 from traceability.serializers import TraceabilitySerializer
 from employee.permissions import IsEmployee
 
+
+def save_traceability(request: Request, name_view: str, description: str) -> None:
+    data_trace = {
+        "user": request.user,
+        "time": datetime.now(),
+        "method": request.method,
+        "view": name_view,
+        "given_data": description
+    }
+    Traceability.objects.create(**data_trace)
+
+
 class EligibilityView(APIView):
     """
-    API endpoint that allows to get and put data related to the contact info and medical information
-    of the student
+    Returns whether the student is eligible for the given call
     """
     permission_classes = [permissions.IsAuthenticated, IsStudent]
 
     def get(self, request):
         student = request.user.student
+
+        save_traceability(
+            request, 'EligibilityView', f'El estudiante quiere postularse a la convocatoria {request.GET.get('call')}'
+        )
 
         # Being matriculated or en 'reserva de cupo'
         if not student.is_enrolled:
@@ -76,6 +92,9 @@ class ApplicationDataView(APIView):
     def get(self, request):
         student = request.user.student
         serializer = StudentApplicationSerializer(student)
+        save_traceability(
+            request, 'ApplicationDataView', f'El estudiante solicito la informacion de contacto e informacion medica'
+        )
         return Response(serializer.data)
 
     def put(self, request):
@@ -83,6 +102,11 @@ class ApplicationDataView(APIView):
         serializer = StudentApplicationSerializer(student, data=request.data)
         if serializer.is_valid():
             serializer.save()
+            save_traceability(
+                request, 'ApplicationDataView',
+                f'El estudiante modifico la informacion de contacto e informacion medica. Siendo la nueva'
+                f'informacion la siguiente: {request.data}'
+            )
             return JsonResponse({'message': 'Data has been updated'}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
