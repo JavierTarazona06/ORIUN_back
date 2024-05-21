@@ -28,6 +28,7 @@ from student.models import Student
 from traceability.models import Traceability
 
 
+
 def save_traceability(request: Request, name_view: str, description: str) -> None:
     data_trace = {
         "user": request.user,
@@ -80,8 +81,8 @@ def create_forms(request: Request):
         return JsonResponse({'error': 'La persona de contacto no ha sido definida'}, status=status.HTTP_400_BAD_REQUEST)
 
     save_traceability(
-        request, 'create_forms', f'El usuario actualizo sus datos personales y de contacto, y solicito'
-                                 f'crear los formularios de la convocatoria {request.data['call']}'
+        request, 'create_forms', f"El usuario actualizó sus datos personales y de contacto, y solicitó"
+                                 f"crear los formularios de la convocatoria {request.data['call']}"
     )
 
     # Set up the attributes (from student model and the ones that came in the request)
