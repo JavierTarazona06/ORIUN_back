@@ -80,8 +80,8 @@ def create_forms(request: Request):
         return JsonResponse({'error': 'La persona de contacto no ha sido definida'}, status=status.HTTP_400_BAD_REQUEST)
 
     save_traceability(
-        request, 'create_forms', f'El usuario actualizo sus datos personales y de contacto, y solicito'
-                                 f'crear los formularios de la convocatoria {request.data['call']}'
+        request, 'create_forms', f"El usuario actualizó sus datos personales y de contacto, y solicitó"
+                                 f"crear los formularios de la convocatoria {request.data['call']}"
     )
 
     # Set up the attributes (from student model and the ones that came in the request)
@@ -608,13 +608,40 @@ class OrderGeneral(APIView):
             return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class GetAllApplications(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsEmployee]
+
+    def get(self, request, pk):
+        try:
+            applications = Application.objects.filter(call=pk)
+            applications = ApplicationOrdersSerializer(applications, many=True).data
+
+            this_user = request.user
+            data_trace = {
+                "user": this_user,
+                "time": datetime.now(),
+                "method": request.method,
+                "view": self.__class__.__name__,
+                "given_data": f"El usuario solicitó las aplicaciones a la convocatoria {pk} ordenadas por estado de la documentación, PAPA, Avance, Idioma y PBM de los estudiantes (Orden General)."
+            }
+            Traceability.objects.create(**data_trace)
+
+            return JsonResponse(applications, status=status.HTTP_200_OK, safe=False)
+        except Exception as e:
+            return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
 class SetWinner(APIView):
     permission_classes = [permissions.IsAuthenticated, IsEmployee]
 
     def post(self, request):
         try:
             input_params = request.data
-            this_application = Application.objects.get(call__id=input_params['call_id'], student_id=input_params['student_id'])
+            this_application = Application.objects.get(call__id=input_params['call_id'],
+                                                       student_id=input_params['student_id'])
+
+            # Verificar que los estudiantes ya fueron revisados
+            se_puede_asignar_ganador(input_params['call_id'])
 
             # Check Available Slots
             call_applications = Application.objects.filter(call=this_application.call_id)
@@ -622,8 +649,9 @@ class SetWinner(APIView):
             for i in range(len(call_applications)):
                 if (call_applications[i].approved):
                     quant_stud_approved += 1
-            if this_application.call.available_slots < (quant_stud_approved+1):
-                raise AttributeError(f"No se pueden aceptar mas estudiantes. Estudiantes ya Aceptados: {quant_stud_approved}. Cupos: {this_application.call.available_slots}")
+            if this_application.call.available_slots < (quant_stud_approved + 1):
+                raise AttributeError(
+                    f"No se pueden aceptar mas estudiantes. Estudiantes ya Aceptados: {quant_stud_approved}. Cupos: {this_application.call.available_slots}")
 
             # Set Winner
             this_application.approved = True
@@ -636,7 +664,17 @@ class SetWinner(APIView):
 
             # Send email
             student_winner = Student.objects.get(id=this_application.student.id)
-            send_email_winner(student_winner.user.email, str(student_winner.user.first_name)+' '+str(student_winner.user.last_name), this_call.id, this_call.university.name, this_call.year, this_call.semester)
+            send_email_winner(student_winner.user.email,
+                              str(student_winner.user.first_name) + ' ' + str(student_winner.user.last_name),
+                              this_call.id, this_call.university.name, this_call.year, this_call.semester)
+
+            # Modify Highest and minimum PAPA winner in Call
+            this_call = Call.objects.get(id=this_application.call_id)
+            if this_call.highest_papa_winner < student_winner.PAPA:
+                this_call.highest_papa_winner = student_winner.PAPA
+            if this_call.minimum_papa_winner > student_winner.PAPA:
+                this_call.minimum_papa_winner = student_winner.PAPA
+            this_call.save()
 
             this_user = request.user
             data_trace = {
@@ -648,10 +686,11 @@ class SetWinner(APIView):
             }
             Traceability.objects.create(**data_trace)
             return JsonResponse({
-                                    "message": f"El estudiante con ID {input_params['student_id']} fue seleccionado para la convocatoria {this_application.call_id}"},
-                                status=status.HTTP_200_OK)
+                "message": f"El estudiante con ID {input_params['student_id']} fue seleccionado para la convocatoria {this_application.call_id}"},
+                status=status.HTTP_200_OK)
         except Exception as e:
             return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class RemoveWinner(APIView):
     permission_classes = [permissions.IsAuthenticated, IsEmployee]
@@ -660,14 +699,37 @@ class RemoveWinner(APIView):
         try:
             input_params = request.data
 
-            this_application = Application.objects.get(call__id=input_params['call_id'], student_id=input_params['student_id'])
+            # Remove as winner
+            this_application = Application.objects.get(call__id=input_params['call_id'],
+                                                       student_id=input_params['student_id'])
             this_application.approved = False
             this_application.save()
 
             # Send email
             student_not_winner = Student.objects.get(id=this_application.student.id)
             this_call = Call.objects.get(id=this_application.call_id)
-            send_email_not_winner(student_not_winner.user.email, str(student_not_winner.user.first_name)+' '+str(student_not_winner.user.last_name), this_call.id, this_call.university.name, this_call.year, this_call.semester)
+            send_email_not_winner(student_not_winner.user.email, str(student_not_winner.user.first_name) + ' ' + str(
+                student_not_winner.user.last_name), this_call.id, this_call.university.name, this_call.year,
+                                  this_call.semester)
+
+            # Modify Highest and minimum PAPA winner in Call
+            all_applications_this_call = Application.objects.filter(call__id=input_params['call_id'], approved=True)
+
+            if this_call.highest_papa_winner == student_not_winner.PAPA:
+                max_papa = 0
+                for application in all_applications_this_call:
+                    if application.student.PAPA > max_papa:
+                        max_papa = application.student.PAPA
+                this_call.highest_papa_winner = max_papa
+
+            if this_call.minimum_papa_winner == student_not_winner.PAPA:
+                min_papa = 5
+                for application in all_applications_this_call:
+                    if application.student.PAPA < min_papa:
+                        min_papa = application.student.PAPA
+                this_call.minimum_papa_winner = min_papa
+
+            this_call.save()
 
             this_user = request.user
             data_trace = {
@@ -680,8 +742,57 @@ class RemoveWinner(APIView):
             Traceability.objects.create(**data_trace)
 
             return JsonResponse({
-                                    "message": f"El estudiante con ID {input_params['student_id']} fue des-seleccionado para la convocatoria {this_application.call_id}"},
-                                status=status.HTTP_200_OK)
+                "message": f"El estudiante con ID {input_params['student_id']} fue des-seleccionado para la convocatoria {this_application.call_id}"},
+                status=status.HTTP_200_OK)
 
+        except Exception as e:
+            return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class OriunError(Exception):
+    def __init__(self, message="Hay un error en las Aplicaciones de ORIUN"):
+        self.message = message
+        super().__init__(self.message)
+
+    def __str__(self):
+        return f'OriunError: {self.message}'
+
+
+def se_puede_asignar_ganador(call_id) -> bool:
+    pending_applications = Application.objects.filter(state_documents=0, call__id=call_id)
+    pending_applications = ApplicationOrdersSerializer(pending_applications, many=True).data
+
+    if len(pending_applications) > 0:
+        raise OriunError(
+            "Hay estudiantes que tienen aplicaciones pendientes por revisar. Aún no se puede asignar ganador. Estudiantes: " + str(
+                pending_applications))
+
+    return True
+
+class PreAssignWinners(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsEmployee]
+
+    def get(self, request, pk):
+        try:
+            pending_applications = Application.objects.filter(state_documents=0, call__id=pk)
+            pending_applications = ApplicationOrdersSerializer(pending_applications, many=True).data
+
+            if len(pending_applications) > 0:
+                raise OriunError(
+                    "Hay estudiantes que tienen aplicaciones pendientes por revisar. Aún no se puede asignar ganador. Estudiantes: " + str(
+                        pending_applications))
+
+            this_user = request.user
+            data_trace = {
+                "user": this_user,
+                "time": datetime.now(),
+                "method": request.method,
+                "view": self.__class__.__name__,
+                "given_data": f"El usuario solicitó confirmación para asignar ganadores de una convocatoria."
+            }
+            Traceability.objects.create(**data_trace)
+
+            return JsonResponse({"message": "Ya se revisaron todas las aplicaciones, se pueden asignar los ganadores"},
+                                status=status.HTTP_200_OK, safe=True)
         except Exception as e:
             return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
