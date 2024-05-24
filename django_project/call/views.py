@@ -812,11 +812,11 @@ class SetClosed(APIView):
                 "time": datetime.now(),
                 "method": request.method,
                 "view": self.__class__.__name__,
-                "given_data": f"El usuario cerró la convocatoria con ID: {this_call.id} de la universidad: {this_call.university.name} en el periodo: {this_call.year}-{this_call.semester}."
+                "given_data": f"El usuario cerró la convocatoria con ID: {this_call.id} de la universidad: {this_call.university.name} del periodo: {this_call.year}-{this_call.semester}."
             }
             Traceability.objects.create(**data_trace)
 
-            return JsonResponse({"message":f"Se cerró la convocatoria con ID: {this_call.id} de la universidad: {this_call.university.name} en el periodo: {this_call.year}-{this_call.semester}."}, status=status.HTTP_200_OK)
+            return JsonResponse({"message":f"Se cerró la convocatoria con ID: {this_call.id} de la universidad: {this_call.university.name} del periodo: {this_call.year}-{this_call.semester}."}, status=status.HTTP_200_OK)
         except Exception as e:
             return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -838,10 +838,10 @@ class SetOpen(APIView):
                 "time": datetime.now(),
                 "method": request.method,
                 "view": self.__class__.__name__,
-                "given_data": f"El usuario abrió la convocatoria con ID: {this_call.id} de la universidad: {this_call.university.name} en el periodo: {this_call.year}-{this_call.semester}."
+                "given_data": f"El usuario abrió la convocatoria con ID: {this_call.id} de la universidad: {this_call.university.name} del periodo: {this_call.year}-{this_call.semester}."
             }
             Traceability.objects.create(**data_trace)
 
-            return JsonResponse({"message":f"Se abrió la convocatoria con ID: {this_call.id} de la universidad: {this_call.university.name} en el periodo: {this_call.year}-{this_call.semester}."}, status=status.HTTP_200_OK)
+            return JsonResponse({"message":f"Se abrió la convocatoria con ID: {this_call.id} de la universidad: {this_call.university.name} del periodo: {this_call.year}-{this_call.semester}."}, status=status.HTTP_200_OK)
         except Exception as e:
             return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
