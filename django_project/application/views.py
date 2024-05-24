@@ -5,6 +5,7 @@ from urllib.request import Request
 
 from google.cloud import exceptions as gcloud_exceptions
 from django.http import JsonResponse
+from django.db.models import Q
 
 from rest_framework import permissions
 from rest_framework import status, generics
@@ -759,7 +760,10 @@ class OriunError(Exception):
 
 
 def se_puede_asignar_ganador(call_id) -> bool:
-    pending_applications = Application.objects.filter(state_documents=0, call__id=call_id)
+    pending_applications = Application.objects.filter(
+        Q(call__id=call_id, state_documents=0) |
+        Q(call__id=call_id, state_documents=1, modified=True)
+    )
     pending_applications = ApplicationOrdersSerializer(pending_applications, many=True).data
 
     if len(pending_applications) > 0:
@@ -774,13 +778,7 @@ class PreAssignWinners(APIView):
 
     def get(self, request, pk):
         try:
-            pending_applications = Application.objects.filter(state_documents=0, call__id=pk)
-            pending_applications = ApplicationOrdersSerializer(pending_applications, many=True).data
-
-            if len(pending_applications) > 0:
-                raise OriunError(
-                    "Hay estudiantes que tienen aplicaciones pendientes por revisar. Aún no se puede asignar ganador. Estudiantes: " + str(
-                        pending_applications))
+            se_puede_asignar_ganador(pk)
 
             this_user = request.user
             data_trace = {
