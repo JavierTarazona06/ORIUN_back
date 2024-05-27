@@ -1,22 +1,15 @@
-import json
-import os
 from django.db import models
-from django.contrib.postgres.fields import ArrayField
-from django.utils.translation import gettext_lazy as _
 from data.constants import Constants
-import ast
+from django.utils.translation import gettext_lazy as _
 
 
 class University(models.Model):
-
-    id = models.BigAutoField(primary_key = True, auto_created = True)
+    id = models.BigAutoField(primary_key=True, auto_created=True)
     name = models.CharField(max_length=255)
     webpage = models.CharField(max_length=255)
 
-
     region_choices = [(choice['value'], _(choice['display'])) for choice in Constants.REGION_CHOICES]
     region = models.CharField(max_length=10, choices=region_choices)
-    
 
     country = models.CharField(max_length=50)
     city = models.CharField(max_length=50)
@@ -24,13 +17,11 @@ class University(models.Model):
     academic_offer = models.CharField(max_length=255)
     exchange_info = models.CharField(max_length=255)
 
-
     def __str__(self):
         return f'University: {self.name}'
 
 
 class Call(models.Model):
-
     university = models.ForeignKey('University', on_delete=models.CASCADE)
     active = models.BooleanField()
     begin_date = models.DateField()

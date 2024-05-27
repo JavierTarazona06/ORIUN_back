@@ -1,32 +1,27 @@
 import io
 import base64
-from datetime import datetime, timezone
-from urllib.request import Request
-
-from google.cloud import exceptions as gcloud_exceptions
-from django.http import JsonResponse
+from datetime import timezone
 from django.db.models import Q
-
-from rest_framework import permissions
-from rest_framework import status, generics
+from django.http import JsonResponse
+from rest_framework.views import APIView
 from rest_framework.response import Response
+from google.cloud import exceptions as gcloud_exceptions
+from rest_framework import permissions, generics, status
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.decorators import api_view, permission_classes, parser_classes
-from rest_framework import status
-from rest_framework.views import APIView
 
-from student.views import ApplicationDataView
-from .permissions import IsStudent, IsEmployee
-from .serializers import ApplicationSerializer, ApplicationModifySerializer, StateSerializer, \
-    ApplicationDetailSerializer, ApplicationOrdersSerializer
 from .helpers import *
 from . import serializers
-from .serializers import Applicants
-from .models import Application
 from call.models import Call
-from data.helpers import send_email_winner, send_email_not_winner
+from .models import Application
 from student.models import Student
 from traceability.models import Traceability
+from student.views import ApplicationDataView
+from .permissions import IsStudent, IsEmployee
+from data.helpers import send_email_winner, send_email_not_winner
+from .serializers import (
+    ApplicationModifySerializer, StateSerializer, ApplicationOrdersSerializer, Applicants
+)
 
 
 def save_traceability(request: Request, name_view: str, description: str) -> None:
