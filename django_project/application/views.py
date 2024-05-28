@@ -1,7 +1,15 @@
 import io
 import base64
+
+from datetime import datetime, timezone
+from urllib.request import Request
+from django.http import QueryDict
+
+from google.cloud import exceptions as gcloud_exceptions
+
 from datetime import timezone
 from django.db.models import Q
+
 from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -9,6 +17,13 @@ from google.cloud import exceptions as gcloud_exceptions
 from rest_framework import permissions, generics, status
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.decorators import api_view, permission_classes, parser_classes
+
+
+from student.views import ApplicationDataView
+from .permissions import IsStudent, IsEmployee
+from .serializers import ApplicationSerializer, ApplicationModifySerializer, StateSerializer, \
+    ApplicationDetailSerializer, ApplicationOrdersSerializer, ApplicationResults
+
 
 from .helpers import *
 from . import serializers
@@ -189,19 +204,6 @@ def submit_application(request: Request):
     )
 
     return Response({'message': 'Application created'}, status=status.HTTP_200_OK)
-
-
-class ApplicationsStudent(generics.ListAPIView):
-    """
-    Endpoint used to return the student's applications in reverse chronological order and with general
-    information about the application.
-    """
-    permission_classes = [permissions.IsAuthenticated, IsStudent]
-    serializer_class = serializers.ApplicationDetailSerializer
-
-    def get_queryset(self):
-        student = self.request.user.student
-        return Application.objects.filter(student=student).order_by('-year', '-semester')
 
 
 class ApplicationComments(generics.ListAPIView):
@@ -789,3 +791,99 @@ class PreAssignWinners(APIView):
                                 status=status.HTTP_200_OK, safe=True)
         except Exception as e:
             return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+#CASE 8 ---------------------------------------------
+class ApplicationsStudent(generics.GenericAPIView):
+    """
+    Endpoint used to return the student's applications in reverse chronological order and with general
+    information about the application.
+    """
+    permission_classes = [permissions.IsAuthenticated, IsStudent]
+    serializer_class = serializers.StudentCalls
+
+    def get(self, request, *args, **kwargs):
+        try:
+            student = self.request.user.student
+
+            application = Application.objects.filter(student=student).order_by('-year', '-semester').first()
+
+            if not application:
+                return Response({"error": "No applications found for this student."}, status=status.HTTP_404_NOT_FOUND)
+
+            serializer = self.get_serializer(application)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated, IsStudent])
+def results(request: Request, call_id):
+    """
+            Endpoint to retrieve results if the student is accepted, not accepted or pending application verification
+    """
+    serializer = Applicants(data=request.query_params)
+    serializer.is_valid(raise_exception=True)
+
+    try:
+        student = request.user.student
+        application = Application.objects.get(student=student, call=call_id)
+    except Application.DoesNotExist:
+        return Response({"error": "Application not found."}, status=status.HTTP_404_NOT_FOUND)
+
+
+    if application.approved is True:
+        message = f"Felicitaciones, usted ha sido seleccionad@ a la convocatoria {call_id}."
+    elif application.approved is False:
+        message = f"Lo sentimos, usted no ha sido seleccionad@ a la convocatoria {call_id}."
+    else:
+        message = f"Su aplicación está pendiente de revisión para la convocatoria {call_id}."
+
+    serializer = ApplicationDetailSerializer(application)
+
+    save_traceability(
+        request, 'results', f'El estudiante con id:{student},  solicito los resultados para la convocatoria: {call_id} .'
+    )
+    return Response({"message": message, "application": serializer.data}, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated, IsEmployee])
+def results_employee(request: Request, call_id):
+    """
+    Endpoint to retrieve all applications with corresponding result, in case it has been accepted or not
+    """
+    try:
+        # TODO: add case when the application is closed
+
+        serializer = Applicants(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+
+        approved = request.GET.get('approved')
+
+        applications = Application.objects.filter(call_id=call_id)
+
+        if approved is not None:
+            applications = applications.filter(approved=approved).order_by('approved')
+
+        #applications = applications.order_by('approved')
+
+        if not applications.exists():
+            return Response({"error": "No results found for the provided call ID"},
+                            status=status.HTTP_404_NOT_FOUND)
+
+        filters = request.query_params.dict()
+        applications = applications.filter(**filters)
+
+        serializer = ApplicationResults(applications, many=True)
+
+        save_traceability(
+            request, 'results_employee', f'El funcionario solicito los resultados de la convocatoria {call_id}'
+        )
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+

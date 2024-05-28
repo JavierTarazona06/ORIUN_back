@@ -47,10 +47,10 @@ class Call(models.Model):
     available_slots = models.SmallIntegerField()
     note = models.TextField(blank=True, null=True)
 
-    # Add 3 new fields only for testing in case 3 (need to create a new model that includes this).
+
     highest_papa_winner = models.FloatField(default=0.0)
     minimum_papa_winner = models.FloatField(default=0.0)
-    selected = models.IntegerField(default=0)
+
 
     def __str__(self):
         return f'Call: university {self.university.name} during semester {self.semester} on year {self.year}'

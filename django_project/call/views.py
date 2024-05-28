@@ -399,8 +399,7 @@ class UpdateCallsView(generics.RetrieveUpdateDestroyAPIView):
                 call.highest_papa_winner = data['highest_papa_winner']
             if 'minimum_papa_winner' in data:
                 call.minimum_papa_winner = data['minimum_papa_winner']
-            if 'selected' in data:
-                call.selected = data['selected']
+
 
             call.save()
 
