@@ -12,12 +12,11 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import AnonymousUser
 from rest_framework import status, generics, permissions
 
-from student.models import Student
-from application.models import Application
 from traceability.models import Traceability
 from data.constants_dict_front import constants_dict_front
 
 from .models import Call, University
+from .helpers import get_info_statistics
 from .permissions import IsEmployee, IsStudent
 from .serializers import (
     CallSerializerPost, UniversitySerializerPost, CallSerializerOpen,
@@ -872,80 +871,10 @@ def statistics(request):
         request, 'statistics', f'Se solicitaron las estadísticas de {data_student} vs {data_call}'
     )
 
-    # Get values of the data requested from the calls
-    if data_call == 'university':
-        rows = {university.name: i for i, university in enumerate(University.objects.all())}
-    elif data_call == 'country':
-        countries = set(university.country for university in University.objects.all())
-        rows = {country: i for i, country in enumerate(countries)}
-    elif data_call == 'region':
-        rows = {display: i for i, (_, display) in enumerate(getattr(University, f'region_choices'))}
-    elif data_call == 'semester':
-        rows = {display: i for i, (_, display) in enumerate(getattr(Call, f'semester_choices'))}
-    else:
+    # Get the statistics in the output format required by the front
+    try:
+        output = get_info_statistics(data_call, data_student)
+    except NotImplemented:
         return JsonResponse({'error': f'Value requested {data_call} not found'}, status=status.HTTP_404_NOT_FOUND)
 
-    # Types of data_call that will be shown with tables
-    data_table = ['faculty', 'major', 'sex', 'admission', 'study_level']
-
-    if data_student in data_table:
-        columns = {
-            str(display): i for i, (_, display) in enumerate(getattr(Student, f'{data_student}_choices'))
-        }
-
-        table_applications = [[0 for _ in range(len(columns))] for _ in range(len(rows))]
-        table_winners = [[0 for _ in range(len(columns))] for _ in range(len(rows))]
-
-        for application in Application.objects.all():
-            if data_call == 'university':
-                r = application.call.university.name
-            elif data_call == 'country':
-                r = application.call.university.country
-            elif data_call == 'region':
-                r = application.call.university.get_region_display()
-            else:
-                r = application.call.get_semester_display()
-
-            c = getattr(application.student, f'get_{data_student}_display')()
-
-            row = rows[r]
-            col = columns[c]
-
-            table_applications[row][col] += 1
-            if application.approved:
-                table_winners[row][col] += 1
-
-        # Set the display values used for rows and columns
-        display_rows = list(range(len(rows)))
-        for value, row in rows.items():
-            display_rows[row] = value
-        display_columns = list(range(len(columns)))
-        for value, column in columns.items():
-            display_columns[column] = value
-
-        # Fill the
-        info_applications = []
-        for display_row, row in zip(display_rows, table_applications):
-            data = {data_call: display_row}
-            for display_column, value in zip(display_columns, row):
-                data[display_column] = value
-            info_applications.append(data)
-
-        info_winners = []
-        for display_row, row in zip(display_rows, table_winners):
-            data = {data_call: display_row}
-            for display_column, value in zip(display_columns, row):
-                data[display_column] = value
-            info_winners.append(data)
-
-        output = {
-            'type_chat': 'table',
-            'postulates': info_applications,
-            'winners': info_winners,
-        }
-        print(output)
-
-        return JsonResponse(output, status=status.HTTP_200_OK)
-
-    else:
-        pass
+    return JsonResponse(output, status=status.HTTP_200_OK)
