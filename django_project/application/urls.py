@@ -26,5 +26,8 @@ urlpatterns = [
     path('order_pbm/<int:pk>/', OrderPBM.as_view(), name='order_apps_by_pbm'),
     path('order/<int:pk>/', OrderGeneral.as_view(), name='order_apps_general'),
     path('winner/', SetWinner.as_view(), name='set_winner'),
-    path('not_winner/', RemoveWinner.as_view(), name='not_winner')
+    path('not_winner/', RemoveWinner.as_view(), name='not_winner'),
+    #path('student_applications/', views.student_application, name='student_applications'),
+    path('results/<int:call_id>/', views.results, name='students-results'),
+    path('results_employee/<int:call_id>/', views.results_employee, name='results-employee'),
 ]

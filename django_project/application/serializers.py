@@ -5,6 +5,7 @@ from rest_framework import serializers
 
 
 class ApplicationSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Application
         fields = '__all__'
@@ -16,6 +17,10 @@ class ApplicationSerializer(serializers.ModelSerializer):
 class ApplicationDetailSerializer(serializers.ModelSerializer):
     university_name = serializers.SerializerMethodField()
     university_country = serializers.SerializerMethodField()
+    call_description = serializers.SerializerMethodField()
+
+    def get_call_description(self, obj):
+        return obj.call.description
 
     def get_university_name(self, obj):
         return obj.call.university.name
@@ -25,7 +30,7 @@ class ApplicationDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Application
-        fields = ['call', 'university_name', 'university_country', 'state_documents', 'approved']
+        fields = ['call', 'university_name', 'university_country', 'state_documents', 'approved', 'call_description','student_id']
 
 
 class ApplicationComments(serializers.ModelSerializer):
@@ -116,3 +121,49 @@ class ApplicationOrdersSerializer(serializers.ModelSerializer):
             return True
         else:
             return False
+class ApplicationResults(serializers.ModelSerializer):
+    university_name = serializers.SerializerMethodField()
+    university_country = serializers.SerializerMethodField()
+    student_id = serializers.PrimaryKeyRelatedField(queryset=Student.objects.all(), required=False)
+    approved = serializers.BooleanField()
+
+    def get_university_name(self, obj):
+        return obj.call.university.name
+
+    def get_university_country(self, obj):
+        return obj.call.university.country
+
+    class Meta:
+        model = Application
+        fields = ['student_id','call', 'university_name', 'university_country','approved']
+
+class StudentCalls(serializers.ModelSerializer):
+    university_name = serializers.SerializerMethodField()
+    university_country = serializers.SerializerMethodField()
+    student_id = serializers.PrimaryKeyRelatedField(queryset=Student.objects.all(), required=False)
+    approved = serializers.BooleanField()
+    call_description = serializers.SerializerMethodField()
+    result_state = serializers.SerializerMethodField()
+
+    def get_call_description(self, obj):
+        return obj.call.description
+
+    def get_university_name(self, obj):
+        return obj.call.university.name
+
+    def get_university_country(self, obj):
+        return obj.call.university.country
+
+    def get_result_state(self, obj):
+        if obj.modified:
+            return 'Modificación solicitada a documentación'
+        elif obj.approved is False:
+            return 'No aceptado'
+        elif obj.approved is None:
+            return 'Pendiente de revisión'
+        elif obj.approved is True:
+            return 'Aceptado'
+
+    class Meta:
+        model = Application
+        fields = ['student_id','call', 'university_name', 'university_country', 'result_state', 'call_description', 'approved']
