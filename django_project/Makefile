@@ -6,6 +6,7 @@ makemigrations:
 	python manage.py makemigrations person
 	python manage.py makemigrations signin
 	python manage.py makemigrations student
+	python manage.py makemigrations traceability
 
 rollbackall:
 	python manage.py migrate zero

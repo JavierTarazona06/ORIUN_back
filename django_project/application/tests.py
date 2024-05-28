@@ -32,6 +32,8 @@ class ApplicationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.token_student = response.json()['access']
 
+
+
     def test_region_call_uniandes(self):
         """
         Check that call 1 return Uniandes as region
@@ -584,6 +586,100 @@ class ApplicationTestCase(TestCase):
         self.assertEqual(qset, qsetr)
         self.assertEqual(response.json(), {"message": f"El estudiante con ID {data['student_id']} fue des-seleccionado para la convocatoria {qset['call']}"})
 
+
+    def test_get_results_for_employee(self):
+        """
+        Return all results
+        """
+
+        print("TEST:test_get_results_for_student")
+
+        headers = {
+            "Authorization": f"Bearer {self.token_employee}",
+        }
+        data = {
+            'call_id': 2,
+        }
+        response = self.client.get(reverse("application:results-employee", args=[1]), data=data, headers=headers)
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_results_for_student_approved(self):
+        """
+        Return accepted call
+        """
+
+        print("TEST:test_get_results_for_student_approved")
+
+        headers = {
+            "Authorization": f"Bearer {self.token_student}",
+        }
+
+
+        response = self.client.get(reverse("application:student_applications"), headers=headers)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['result_state'], 'Aceptado')
+
+
+    def test_get_results_for_student_no_accepted(self):
+        """
+        Return not  accepted call
+        """
+        print("TEST:test_get_results_for_student_no_accepted")
+
+        response = self.client.post(
+            '/api-token/', {'username': 'valentina.rodriguez@unal.edu.co', 'password': 'TestPassword'}
+        )
+
+        headers = {
+            "Authorization": f"Bearer {response.json()['access']}",
+        }
+
+        response = self.client.get(reverse("application:student_applications"), headers=headers)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['result_state'], 'No aceptado')
+
+
+    def test_get_results_for_student_pending(self):
+        """
+        Return pending to review call
+        """
+        print("TEST:test_get_results_for_student__pending")
+
+        response = self.client.post(
+            '/api-token/', {'username': 'isabella.gonzalez@unal.edu.co', 'password': 'Pasword021'}
+        )
+
+        headers = {
+            "Authorization": f"Bearer {response.json()['access']}",
+        }
+
+        response = self.client.get(reverse("application:student_applications"), headers=headers)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['result_state'], 'Pendiente de revisión')
+
+    def test_get_results_for_student_modify(self):
+        """
+        Return pending to review call
+        """
+        print("TEST:test_get_results_for_student_modify")
+
+        response = self.client.post(
+            '/api-token/', {'username': 'andres.hernandez@unal.edu.co', 'password': 'pass1234'}
+        )
+
+        headers = {
+            "Authorization": f"Bearer {response.json()['access']}",
+        }
+
+        response = self.client.get(reverse("application:student_applications"), headers=headers)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['result_state'], 'Modificación solicitada a documentación')
+
+
     def test_pre_assign_winners(self):
         print("TEST: pre_assign_winners")
 
@@ -592,6 +688,7 @@ class ApplicationTestCase(TestCase):
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), {'Error': "OriunError: Hay estudiantes que tienen aplicaciones pendientes por revisar. Aún no se puede asignar ganador. Estudiantes: [{'id': 3, 'student_id': '106985477', 'student_name': 'Isabella Gonzalez', 'state_documents': 0, 'student_PAPA': 3.0, 'student_advance': 10.0, 'student_headquarter': 'BO', 'language': False, 'student_PBM': 50}]"})
+
 
     def tearDown(self):
         pass
