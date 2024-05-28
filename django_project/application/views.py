@@ -1,33 +1,42 @@
 import io
 import base64
+
 from datetime import datetime, timezone
 from urllib.request import Request
 from django.http import QueryDict
 
 from google.cloud import exceptions as gcloud_exceptions
-from django.http import JsonResponse
 
-from rest_framework import permissions
-from rest_framework import status, generics
+from datetime import timezone
+from django.db.models import Q
+
+from django.http import JsonResponse
+from rest_framework.views import APIView
 from rest_framework.response import Response
+from google.cloud import exceptions as gcloud_exceptions
+from rest_framework import permissions, generics, status
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.decorators import api_view, permission_classes, parser_classes
-from rest_framework import status
-from rest_framework.views import APIView
+
 
 from student.views import ApplicationDataView
 from .permissions import IsStudent, IsEmployee
 from .serializers import ApplicationSerializer, ApplicationModifySerializer, StateSerializer, \
     ApplicationDetailSerializer, ApplicationOrdersSerializer, ApplicationResults
+
+
 from .helpers import *
 from . import serializers
-from .serializers import Applicants
-from .models import Application
 from call.models import Call
-from data.helpers import send_email_winner, send_email_not_winner
+from .models import Application
 from student.models import Student
 from traceability.models import Traceability
-
+from student.views import ApplicationDataView
+from .permissions import IsStudent, IsEmployee
+from data.helpers import send_email_winner, send_email_not_winner
+from .serializers import (
+    ApplicationModifySerializer, StateSerializer, ApplicationOrdersSerializer, Applicants
+)
 
 
 def save_traceability(request: Request, name_view: str, description: str) -> None:
@@ -597,13 +606,40 @@ class OrderGeneral(APIView):
             return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class GetAllApplications(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsEmployee]
+
+    def get(self, request, pk):
+        try:
+            applications = Application.objects.filter(call=pk)
+            applications = ApplicationOrdersSerializer(applications, many=True).data
+
+            this_user = request.user
+            data_trace = {
+                "user": this_user,
+                "time": datetime.now(),
+                "method": request.method,
+                "view": self.__class__.__name__,
+                "given_data": f"El usuario solicitó las aplicaciones a la convocatoria {pk} ordenadas por estado de la documentación, PAPA, Avance, Idioma y PBM de los estudiantes (Orden General)."
+            }
+            Traceability.objects.create(**data_trace)
+
+            return JsonResponse(applications, status=status.HTTP_200_OK, safe=False)
+        except Exception as e:
+            return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
 class SetWinner(APIView):
     permission_classes = [permissions.IsAuthenticated, IsEmployee]
 
     def post(self, request):
         try:
             input_params = request.data
-            this_application = Application.objects.get(call__id=input_params['call_id'], student_id=input_params['student_id'])
+            this_application = Application.objects.get(call__id=input_params['call_id'],
+                                                       student_id=input_params['student_id'])
+
+            # Verificar que los estudiantes ya fueron revisados
+            se_puede_asignar_ganador(input_params['call_id'])
 
             # Check Available Slots
             call_applications = Application.objects.filter(call=this_application.call_id)
@@ -611,8 +647,9 @@ class SetWinner(APIView):
             for i in range(len(call_applications)):
                 if (call_applications[i].approved):
                     quant_stud_approved += 1
-            if this_application.call.available_slots < (quant_stud_approved+1):
-                raise AttributeError(f"No se pueden aceptar mas estudiantes. Estudiantes ya Aceptados: {quant_stud_approved}. Cupos: {this_application.call.available_slots}")
+            if this_application.call.available_slots < (quant_stud_approved + 1):
+                raise AttributeError(
+                    f"No se pueden aceptar mas estudiantes. Estudiantes ya Aceptados: {quant_stud_approved}. Cupos: {this_application.call.available_slots}")
 
             # Set Winner
             this_application.approved = True
@@ -625,7 +662,17 @@ class SetWinner(APIView):
 
             # Send email
             student_winner = Student.objects.get(id=this_application.student.id)
-            send_email_winner(student_winner.user.email, str(student_winner.user.first_name)+' '+str(student_winner.user.last_name), this_call.id, this_call.university.name, this_call.year, this_call.semester)
+            send_email_winner(student_winner.user.email,
+                              str(student_winner.user.first_name) + ' ' + str(student_winner.user.last_name),
+                              this_call.id, this_call.university.name, this_call.year, this_call.semester)
+
+            # Modify Highest and minimum PAPA winner in Call
+            this_call = Call.objects.get(id=this_application.call_id)
+            if this_call.highest_papa_winner < student_winner.PAPA:
+                this_call.highest_papa_winner = student_winner.PAPA
+            if this_call.minimum_papa_winner > student_winner.PAPA:
+                this_call.minimum_papa_winner = student_winner.PAPA
+            this_call.save()
 
             this_user = request.user
             data_trace = {
@@ -637,10 +684,11 @@ class SetWinner(APIView):
             }
             Traceability.objects.create(**data_trace)
             return JsonResponse({
-                                    "message": f"El estudiante con ID {input_params['student_id']} fue seleccionado para la convocatoria {this_application.call_id}"},
-                                status=status.HTTP_200_OK)
+                "message": f"El estudiante con ID {input_params['student_id']} fue seleccionado para la convocatoria {this_application.call_id}"},
+                status=status.HTTP_200_OK)
         except Exception as e:
             return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class RemoveWinner(APIView):
     permission_classes = [permissions.IsAuthenticated, IsEmployee]
@@ -649,14 +697,37 @@ class RemoveWinner(APIView):
         try:
             input_params = request.data
 
-            this_application = Application.objects.get(call__id=input_params['call_id'], student_id=input_params['student_id'])
+            # Remove as winner
+            this_application = Application.objects.get(call__id=input_params['call_id'],
+                                                       student_id=input_params['student_id'])
             this_application.approved = False
             this_application.save()
 
             # Send email
             student_not_winner = Student.objects.get(id=this_application.student.id)
             this_call = Call.objects.get(id=this_application.call_id)
-            send_email_not_winner(student_not_winner.user.email, str(student_not_winner.user.first_name)+' '+str(student_not_winner.user.last_name), this_call.id, this_call.university.name, this_call.year, this_call.semester)
+            send_email_not_winner(student_not_winner.user.email, str(student_not_winner.user.first_name) + ' ' + str(
+                student_not_winner.user.last_name), this_call.id, this_call.university.name, this_call.year,
+                                  this_call.semester)
+
+            # Modify Highest and minimum PAPA winner in Call
+            all_applications_this_call = Application.objects.filter(call__id=input_params['call_id'], approved=True)
+
+            if this_call.highest_papa_winner == student_not_winner.PAPA:
+                max_papa = 0
+                for application in all_applications_this_call:
+                    if application.student.PAPA > max_papa:
+                        max_papa = application.student.PAPA
+                this_call.highest_papa_winner = max_papa
+
+            if this_call.minimum_papa_winner == student_not_winner.PAPA:
+                min_papa = 5
+                for application in all_applications_this_call:
+                    if application.student.PAPA < min_papa:
+                        min_papa = application.student.PAPA
+                this_call.minimum_papa_winner = min_papa
+
+            this_call.save()
 
             this_user = request.user
             data_trace = {
@@ -669,11 +740,58 @@ class RemoveWinner(APIView):
             Traceability.objects.create(**data_trace)
 
             return JsonResponse({
-                                    "message": f"El estudiante con ID {input_params['student_id']} fue des-seleccionado para la convocatoria {this_application.call_id}"},
-                                status=status.HTTP_200_OK)
+                "message": f"El estudiante con ID {input_params['student_id']} fue des-seleccionado para la convocatoria {this_application.call_id}"},
+                status=status.HTTP_200_OK)
 
         except Exception as e:
             return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class OriunError(Exception):
+    def __init__(self, message="Hay un error en las Aplicaciones de ORIUN"):
+        self.message = message
+        super().__init__(self.message)
+
+    def __str__(self):
+        return f'OriunError: {self.message}'
+
+
+def se_puede_asignar_ganador(call_id) -> bool:
+    pending_applications = Application.objects.filter(
+        Q(call__id=call_id, state_documents=0) |
+        Q(call__id=call_id, state_documents=1, modified=True)
+    )
+    pending_applications = ApplicationOrdersSerializer(pending_applications, many=True).data
+
+    if len(pending_applications) > 0:
+        raise OriunError(
+            "Hay estudiantes que tienen aplicaciones pendientes por revisar. Aún no se puede asignar ganador. Estudiantes: " + str(
+                pending_applications))
+
+    return True
+
+class PreAssignWinners(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsEmployee]
+
+    def get(self, request, pk):
+        try:
+            se_puede_asignar_ganador(pk)
+
+            this_user = request.user
+            data_trace = {
+                "user": this_user,
+                "time": datetime.now(),
+                "method": request.method,
+                "view": self.__class__.__name__,
+                "given_data": f"El usuario solicitó confirmación para asignar ganadores de una convocatoria."
+            }
+            Traceability.objects.create(**data_trace)
+
+            return JsonResponse({"message": "Ya se revisaron todas las aplicaciones, se pueden asignar los ganadores"},
+                                status=status.HTTP_200_OK, safe=True)
+        except Exception as e:
+            return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 #CASE 8 ---------------------------------------------
@@ -768,3 +886,4 @@ def results_employee(request: Request, call_id):
 
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+

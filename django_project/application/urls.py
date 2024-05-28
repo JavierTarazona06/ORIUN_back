@@ -1,7 +1,7 @@
 from . import views
 from django.urls import path
 
-from .views import OrderDocs, OrderPAPA, OrderAdvance, OrderLanguage, OrderPBM, OrderGeneral, SetWinner, RemoveWinner
+from .views import OrderDocs, OrderPAPA, OrderAdvance, OrderLanguage, OrderPBM, OrderGeneral, SetWinner, RemoveWinner, GetAllApplications, PreAssignWinners
 
 urlpatterns = [
     path('region_call/', views.get_region_call, name='region_call'),
@@ -25,9 +25,14 @@ urlpatterns = [
     path('order_lang/<int:pk>/', OrderLanguage.as_view(), name='order_apps_by_language'),
     path('order_pbm/<int:pk>/', OrderPBM.as_view(), name='order_apps_by_pbm'),
     path('order/<int:pk>/', OrderGeneral.as_view(), name='order_apps_general'),
+    path('get_all/<int:pk>/', GetAllApplications.as_view(), name='all_apps_general_by_call_id'),
     path('winner/', SetWinner.as_view(), name='set_winner'),
     path('not_winner/', RemoveWinner.as_view(), name='not_winner'),
+
     #path('student_applications/', views.student_application, name='student_applications'),
     path('results/<int:call_id>/', views.results, name='students-results'),
     path('results_employee/<int:call_id>/', views.results_employee, name='results-employee'),
+
+    path('pre_assign_winners/<int:pk>/', PreAssignWinners.as_view(), name='pre_assign_winners')
+
 ]

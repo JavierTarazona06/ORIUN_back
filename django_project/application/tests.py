@@ -490,6 +490,23 @@ class ApplicationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(qset, qsetr)
 
+    def test_get_all_apps_general(self):
+        print("TEST: test_get_all_apps_general")
+
+        headers = {"Authorization": f"Bearer {self.token_employee}"}
+        response = self.client.get(reverse("application:all_apps_general_by_call_id", args=[1]), headers=headers)
+
+        qset = response.json()
+        qsetr = [
+            {'id': 1, 'student_id': '5596848490', 'student_name': 'Santiago García', 'state_documents': 2, 'student_PAPA': 4.8, 'student_advance': 92.0, 'student_headquarter': 'BO', 'language': True, 'student_PBM': 2},
+            {'id': 2, 'student_id': '1196989870', 'student_name': 'Valentina Rodríguez', 'state_documents': 1, 'student_PAPA': 4.8, 'student_advance': 86.0, 'student_headquarter': 'BO', 'language': False, 'student_PBM': 9},
+            {'id': 3, 'student_id': '106985477', 'student_name': 'Isabella Gonzalez', 'state_documents': 0, 'student_PAPA': 3.0, 'student_advance': 10.0, 'student_headquarter': 'BO', 'language': False, 'student_PBM': 50},
+            {'id': 6, 'student_id': '1013691479', 'student_name': 'Valeria Mora', 'state_documents': 2, 'student_PAPA': 4.6, 'student_advance': 55.8, 'student_headquarter': 'BO', 'language': True, 'student_PBM': 42}
+        ]
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(qset, qsetr)
+
     def test_set_winner(self):
         print("TEST: test_set_winner")
 
@@ -497,6 +514,12 @@ class ApplicationTestCase(TestCase):
             "call_id": 1,
             "student_id": 1013691479
         }
+
+        # This variable is to set student state_docs to 1, pending modification as othwerwise is not possible.
+        # (having the review pending in value 0 is not possible) in order to assign winners
+        this_application_to_mod = Application.objects.get(call__id=data['call_id'], id=3, student__id=106985477)
+        this_application_to_mod.state_documents = 1
+        this_application_to_mod.save()
 
         headers = {"Authorization": f"Bearer {self.token_employee}"}
         response = self.client.post(reverse("application:set_winner"), data=data, headers=headers)
@@ -515,6 +538,9 @@ class ApplicationTestCase(TestCase):
             'training_session': None,
             'call': 1, 'student': 1013691479}
 
+        this_application_to_mod.state_documents = 0
+        this_application_to_mod.save()
+
         self.assertEqual(response.status_code, 200)
         self.assertEqual(qset, qsetr)
         self.assertEqual(response.json(), {
@@ -527,6 +553,17 @@ class ApplicationTestCase(TestCase):
             "call_id": 1,
             "student_id": 5596848490
         }
+
+        data2 = {
+            "call_id": 1,
+            "student_id": 1013691479
+        }
+
+        headers = {"Authorization": f"Bearer {self.token_employee}"}
+        response = self.client.post(reverse("application:set_winner"), data=data, headers=headers)
+
+        headers = {"Authorization": f"Bearer {self.token_employee}"}
+        response = self.client.post(reverse("application:set_winner"), data=data2, headers=headers)
 
         headers = {"Authorization": f"Bearer {self.token_employee}"}
         response = self.client.post(reverse("application:not_winner"), data=data, headers=headers)
@@ -548,6 +585,7 @@ class ApplicationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(qset, qsetr)
         self.assertEqual(response.json(), {"message": f"El estudiante con ID {data['student_id']} fue des-seleccionado para la convocatoria {qset['call']}"})
+
 
     def test_get_results_for_employee(self):
         """
@@ -640,6 +678,16 @@ class ApplicationTestCase(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['result_state'], 'Modificación solicitada a documentación')
+
+
+    def test_pre_assign_winners(self):
+        print("TEST: pre_assign_winners")
+
+        headers = {"Authorization": f"Bearer {self.token_employee}"}
+        response = self.client.get(reverse("application:pre_assign_winners", args=[1]), headers=headers)
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), {'Error': "OriunError: Hay estudiantes que tienen aplicaciones pendientes por revisar. Aún no se puede asignar ganador. Estudiantes: [{'id': 3, 'student_id': '106985477', 'student_name': 'Isabella Gonzalez', 'state_documents': 0, 'student_PAPA': 3.0, 'student_advance': 10.0, 'student_headquarter': 'BO', 'language': False, 'student_PBM': 50}]"})
 
 
     def tearDown(self):

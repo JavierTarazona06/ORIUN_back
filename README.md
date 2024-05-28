@@ -1,5 +1,6 @@
 # ORIUN_back
 
+Deploy: https://oriun-ashy.vercel.app/PreguntasFrecuentes
 
 # Plataforma Web para Gestión de Convocatorias de Intercambio
 

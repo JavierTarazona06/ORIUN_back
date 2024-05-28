@@ -1,30 +1,41 @@
-from django.http import JsonResponse
-from django.views.decorators.http import require_GET
-from .models import Call, University
-from .serializers import CallSerializerOpen, CallSerializerClosed, CallDetailsSerializerOpenStudent, \
-    CallDetailsSerializerClosedStudent, CallSerializer, UniversitySerializer, CallSerializerPost, UniversitySerializerPost
-from rest_framework.views import APIView
-from rest_framework import status, generics, permissions
 import json
-from datetime import datetime, timezone
-
-from django.views import View
+import pytz
 from django.db.models import Q
 from django.utils import timezone
 from django.http import JsonResponse
+from datetime import datetime, timezone
 from rest_framework.views import APIView
-from django.contrib.auth.models import User
+from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.decorators import api_view
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import AnonymousUser
 from rest_framework import status, generics, permissions
 
-from employee.models import Employee
+from student.models import Student
+from application.models import Application
+from traceability.models import Traceability
+from data.constants_dict_front import constants_dict_front
+
 from .models import Call, University
 from .permissions import IsEmployee, IsStudent
-from data.constants_dict_front import constants_dict_front
-from .serializers import CallSerializerOpen, CallSerializerClosed, CallDetailsSerializerOpenStudent, \
+from .serializers import (
+    CallSerializerPost, UniversitySerializerPost, CallSerializerOpen,
+    CallSerializerClosed, CallDetailsSerializerOpenStudent,
     CallDetailsSerializerClosedStudent, CallSerializer, UniversitySerializer
-from traceability.models import Traceability
+)
+
+
+def save_traceability(request: Request, name_view: str, description: str) -> None:
+    user = None if isinstance(request.user, AnonymousUser) else request.user
+    data_trace = {
+        "user": user,
+        "time": datetime.now(pytz.timezone('America/Bogota')),
+        "method": request.method,
+        "view": name_view,
+        "given_data": description
+    }
+    Traceability.objects.create(**data_trace)
 
 
 class OpenCallsStudent(APIView):
@@ -84,6 +95,7 @@ class OpenCallsStudent(APIView):
 
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
+
 
 class ClosedCallsStudent(APIView):
     permission_classes = [permissions.IsAuthenticated, IsStudent]
@@ -811,13 +823,14 @@ class SetClosed(APIView):
                 "time": datetime.now(),
                 "method": request.method,
                 "view": self.__class__.__name__,
-                "given_data": f"El usuario cerró la convocatoria con ID: {this_call.id} de la universidad: {this_call.university.name} en el periodo: {this_call.year}-{this_call.semester}."
+                "given_data": f"El usuario cerró la convocatoria con ID: {this_call.id} de la universidad: {this_call.university.name} del periodo: {this_call.year}-{this_call.semester}."
             }
             Traceability.objects.create(**data_trace)
 
-            return JsonResponse({"message":f"Se cerró la convocatoria con ID: {this_call.id} de la universidad: {this_call.university.name} en el periodo: {this_call.year}-{this_call.semester}."}, status=status.HTTP_200_OK)
+            return JsonResponse({"message":f"Se cerró la convocatoria con ID: {this_call.id} de la universidad: {this_call.university.name} del periodo: {this_call.year}-{this_call.semester}."}, status=status.HTTP_200_OK)
         except Exception as e:
             return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class SetOpen(APIView):
     permission_classes = [permissions.IsAuthenticated, IsEmployee]
@@ -837,10 +850,101 @@ class SetOpen(APIView):
                 "time": datetime.now(),
                 "method": request.method,
                 "view": self.__class__.__name__,
-                "given_data": f"El usuario abrió la convocatoria con ID: {this_call.id} de la universidad: {this_call.university.name} en el periodo: {this_call.year}-{this_call.semester}."
+                "given_data": f"El usuario abrió la convocatoria con ID: {this_call.id} de la universidad: {this_call.university.name} del periodo: {this_call.year}-{this_call.semester}."
             }
             Traceability.objects.create(**data_trace)
 
-            return JsonResponse({"message":f"Se abrió la convocatoria con ID: {this_call.id} de la universidad: {this_call.university.name} en el periodo: {this_call.year}-{this_call.semester}."}, status=status.HTTP_200_OK)
+            return JsonResponse({"message":f"Se abrió la convocatoria con ID: {this_call.id} de la universidad: {this_call.university.name} del periodo: {this_call.year}-{this_call.semester}."}, status=status.HTTP_200_OK)
         except Exception as e:
             return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def statistics(request):
+    """
+    Endpoint used to get statistics about the calls
+    """
+    data_student = request.query_params['data_student']
+    data_call = request.query_params['data_call']
+
+    save_traceability(
+        request, 'statistics', f'Se solicitaron las estadísticas de {data_student} vs {data_call}'
+    )
+
+    # Get values of the data requested from the calls
+    if data_call == 'university':
+        rows = {university.name: i for i, university in enumerate(University.objects.all())}
+    elif data_call == 'country':
+        countries = set(university.country for university in University.objects.all())
+        rows = {country: i for i, country in enumerate(countries)}
+    elif data_call == 'region':
+        rows = {display: i for i, (_, display) in enumerate(getattr(University, f'region_choices'))}
+    elif data_call == 'semester':
+        rows = {display: i for i, (_, display) in enumerate(getattr(Call, f'semester_choices'))}
+    else:
+        return JsonResponse({'error': f'Value requested {data_call} not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    # Types of data_call that will be shown with tables
+    data_table = ['faculty', 'major', 'sex', 'admission', 'study_level']
+
+    if data_student in data_table:
+        columns = {
+            str(display): i for i, (_, display) in enumerate(getattr(Student, f'{data_student}_choices'))
+        }
+
+        table_applications = [[0 for _ in range(len(columns))] for _ in range(len(rows))]
+        table_winners = [[0 for _ in range(len(columns))] for _ in range(len(rows))]
+
+        for application in Application.objects.all():
+            if data_call == 'university':
+                r = application.call.university.name
+            elif data_call == 'country':
+                r = application.call.university.country
+            elif data_call == 'region':
+                r = application.call.university.get_region_display()
+            else:
+                r = application.call.get_semester_display()
+
+            c = getattr(application.student, f'get_{data_student}_display')()
+
+            row = rows[r]
+            col = columns[c]
+
+            table_applications[row][col] += 1
+            if application.approved:
+                table_winners[row][col] += 1
+
+        # Set the display values used for rows and columns
+        display_rows = list(range(len(rows)))
+        for value, row in rows.items():
+            display_rows[row] = value
+        display_columns = list(range(len(columns)))
+        for value, column in columns.items():
+            display_columns[column] = value
+
+        # Fill the
+        info_applications = []
+        for display_row, row in zip(display_rows, table_applications):
+            data = {data_call: display_row}
+            for display_column, value in zip(display_columns, row):
+                data[display_column] = value
+            info_applications.append(data)
+
+        info_winners = []
+        for display_row, row in zip(display_rows, table_winners):
+            data = {data_call: display_row}
+            for display_column, value in zip(display_columns, row):
+                data[display_column] = value
+            info_winners.append(data)
+
+        output = {
+            'type_chat': 'table',
+            'postulates': info_applications,
+            'winners': info_winners,
+        }
+        print(output)
+
+        return JsonResponse(output, status=status.HTTP_200_OK)
+
+    else:
+        pass

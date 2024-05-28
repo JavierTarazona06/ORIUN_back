@@ -1,8 +1,11 @@
 from django.urls import path
-from .views import OpenCallsStudent, ClosedCallsStudent, CallView, CallDetails, OpenCalls, ClosedCalls, CallsFilterSearch, OpenCallDetailStudent, ClosedCallDetailStudent, UniversityDetails
-from .views import UniversityView, UpdateCallsView, UpdateUniversityView
-from .views import SetClosed, SetOpen
 from rest_framework.documentation import include_docs_urls
+from .views import (
+    OpenCallsStudent, ClosedCallsStudent, CallView, CallDetails, OpenCalls, ClosedCalls,
+    CallsFilterSearch, OpenCallDetailStudent, ClosedCallDetailStudent, UniversityDetails,
+    UniversityView, UpdateCallsView, UpdateUniversityView, SetClosed, SetOpen, statistics
+)
+
 
 urlpatterns = [
     path('open/', OpenCallsStudent.as_view(), name='open_calls'),
@@ -20,5 +23,6 @@ urlpatterns = [
     path('closed/<int:id>/', ClosedCallDetailStudent.as_view(), name='closed-call-detail'),
     path('set_closed/', SetClosed.as_view(), name='set_call_closed'),
     path('set_open/', SetOpen.as_view(), name='set_call_open'),
-    path("docs/", include_docs_urls(title="CALLS docs"))
+    path("docs/", include_docs_urls(title="CALLS docs")),
+    path("statistics/", statistics, name="statistics"),
 ]

@@ -1000,7 +1000,7 @@ class CallsTestCase2(TestCase):
         response = self.client.post(reverse("call:set_call_closed"), data=data, headers=headers)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), {'message': 'Se cerró la convocatoria con ID: 1 de la universidad: Universidad de los Andes en el periodo: 2024-2.'})
+        self.assertEqual(response.json(), {'message': 'Se cerró la convocatoria con ID: 1 de la universidad: Universidad de los Andes del periodo: 2024-2.'})
 
     def test_set_call_open(self):
         print("TEST: test_set_call_open")
@@ -1014,7 +1014,7 @@ class CallsTestCase2(TestCase):
         response = self.client.post(reverse("call:set_call_open"), data=data, headers=headers)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), {'message': 'Se abrió la convocatoria con ID: 1 de la universidad: Universidad de los Andes en el periodo: 2024-2.'})
+        self.assertEqual(response.json(), {'message': 'Se abrió la convocatoria con ID: 1 de la universidad: Universidad de los Andes del periodo: 2024-2.'})
 
 
 
