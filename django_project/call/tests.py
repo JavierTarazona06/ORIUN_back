@@ -1016,6 +1016,9 @@ class CallsTestCase2(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {'message': 'Se abrió la convocatoria con ID: 1 de la universidad: Universidad de los Andes en el periodo: 2024-2.'})
 
+
+
+
     def tearDown(self):
         pass
 
