@@ -1,9 +1,8 @@
 import json
-import pytz
+from datetime import datetime
 from django.db.models import Q
 from django.utils import timezone
 from django.http import JsonResponse
-from datetime import datetime, timezone
 from rest_framework.views import APIView
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -29,7 +28,7 @@ def save_traceability(request: Request, name_view: str, description: str) -> Non
     user = None if isinstance(request.user, AnonymousUser) else request.user
     data_trace = {
         "user": user,
-        "time": datetime.now(pytz.timezone('America/Bogota')),
+        "time": datetime.now(),
         "method": request.method,
         "view": name_view,
         "given_data": description
