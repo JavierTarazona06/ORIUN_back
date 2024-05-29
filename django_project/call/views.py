@@ -1,30 +1,39 @@
-from django.http import JsonResponse
-from django.views.decorators.http import require_GET
-from .models import Call, University
-from .serializers import CallSerializerOpen, CallSerializerClosed, CallDetailsSerializerOpenStudent, \
-    CallDetailsSerializerClosedStudent, CallSerializer, UniversitySerializer, CallSerializerPost, UniversitySerializerPost
-from rest_framework.views import APIView
-from rest_framework import status, generics, permissions
 import json
-from datetime import datetime, timezone
-
-from django.views import View
+from datetime import datetime
 from django.db.models import Q
 from django.utils import timezone
 from django.http import JsonResponse
 from rest_framework.views import APIView
-from django.contrib.auth.models import User
+from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.decorators import api_view
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import AnonymousUser
 from rest_framework import status, generics, permissions
 
-from employee.models import Employee
-from .models import Call, University
-from .permissions import IsEmployee, IsStudent
-from data.constants_dict_front import constants_dict_front
-from .serializers import CallSerializerOpen, CallSerializerClosed, CallDetailsSerializerOpenStudent, \
-    CallDetailsSerializerClosedStudent, CallSerializer, UniversitySerializer
 from traceability.models import Traceability
+from data.constants_dict_front import constants_dict_front
+
+from .models import Call, University
+from .helpers import get_info_statistics
+from .permissions import IsEmployee, IsStudent
+from .serializers import (
+    CallSerializerPost, UniversitySerializerPost, CallSerializerOpen,
+    CallSerializerClosed, CallDetailsSerializerOpenStudent,
+    CallDetailsSerializerClosedStudent, CallSerializer, UniversitySerializer
+)
+
+
+def save_traceability(request: Request, name_view: str, description: str) -> None:
+    user = None if isinstance(request.user, AnonymousUser) else request.user
+    data_trace = {
+        "user": user,
+        "time": datetime.now(),
+        "method": request.method,
+        "view": name_view,
+        "given_data": description
+    }
+    Traceability.objects.create(**data_trace)
 
 
 class OpenCallsStudent(APIView):
@@ -84,6 +93,7 @@ class OpenCallsStudent(APIView):
 
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
+
 
 class ClosedCallsStudent(APIView):
     permission_classes = [permissions.IsAuthenticated, IsStudent]
@@ -388,8 +398,7 @@ class UpdateCallsView(generics.RetrieveUpdateDestroyAPIView):
                 call.highest_papa_winner = data['highest_papa_winner']
             if 'minimum_papa_winner' in data:
                 call.minimum_papa_winner = data['minimum_papa_winner']
-            if 'selected' in data:
-                call.selected = data['selected']
+
 
             call.save()
 
@@ -820,6 +829,7 @@ class SetClosed(APIView):
         except Exception as e:
             return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
+
 class SetOpen(APIView):
     permission_classes = [permissions.IsAuthenticated, IsEmployee]
 
@@ -845,3 +855,24 @@ class SetOpen(APIView):
             return JsonResponse({"message":f"Se abrió la convocatoria con ID: {this_call.id} de la universidad: {this_call.university.name} del periodo: {this_call.year}-{this_call.semester}."}, status=status.HTTP_200_OK)
         except Exception as e:
             return JsonResponse({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def statistics(request):
+    """
+    Endpoint used to get statistics about the calls
+    """
+    data_student = request.query_params['data_student']
+    data_call = request.query_params['data_call']
+
+    save_traceability(
+        request, 'statistics', f'Se solicitaron las estadísticas de {data_student} vs {data_call}'
+    )
+
+    # Get the statistics in the output format required by the front
+    try:
+        output = get_info_statistics(data_call, data_student)
+    except NotImplemented:
+        return JsonResponse({'error': f'Value requested {data_call} not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    return JsonResponse(output, status=status.HTTP_200_OK)

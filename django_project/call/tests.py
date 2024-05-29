@@ -1016,6 +1016,42 @@ class CallsTestCase2(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {'message': 'Se abrió la convocatoria con ID: 1 de la universidad: Universidad de los Andes del periodo: 2024-2.'})
 
+    def test_get_statistic_table(self):
+        """
+        Check the statistics for table are returned successfully
+        """
+        print("TEST: test_get_statistic_table")
+
+        data = {
+            "data_student": 'sex',
+            "data_call": "university"
+        }
+
+        response = self.client.get('/call/statistics/', data=data)
+
+        self.assertEqual(response.status_code, 200)
+        expected_keys = {'type_chart', 'postulates', 'winners'}
+        self.assertTrue(expected_keys.issubset(response.json().keys()))
+        self.assertEqual(response.json()['type_chart'], 'table')
+
+    def test_get_statistic_candle(self):
+        """
+        Check the statistics for candle sticks are returned successfully
+        """
+        print("TEST: test_get_statistic_candle")
+
+        data = {
+            "data_student": 'advance',
+            "data_call": "university"
+        }
+
+        response = self.client.get('/call/statistics/', data=data)
+
+        self.assertEqual(response.status_code, 200)
+        expected_keys = {'type_chart', 'postulates', 'winners'}
+        self.assertTrue(expected_keys.issubset(response.json().keys()))
+        self.assertEqual(response.json()['type_chart'], 'candle')
+
     def tearDown(self):
         pass
 

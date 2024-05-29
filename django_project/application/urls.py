@@ -28,5 +28,11 @@ urlpatterns = [
     path('get_all/<int:pk>/', GetAllApplications.as_view(), name='all_apps_general_by_call_id'),
     path('winner/', SetWinner.as_view(), name='set_winner'),
     path('not_winner/', RemoveWinner.as_view(), name='not_winner'),
+
+    #path('student_applications/', views.student_application, name='student_applications'),
+    path('results/<int:call_id>/', views.results, name='students-results'),
+    path('results_employee/<int:call_id>/', views.results_employee, name='results-employee'),
+
     path('pre_assign_winners/<int:pk>/', PreAssignWinners.as_view(), name='pre_assign_winners')
+
 ]
