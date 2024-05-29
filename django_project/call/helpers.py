@@ -44,7 +44,7 @@ def get_info_statistics(data_call: str, data_student: str) -> dict:
         raise NotImplemented(f'{data_call} not implemented yet')
 
     # Types of data_call that will be shown with tables
-    data_table = ['faculty', 'major', 'sex', 'admission', 'study_level']
+    data_table = ['faculty', 'major', 'sex', 'admission', 'study_level', 'ethnicity', 'headquarter']
 
     # Set the name of the columns (in the candle sticks only min and max is used)
     type_chart = 'table' if data_student in data_table else 'candle'
