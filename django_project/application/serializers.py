@@ -18,6 +18,11 @@ class ApplicationDetailSerializer(serializers.ModelSerializer):
     university_name = serializers.SerializerMethodField()
     university_country = serializers.SerializerMethodField()
     call_description = serializers.SerializerMethodField()
+    flag_image_url = serializers.SerializerMethodField()
+
+    def get_flag_image_url(self, obj):
+        return obj.call.university.flag_image_url
+
 
     def get_call_description(self, obj):
         return obj.call.description
@@ -30,7 +35,7 @@ class ApplicationDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Application
-        fields = ['call', 'university_name', 'university_country', 'state_documents', 'approved', 'call_description','student_id']
+        fields = ['call', 'university_name', 'university_country', 'state_documents', 'approved', 'call_description','student_id','flag_image_url']
 
 
 class ApplicationComments(serializers.ModelSerializer):
@@ -56,6 +61,10 @@ class Applicants(serializers.ModelSerializer):
     university_country = serializers.SerializerMethodField()
     call = serializers.PrimaryKeyRelatedField(queryset=Call.objects.all(), required=False)
     student_id = serializers.PrimaryKeyRelatedField(queryset=Student.objects.all(), required=False)
+    flag_image_url = serializers.SerializerMethodField()
+
+    def get_flag_image_url(self,obj):
+        return obj.call.university.flag_image_url
 
     def get_university_name(self, obj):
         return obj.call.university.name
@@ -78,7 +87,7 @@ class Applicants(serializers.ModelSerializer):
     class Meta:
         model = Application
         fields = ['call', 'student_id', 'university_name', 'university_country', 'year', 'semester', 'student_name',
-                  'student_major', 'state_documents', 'modified']
+                  'student_major', 'state_documents', 'modified', 'flag_image_url']
 
 
 class ApplicationModifySerializer(serializers.ModelSerializer):
@@ -120,12 +129,17 @@ class ApplicationOrdersSerializer(serializers.ModelSerializer):
         if (obj.state_documents == 2):
             return True
         else:
-            return False
+            return
+
 class ApplicationResults(serializers.ModelSerializer):
     university_name = serializers.SerializerMethodField()
     university_country = serializers.SerializerMethodField()
     student_id = serializers.PrimaryKeyRelatedField(queryset=Student.objects.all(), required=False)
     approved = serializers.BooleanField()
+    flag_image_url = serializers.SerializerMethodField()
+
+    def get_flag_image_url(self, obj):
+        return obj.call.university.flag_image_url
 
     def get_university_name(self, obj):
         return obj.call.university.name
@@ -135,7 +149,7 @@ class ApplicationResults(serializers.ModelSerializer):
 
     class Meta:
         model = Application
-        fields = ['student_id','call', 'university_name', 'university_country','approved']
+        fields = ['student_id','call', 'university_name', 'university_country','approved', 'flag_image_url']
 
 class StudentCalls(serializers.ModelSerializer):
     university_name = serializers.SerializerMethodField()
@@ -144,6 +158,11 @@ class StudentCalls(serializers.ModelSerializer):
     approved = serializers.BooleanField()
     call_description = serializers.SerializerMethodField()
     result_state = serializers.SerializerMethodField()
+    flag_image_url = serializers.SerializerMethodField()
+
+    def get_flag_image_url(self, obj):
+        return obj.call.university.flag_image_url
+
 
     def get_call_description(self, obj):
         return obj.call.description
@@ -166,4 +185,4 @@ class StudentCalls(serializers.ModelSerializer):
 
     class Meta:
         model = Application
-        fields = ['student_id','call', 'university_name', 'university_country', 'result_state', 'call_description', 'approved']
+        fields = ['student_id','call', 'university_name', 'university_country', 'result_state', 'call_description', 'approved','flag_image_url']
