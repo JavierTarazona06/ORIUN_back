@@ -844,7 +844,8 @@ class CallsTestCase2(TestCase):
             "country": "Mexico",
             "city": "Ciudad de Mexico",
             "academic_offer": "https://oferta.unam.mx/",
-            "exchange_info": "https://oferta.unam.mx/"
+            "exchange_info": "https://oferta.unam.mx/",
+            'flag_image_url': None
         }
 
         response = self.client.post(reverse("call:univ_list"), data=data, content_type='application/json', **headers)
@@ -908,7 +909,8 @@ class CallsTestCase2(TestCase):
             "country": "Colombiano",
             "city": "Bogotáno",
             "academic_offer": "Ahttps://aspirantes.uniandes.edu.co/es/aspirantes-internacionales",
-            "exchange_info": "Ahttps://aspirantes.uniandes.edu.co/es/aspirantes-internacionales"
+            "exchange_info": "Ahttps://aspirantes.uniandes.edu.co/es/aspirantes-internacionales",
+            'flag_image_url': 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Flag_of_Colombia.svg/1280px-Flag_of_Colombia.svg.png'
         }
 
         response = self.client.put(reverse("call:University_update_by_id", args=[1]), data=data_f,  content_type='application/json', **headers)
@@ -932,7 +934,8 @@ class CallsTestCase2(TestCase):
             "country": "Colombia",
             "city": "Bogotá",
             "academic_offer": "https://aspirantes.uniandes.edu.co/es/aspirantes-internacionales",
-            "exchange_info": "https://aspirantes.uniandes.edu.co/es/aspirantes-internacionales"
+            "exchange_info": "https://aspirantes.uniandes.edu.co/es/aspirantes-internacionales",
+            'flag_image_url': 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Flag_of_Colombia.svg/1280px-Flag_of_Colombia.svg.png'
         }
 
         _response = self.client.put(reverse("call:University_update_by_id", args=[1]), data=data_t,  content_type='application/json', **headers)

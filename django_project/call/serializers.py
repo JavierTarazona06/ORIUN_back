@@ -74,6 +74,7 @@ class CallSerializer(serializers.ModelSerializer):
     format = serializers.CharField(source="get_format_display")
     study_level = serializers.CharField(source="get_study_level_display")
     language = serializers.CharField(source="get_language_display")
+    flag_image_url = serializers.URLField(source='university.flag_image_url')
 
     class Meta:
         model = Call

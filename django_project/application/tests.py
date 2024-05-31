@@ -398,8 +398,8 @@ class ApplicationTestCase(TestCase):
         qsetr = [
             {'id': 1, 'student_id': '5596848490', 'student_name': 'Santiago García', 'state_documents': 2, 'student_PAPA': 4.8, 'student_advance': 92.0, 'student_headquarter': 'BO', 'language': True, 'student_PBM': 2},
             {'id': 6, 'student_id': '1013691479', 'student_name': 'Valeria Mora', 'state_documents': 2, 'student_PAPA': 4.6, 'student_advance': 55.8, 'student_headquarter': 'BO', 'language': True,'student_PBM': 42},
-            {'id': 2, 'student_id': '1196989870', 'student_name': 'Valentina Rodríguez', 'state_documents': 1, 'student_PAPA': 4.8, 'student_advance': 86.0, 'student_headquarter': 'BO', 'language': False, 'student_PBM': 9},
-            {'id': 3, 'student_id': '106985477', 'student_name': 'Isabella Gonzalez', 'state_documents': 0, 'student_PAPA': 3.0, 'student_advance': 10.0, 'student_headquarter': 'BO', 'language': False, 'student_PBM': 50}
+            {'id': 2, 'student_id': '1196989870', 'student_name': 'Valentina Rodríguez', 'state_documents': 1, 'student_PAPA': 4.8, 'student_advance': 86.0, 'student_headquarter': 'BO', 'language': None, 'student_PBM': 9},
+            {'id': 3, 'student_id': '106985477', 'student_name': 'Isabella Gonzalez', 'state_documents': 0, 'student_PAPA': 3.0, 'student_advance': 10.0, 'student_headquarter': 'BO', 'language': None, 'student_PBM': 50}
         ]
 
         self.assertEqual(response.status_code, 200)
@@ -414,9 +414,9 @@ class ApplicationTestCase(TestCase):
         qset = response.json()
         qsetr = [
             {'id': 1, 'student_id': '5596848490', 'student_name': 'Santiago García', 'state_documents': 2, 'student_PAPA': 4.8, 'student_advance': 92.0, 'student_headquarter': 'BO', 'language': True, 'student_PBM': 2},
-            {'id': 2, 'student_id': '1196989870', 'student_name': 'Valentina Rodríguez', 'state_documents': 1, 'student_PAPA': 4.8, 'student_advance': 86.0, 'student_headquarter': 'BO', 'language': False, 'student_PBM': 9},
+            {'id': 2, 'student_id': '1196989870', 'student_name': 'Valentina Rodríguez', 'state_documents': 1, 'student_PAPA': 4.8, 'student_advance': 86.0, 'student_headquarter': 'BO', 'language': None, 'student_PBM': 9},
             {'id': 6, 'student_id': '1013691479', 'student_name': 'Valeria Mora', 'state_documents': 2, 'student_PAPA': 4.6, 'student_advance': 55.8, 'student_headquarter': 'BO', 'language': True,'student_PBM': 42},
-            {'id': 3, 'student_id': '106985477', 'student_name': 'Isabella Gonzalez', 'state_documents': 0, 'student_PAPA': 3.0, 'student_advance': 10.0, 'student_headquarter': 'BO', 'language': False, 'student_PBM': 50}
+            {'id': 3, 'student_id': '106985477', 'student_name': 'Isabella Gonzalez', 'state_documents': 0, 'student_PAPA': 3.0, 'student_advance': 10.0, 'student_headquarter': 'BO', 'language': None, 'student_PBM': 50}
         ]
 
         self.assertEqual(response.status_code, 200)
@@ -431,9 +431,9 @@ class ApplicationTestCase(TestCase):
         qset = response.json()
         qsetr = [
             {'id': 1, 'student_id': '5596848490', 'student_name': 'Santiago García', 'state_documents': 2, 'student_PAPA': 4.8, 'student_advance': 92.0, 'student_headquarter': 'BO', 'language': True, 'student_PBM': 2},
-            {'id': 2, 'student_id': '1196989870', 'student_name': 'Valentina Rodríguez', 'state_documents': 1, 'student_PAPA': 4.8, 'student_advance': 86.0, 'student_headquarter': 'BO', 'language': False, 'student_PBM': 9},
+            {'id': 2, 'student_id': '1196989870', 'student_name': 'Valentina Rodríguez', 'state_documents': 1, 'student_PAPA': 4.8, 'student_advance': 86.0, 'student_headquarter': 'BO', 'language': None, 'student_PBM': 9},
             {'id': 6, 'student_id': '1013691479', 'student_name': 'Valeria Mora', 'state_documents': 2, 'student_PAPA': 4.6, 'student_advance': 55.8, 'student_headquarter': 'BO', 'language': True, 'student_PBM': 42},
-            {'id': 3, 'student_id': '106985477', 'student_name': 'Isabella Gonzalez', 'state_documents': 0, 'student_PAPA': 3.0, 'student_advance': 10.0, 'student_headquarter': 'BO', 'language': False, 'student_PBM': 50}
+            {'id': 3, 'student_id': '106985477', 'student_name': 'Isabella Gonzalez', 'state_documents': 0, 'student_PAPA': 3.0, 'student_advance': 10.0, 'student_headquarter': 'BO', 'language': None, 'student_PBM': 50}
         ]
 
         self.assertEqual(response.status_code, 200)
@@ -449,8 +449,8 @@ class ApplicationTestCase(TestCase):
         qsetr = [
             {'id': 1, 'student_id': '5596848490', 'student_name': 'Santiago García', 'state_documents': 2, 'student_PAPA': 4.8, 'student_advance': 92.0, 'student_headquarter': 'BO', 'language': True, 'student_PBM': 2},
             {'id': 6, 'student_id': '1013691479', 'student_name': 'Valeria Mora', 'state_documents': 2, 'student_PAPA': 4.6, 'student_advance': 55.8, 'student_headquarter': 'BO', 'language': True, 'student_PBM': 42},
-            {'id': 2, 'student_id': '1196989870', 'student_name': 'Valentina Rodríguez', 'state_documents': 1, 'student_PAPA': 4.8, 'student_advance': 86.0, 'student_headquarter': 'BO', 'language': False, 'student_PBM': 9},
-            {'id': 3, 'student_id': '106985477', 'student_name': 'Isabella Gonzalez', 'state_documents': 0, 'student_PAPA': 3.0, 'student_advance': 10.0, 'student_headquarter': 'BO', 'language': False, 'student_PBM': 50}
+            {'id': 2, 'student_id': '1196989870', 'student_name': 'Valentina Rodríguez', 'state_documents': 1, 'student_PAPA': 4.8, 'student_advance': 86.0, 'student_headquarter': 'BO', 'language': None, 'student_PBM': 9},
+            {'id': 3, 'student_id': '106985477', 'student_name': 'Isabella Gonzalez', 'state_documents': 0, 'student_PAPA': 3.0, 'student_advance': 10.0, 'student_headquarter': 'BO', 'language': None, 'student_PBM': 50}
         ]
 
         self.assertEqual(response.status_code, 200)
@@ -465,9 +465,9 @@ class ApplicationTestCase(TestCase):
         qset = response.json()
         qsetr = [
             {'id': 1, 'student_id': '5596848490', 'student_name': 'Santiago García', 'state_documents': 2, 'student_PAPA': 4.8, 'student_advance': 92.0, 'student_headquarter': 'BO', 'language': True, 'student_PBM': 2},
-            {'id': 2, 'student_id': '1196989870', 'student_name': 'Valentina Rodríguez', 'state_documents': 1, 'student_PAPA': 4.8, 'student_advance': 86.0, 'student_headquarter': 'BO', 'language': False, 'student_PBM': 9},
+            {'id': 2, 'student_id': '1196989870', 'student_name': 'Valentina Rodríguez', 'state_documents': 1, 'student_PAPA': 4.8, 'student_advance': 86.0, 'student_headquarter': 'BO', 'language': None, 'student_PBM': 9},
             {'id': 6, 'student_id': '1013691479', 'student_name': 'Valeria Mora', 'state_documents': 2, 'student_PAPA': 4.6, 'student_advance': 55.8, 'student_headquarter': 'BO', 'language': True, 'student_PBM': 42},
-            {'id': 3, 'student_id': '106985477', 'student_name': 'Isabella Gonzalez', 'state_documents': 0, 'student_PAPA': 3.0, 'student_advance': 10.0, 'student_headquarter': 'BO', 'language': False, 'student_PBM': 50}
+            {'id': 3, 'student_id': '106985477', 'student_name': 'Isabella Gonzalez', 'state_documents': 0, 'student_PAPA': 3.0, 'student_advance': 10.0, 'student_headquarter': 'BO', 'language': None, 'student_PBM': 50}
         ]
 
         self.assertEqual(response.status_code, 200)
@@ -483,8 +483,8 @@ class ApplicationTestCase(TestCase):
         qsetr = [
             {'id': 1, 'student_id': '5596848490', 'student_name': 'Santiago García', 'state_documents': 2, 'student_PAPA': 4.8, 'student_advance': 92.0, 'student_headquarter': 'BO', 'language': True, 'student_PBM': 2},
             {'id': 6, 'student_id': '1013691479', 'student_name': 'Valeria Mora', 'state_documents': 2, 'student_PAPA': 4.6, 'student_advance': 55.8, 'student_headquarter': 'BO', 'language': True, 'student_PBM': 42},
-            {'id': 2, 'student_id': '1196989870', 'student_name': 'Valentina Rodríguez', 'state_documents': 1, 'student_PAPA': 4.8, 'student_advance': 86.0, 'student_headquarter': 'BO', 'language': False, 'student_PBM': 9},
-            {'id': 3, 'student_id': '106985477', 'student_name': 'Isabella Gonzalez', 'state_documents': 0, 'student_PAPA': 3.0, 'student_advance': 10.0, 'student_headquarter': 'BO', 'language': False, 'student_PBM': 50}
+            {'id': 2, 'student_id': '1196989870', 'student_name': 'Valentina Rodríguez', 'state_documents': 1, 'student_PAPA': 4.8, 'student_advance': 86.0, 'student_headquarter': 'BO', 'language': None, 'student_PBM': 9},
+            {'id': 3, 'student_id': '106985477', 'student_name': 'Isabella Gonzalez', 'state_documents': 0, 'student_PAPA': 3.0, 'student_advance': 10.0, 'student_headquarter': 'BO', 'language': None, 'student_PBM': 50}
         ]
 
         self.assertEqual(response.status_code, 200)
@@ -499,8 +499,8 @@ class ApplicationTestCase(TestCase):
         qset = response.json()
         qsetr = [
             {'id': 1, 'student_id': '5596848490', 'student_name': 'Santiago García', 'state_documents': 2, 'student_PAPA': 4.8, 'student_advance': 92.0, 'student_headquarter': 'BO', 'language': True, 'student_PBM': 2},
-            {'id': 2, 'student_id': '1196989870', 'student_name': 'Valentina Rodríguez', 'state_documents': 1, 'student_PAPA': 4.8, 'student_advance': 86.0, 'student_headquarter': 'BO', 'language': False, 'student_PBM': 9},
-            {'id': 3, 'student_id': '106985477', 'student_name': 'Isabella Gonzalez', 'state_documents': 0, 'student_PAPA': 3.0, 'student_advance': 10.0, 'student_headquarter': 'BO', 'language': False, 'student_PBM': 50},
+            {'id': 2, 'student_id': '1196989870', 'student_name': 'Valentina Rodríguez', 'state_documents': 1, 'student_PAPA': 4.8, 'student_advance': 86.0, 'student_headquarter': 'BO', 'language': None, 'student_PBM': 9},
+            {'id': 3, 'student_id': '106985477', 'student_name': 'Isabella Gonzalez', 'state_documents': 0, 'student_PAPA': 3.0, 'student_advance': 10.0, 'student_headquarter': 'BO', 'language': None, 'student_PBM': 50},
             {'id': 6, 'student_id': '1013691479', 'student_name': 'Valeria Mora', 'state_documents': 2, 'student_PAPA': 4.6, 'student_advance': 55.8, 'student_headquarter': 'BO', 'language': True, 'student_PBM': 42}
         ]
 
@@ -687,7 +687,7 @@ class ApplicationTestCase(TestCase):
         response = self.client.get(reverse("application:pre_assign_winners", args=[1]), headers=headers)
 
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), {'Error': "OriunError: Hay estudiantes que tienen aplicaciones pendientes por revisar. Aún no se puede asignar ganador. Estudiantes: [{'id': 3, 'student_id': '106985477', 'student_name': 'Isabella Gonzalez', 'state_documents': 0, 'student_PAPA': 3.0, 'student_advance': 10.0, 'student_headquarter': 'BO', 'language': False, 'student_PBM': 50}]"})
+        self.assertEqual(response.json(), {'Error': "OriunError: Hay estudiantes que tienen aplicaciones pendientes por revisar. Aún no se puede asignar ganador. Estudiantes: [{'id': 3, 'student_id': '106985477', 'student_name': 'Isabella Gonzalez', 'state_documents': 0, 'student_PAPA': 3.0, 'student_advance': 10.0, 'student_headquarter': 'BO', 'language': None, 'student_PBM': 50}]"})
 
 
     def tearDown(self):
