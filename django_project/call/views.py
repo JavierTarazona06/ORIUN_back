@@ -626,7 +626,6 @@ class UniversityView(generics.ListCreateAPIView):
     #         return JsonResponse({"Error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request):
-        print("Entró al get")
         try:
             queryset = University.objects.all()
 
