@@ -9,6 +9,7 @@ class CallSerializerOpen(serializers.ModelSerializer):
     language =  serializers.SerializerMethodField()
     deadline = serializers.DateField(format='%Y-%m-%d')
     region = serializers.SerializerMethodField()
+    flag_image_url = serializers.URLField(source='university.flag_image_url')
     def get_language(self, obj):
         return obj.get_language_display()
 
@@ -17,7 +18,7 @@ class CallSerializerOpen(serializers.ModelSerializer):
 
     class Meta:
         model = Call
-        fields = ('id','university_name', 'country', 'language', 'deadline','region')
+        fields = ('id','university_name', 'country', 'language', 'deadline','region','flag_image_url')
 
 class CallSerializerClosed(CallSerializerOpen):
 
@@ -38,6 +39,7 @@ class CallDetailsSerializerOpenStudent(serializers.ModelSerializer):
     description = serializers.CharField(allow_null=True)
     available_slots = serializers.IntegerField()
     note = serializers.CharField(allow_null=True)
+    flag_image_url = serializers.URLField(source='university.flag_image_url')
 
     def get_language(self, obj):
         return obj.get_language_display()
@@ -49,7 +51,7 @@ class CallDetailsSerializerOpenStudent(serializers.ModelSerializer):
         model = Call
         fields = (
         'university_name', 'country', 'language', 'deadline', 'min_advance', 'min_papa', 'format', 'year', 'semester',
-        'description', 'available_slots', 'note')
+        'description', 'available_slots', 'note', 'flag_image_url')
 
 
 class CallDetailsSerializerClosedStudent(CallDetailsSerializerOpenStudent):
@@ -59,7 +61,7 @@ class CallDetailsSerializerClosedStudent(CallDetailsSerializerOpenStudent):
 
     class Meta(CallDetailsSerializerOpenStudent.Meta):
         fields = CallDetailsSerializerOpenStudent.Meta.fields + (
-        'minimum_papa_winner', 'highest_papa_winner', 'selected')
+        'minimum_papa_winner', 'highest_papa_winner', 'selected','flag_image_url')
 
 
 class CallSerializerPost(serializers.ModelSerializer):
@@ -72,6 +74,7 @@ class CallSerializer(serializers.ModelSerializer):
     format = serializers.CharField(source="get_format_display")
     study_level = serializers.CharField(source="get_study_level_display")
     language = serializers.CharField(source="get_language_display")
+    flag_image_url = serializers.URLField(source='university.flag_image_url')
 
     class Meta:
         model = Call

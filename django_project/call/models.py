@@ -17,6 +17,8 @@ class University(models.Model):
     academic_offer = models.CharField(max_length=255)
     exchange_info = models.CharField(max_length=255)
 
+    flag_image_url = models.URLField(max_length=500, null=True, blank=True, default='https://identidad.unal.edu.co/fileadmin/user_upload/escudo_unal_2015-01.jpg')
+
     def __str__(self):
         return f'University: {self.name}'
 
