@@ -1,5 +1,6 @@
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
+import pytz
 from django.db.models import Q
 from django.utils import timezone
 from django.http import JsonResponse
@@ -23,12 +24,15 @@ from .serializers import (
     CallDetailsSerializerClosedStudent, CallSerializer, UniversitySerializer
 )
 
+from data import helpers
+
+HOUR_COL = helpers.get_col_time()
 
 def save_traceability(request: Request, name_view: str, description: str) -> None:
     user = None if isinstance(request.user, AnonymousUser) else request.user
     data_trace = {
         "user": user,
-        "time": datetime.now(),
+        "time": HOUR_COL,
         "method": request.method,
         "view": name_view,
         "given_data": description
@@ -205,7 +209,7 @@ class CallView(generics.ListCreateAPIView):
             this_user = request.user
             data_trace = {
                 "user": this_user,
-                "time": datetime.now(),
+                "time": HOUR_COL,
                 "method": request.method,
                 "view": self.__class__.__name__,
                 "given_data": f"El usuario solicitó todas las convocatorias."
@@ -225,7 +229,7 @@ class CallView(generics.ListCreateAPIView):
             this_user = request.user
             data_trace = {
                 "user": this_user,
-                "time": datetime.now(),
+                "time": HOUR_COL,
                 "method": request.method,
                 "view": self.__class__.__name__,
                 "given_data": f"El usuario solicitó todas las convocatorias."
@@ -251,7 +255,7 @@ class CallView(generics.ListCreateAPIView):
             this_user = request.user
             data_trace = {
                 "user": this_user,
-                "time": datetime.now(),
+                "time": HOUR_COL,
                 "method": request.method,
                 "view": self.__class__.__name__,
                 "given_data": f"El usuario creo una convocatoria con id {call_instance.id}."
@@ -288,7 +292,7 @@ class CallDetails(generics.RetrieveUpdateDestroyAPIView):
         this_user = request.user
         data_trace = {
             "user": this_user,
-            "time": datetime.now(),
+            "time": HOUR_COL,
             "method": request.method,
             "view": self.__class__.__name__,
             "given_data": f"El usuario solicitó todas las convocatorias."
@@ -310,7 +314,7 @@ class CallDetails(generics.RetrieveUpdateDestroyAPIView):
             this_user = request.user
             data_trace = {
                 "user": this_user,
-                "time": datetime.now(),
+                "time": HOUR_COL,
                 "method": request.method,
                 "view": self.__class__.__name__,
                 "given_data": f"El usuario actualizó la convocatoria con id {call.id}. Los datos fueron: {request.data}."
@@ -329,7 +333,7 @@ class CallDetails(generics.RetrieveUpdateDestroyAPIView):
             this_user = request.user
             data_trace = {
                 "user": this_user,
-                "time": datetime.now(),
+                "time": HOUR_COL,
                 "method": request.method,
                 "view": self.__class__.__name__,
                 "given_data": f"El usuario eliminó la convocatoria con id {ide}."
@@ -405,7 +409,7 @@ class UpdateCallsView(generics.RetrieveUpdateDestroyAPIView):
             this_user = request.user
             data_trace = {
                 "user": this_user,
-                "time": datetime.now(),
+                "time": HOUR_COL,
                 "method": request.method,
                 "view": self.__class__.__name__,
                 "given_data": f"El usuario actualizó la convocatoria con id {call.id}. Los datos fueron: {data}."
@@ -446,7 +450,7 @@ class OpenCalls(generics.ListCreateAPIView):
         this_user = request.user
         data_trace = {
             "user": this_user,
-            "time": datetime.now(),
+            "time": HOUR_COL,
             "method": request.method,
             "view": self.__class__.__name__,
             "given_data": f"El usuario solicitó las convocatorias abiertas."
@@ -480,7 +484,7 @@ class ClosedCalls(generics.ListCreateAPIView):
         this_user = request.user
         data_trace = {
             "user": this_user,
-            "time": datetime.now(),
+            "time": HOUR_COL,
             "method": request.method,
             "view": self.__class__.__name__,
             "given_data": f"El usuario solicitó las convocatorias cerradas."
@@ -579,7 +583,7 @@ class CallsFilterSearch(APIView):
             this_user = request.user
             data_trace = {
                 "user": this_user,
-                "time": datetime.now(),
+                "time": HOUR_COL,
                 "method": request.method,
                 "view": self.__class__.__name__,
                 "given_data": f"El usuario solicitó las convocatorias bajo el filtro de {data}."
@@ -614,7 +618,7 @@ class UniversityView(generics.ListCreateAPIView):
     #         this_user = request.user
     #         data_trace = {
     #             "user": this_user,
-    #             "time": datetime.now(),
+    #             "time": HOUR_COL,
     #             "method": request.method,
     #             "view": self.__class__.__name__,
     #             "given_data": f"El usuario solicitó todas las universidades."
@@ -634,7 +638,7 @@ class UniversityView(generics.ListCreateAPIView):
             this_user = request.user
             data_trace = {
                 "user": this_user,
-                "time": datetime.now(),
+                "time": HOUR_COL,
                 "method": request.method,
                 "view": self.__class__.__name__,
                 "given_data": f"El usuario solicitó todas las universidades."
@@ -657,7 +661,7 @@ class UniversityView(generics.ListCreateAPIView):
             this_user = request.user
             data_trace = {
                 "user": this_user,
-                "time": datetime.now(),
+                "time": HOUR_COL,
                 "method": request.method,
                 "view": self.__class__.__name__,
                 "given_data": f"El usuario creo una universidad con el ID {uni_instance.id}."
@@ -695,7 +699,7 @@ class UniversityDetails(generics.RetrieveUpdateDestroyAPIView):
             this_user = request.user
             data_trace = {
                 "user": this_user,
-                "time": datetime.now(),
+                "time": HOUR_COL,
                 "method": request.method,
                 "view": self.__class__.__name__,
                 "given_data": f"El usuario actualizó la universidad con id {pk}. Datos: {request.data}"
@@ -715,7 +719,7 @@ class UniversityDetails(generics.RetrieveUpdateDestroyAPIView):
         this_user = request.user
         data_trace = {
             "user": this_user,
-            "time": datetime.now(),
+            "time": HOUR_COL,
             "method": request.method,
             "view": self.__class__.__name__,
             "given_data": f"El usuario solicitó todas las universidades."
@@ -733,7 +737,7 @@ class UniversityDetails(generics.RetrieveUpdateDestroyAPIView):
             this_user = request.user
             data_trace = {
                 "user": this_user,
-                "time": datetime.now(),
+                "time": HOUR_COL,
                 "method": request.method,
                 "view": self.__class__.__name__,
                 "given_data": f"El usuario eliminó la universidad con id {ide}."
@@ -785,7 +789,7 @@ class UpdateUniversityView(generics.RetrieveUpdateDestroyAPIView):
             this_user = request.user
             data_trace = {
                 "user": this_user,
-                "time": datetime.now(),
+                "time": HOUR_COL,
                 "method": request.method,
                 "view": self.__class__.__name__,
                 "given_data": f"El usuario actualizo la universidad con id {university.id}. Datos: {data}"
@@ -817,7 +821,7 @@ class SetClosed(APIView):
             this_user = request.user
             data_trace = {
                 "user": this_user,
-                "time": datetime.now(),
+                "time": HOUR_COL,
                 "method": request.method,
                 "view": self.__class__.__name__,
                 "given_data": f"El usuario cerró la convocatoria con ID: {this_call.id} de la universidad: {this_call.university.name} del periodo: {this_call.year}-{this_call.semester}."
@@ -844,7 +848,7 @@ class SetOpen(APIView):
             this_user = request.user
             data_trace = {
                 "user": this_user,
-                "time": datetime.now(),
+                "time": HOUR_COL,
                 "method": request.method,
                 "view": self.__class__.__name__,
                 "given_data": f"El usuario abrió la convocatoria con ID: {this_call.id} de la universidad: {this_call.university.name} del periodo: {this_call.year}-{this_call.semester}."

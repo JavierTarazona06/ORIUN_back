@@ -1,4 +1,5 @@
 import os
+import pytz
 
 from rest_framework.request import Request
 from call.models import Call
@@ -10,7 +11,7 @@ from .permissions import IsStudent
 from django.http import JsonResponse
 from django.core.files.uploadedfile import SimpleUploadedFile
 from rest_framework import permissions
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from rest_framework.views import APIView
 from application.models import Application
 from rest_framework.response import Response
@@ -24,11 +25,14 @@ from traceability.models import Traceability
 from traceability.serializers import TraceabilitySerializer
 from employee.permissions import IsEmployee
 
+from data import helpers
+
+HOUR_COL = helpers.get_col_time()
 
 def save_traceability(request: Request, name_view: str, description: str) -> None:
     data_trace = {
         "user": request.user,
-        "time": datetime.now(),
+        "time": HOUR_COL,
         "method": request.method,
         "view": name_view,
         "given_data": description
@@ -149,7 +153,7 @@ class ReadUserStudent(APIView):
             this_user = request.user
             data_trace = {
                 "user": this_user,
-                "time": datetime.now(),
+                "time": HOUR_COL,
                 "method": request.method,
                 "view": str(self.__class__.__name__),
                 "given_data": f"El usuario solicito la información del estudiante con id {my_student.id}."
@@ -172,7 +176,7 @@ class DeleteUserStudent(APIView):
             this_user = request.user
             data_trace = {
                 "user": this_user,
-                "time": datetime.now(),
+                "time": HOUR_COL,
                 "method": request.method,
                 "view": str(self.__class__.__name__),
                 "given_data": f"El usuario eliminó al estudiante con id {ide}."
@@ -364,7 +368,7 @@ class post_user_student(APIView):
             this_user = this_student.user
             data_trace = {
                 "user": this_user,
-                "time": datetime.now(),
+                "time": HOUR_COL,
                 "method": request.method,
                 "view": str(self.__class__.__name__),
                 "given_data": f"Se creó al usuario estudiante con id {this_student.id} con correo {this_student.user.email} e id usuario {this_student.user.id}."
