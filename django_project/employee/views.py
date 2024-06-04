@@ -1,9 +1,11 @@
+import pytz
+
 from django.shortcuts import render
 from rest_framework.views import APIView
 from .serializers import EmployeeSerializer, EmployeeGetSerializer
 from django.contrib.auth.models import User
 from rest_framework.exceptions import ValidationError
-from datetime import datetime
+from datetime import datetime, timedelta
 from .models import Employee
 from django.http import JsonResponse
 from rest_framework import status, permissions
@@ -11,6 +13,9 @@ from .permissions import IsEmployee
 from data.constants import Constants
 from traceability.models import Traceability
 
+from data import helpers
+
+HOUR_COL = helpers.get_col_time()
 
 class PostUserEmployee(APIView):
     permission_classes = []
@@ -92,7 +97,7 @@ class PostUserEmployee(APIView):
             this_user = this_employee.user
             data_trace = {
                 "user": this_user,
-                "time": datetime.now(),
+                "time": HOUR_COL,
                 "method": request.method,
                 "view": str(self.__class__.__name__),
                 "given_data": f"Se creó el empleado con id: {this_employee.id} y correo {this_employee.user.email}. ID de usuario: {this_employee.user.id}",
@@ -124,7 +129,7 @@ class ReadUserEmployee(APIView):
             this_user = request.user
             data_trace = {
                 "user": this_user,
-                "time": datetime.now(),
+                "time": HOUR_COL,
                 "method": request.method,
                 "view": str(self.__class__.__name__),
                 "given_data": f"El usuario solicitó la información del emploeado con id {myEmployee.id}."
@@ -148,7 +153,7 @@ class DeleteUserEmployee(APIView):
             this_user = request.user
             data_trace = {
                 "user": this_user,
-                "time": datetime.now(),
+                "time": HOUR_COL,
                 "method": request.method,
                 "view": str(self.__class__.__name__),
                 "given_data": f"El usuario eliminó al empleado con id {ide}."
