@@ -7,7 +7,8 @@ from django.http import QueryDict
 
 from google.cloud import exceptions as gcloud_exceptions
 
-from datetime import timezone
+from datetime import timezone, timedelta
+import pytz
 from django.db.models import Q
 
 from django.http import JsonResponse
@@ -33,16 +34,17 @@ from student.models import Student
 from traceability.models import Traceability
 from student.views import ApplicationDataView
 from .permissions import IsStudent, IsEmployee
-from data.helpers import send_email_winner, send_email_not_winner
+from data.helpers import send_email_winner, send_email_not_winner, get_col_time
 from .serializers import (
     ApplicationModifySerializer, StateSerializer, ApplicationOrdersSerializer, Applicants
 )
 
+HOUR_COL = get_col_time()
 
 def save_traceability(request: Request, name_view: str, description: str) -> None:
     data_trace = {
         "user": request.user,
-        "time": datetime.now(),
+        "time": HOUR_COL,
         "method": request.method,
         "view": name_view,
         "given_data": description
@@ -478,7 +480,7 @@ class OrderDocs(APIView):
             this_user = request.user
             data_trace = {
                 "user": this_user,
-                "time": datetime.now(),
+                "time": HOUR_COL,
                 "method": request.method,
                 "view": self.__class__.__name__,
                 "given_data": f"El usuario solicitó las aplicaciones a la convocatoria {pk} ordenadas por estado de documentación de los estudiantes."
@@ -501,7 +503,7 @@ class OrderPAPA(APIView):
             this_user = request.user
             data_trace = {
                 "user": this_user,
-                "time": datetime.now(),
+                "time": HOUR_COL,
                 "method": request.method,
                 "view": self.__class__.__name__,
                 "given_data": f"El usuario solicitó las aplicaciones a la convocatoria {pk} ordenadas por PAPA descendente de los estudiantes."
@@ -524,7 +526,7 @@ class OrderAdvance(APIView):
             this_user = request.user
             data_trace = {
                 "user": this_user,
-                "time": datetime.now(),
+                "time": HOUR_COL,
                 "method": request.method,
                 "view": self.__class__.__name__,
                 "given_data": f"El usuario solicitó las aplicaciones a la convocatoria {pk} ordenadas por porcentaje de avance de carrera de los estudiantes."
@@ -547,7 +549,7 @@ class OrderLanguage(APIView):
             this_user = request.user
             data_trace = {
                 "user": this_user,
-                "time": datetime.now(),
+                "time": HOUR_COL,
                 "method": request.method,
                 "view": self.__class__.__name__,
                 "given_data": f"El usuario solicitó las aplicaciones a la convocatoria {pk} ordenadas por cumplimiento del requisito de idioma de los estudiantes."
@@ -570,7 +572,7 @@ class OrderPBM(APIView):
             this_user = request.user
             data_trace = {
                 "user": this_user,
-                "time": datetime.now(),
+                "time": HOUR_COL,
                 "method": request.method,
                 "view": self.__class__.__name__,
                 "given_data": f"El usuario solicitó las aplicaciones a la convocatoria {pk} ordenadas por PBM ascendente de los estudiantes."
@@ -594,7 +596,7 @@ class OrderGeneral(APIView):
             this_user = request.user
             data_trace = {
                 "user": this_user,
-                "time": datetime.now(),
+                "time": HOUR_COL,
                 "method": request.method,
                 "view": self.__class__.__name__,
                 "given_data": f"El usuario solicitó las aplicaciones a la convocatoria {pk} ordenadas por estado de la documentación, PAPA, Avance, Idioma y PBM de los estudiantes (Orden General)."
@@ -617,7 +619,7 @@ class GetAllApplications(APIView):
             this_user = request.user
             data_trace = {
                 "user": this_user,
-                "time": datetime.now(),
+                "time": HOUR_COL,
                 "method": request.method,
                 "view": self.__class__.__name__,
                 "given_data": f"El usuario solicitó las aplicaciones a la convocatoria {pk} ordenadas por estado de la documentación, PAPA, Avance, Idioma y PBM de los estudiantes (Orden General)."
@@ -635,7 +637,7 @@ class SetWinner(APIView):
     def post(self, request):
         try:
             input_params = request.data
-            this_application = Application.objects.get(call__id=input_params['call_id'],
+            this_application = Application.objects.get(call_id=input_params['call_id'],
                                                        student_id=input_params['student_id'])
 
             # Verificar que los estudiantes ya fueron revisados
@@ -677,7 +679,7 @@ class SetWinner(APIView):
             this_user = request.user
             data_trace = {
                 "user": this_user,
-                "time": datetime.now(),
+                "time": HOUR_COL,
                 "method": request.method,
                 "view": self.__class__.__name__,
                 "given_data": f"El usuario seleccionó al estudiante con id {student_winner.id} como ganador de la convocatoria {this_call.id}."
@@ -732,7 +734,7 @@ class RemoveWinner(APIView):
             this_user = request.user
             data_trace = {
                 "user": this_user,
-                "time": datetime.now(),
+                "time": HOUR_COL,
                 "method": request.method,
                 "view": self.__class__.__name__,
                 "given_data": f"El usuario des-seleccionó al estudiante con id {student_not_winner.id} como ganador de la convocatoria {this_call.id}."
@@ -780,7 +782,7 @@ class PreAssignWinners(APIView):
             this_user = request.user
             data_trace = {
                 "user": this_user,
-                "time": datetime.now(),
+                "time": HOUR_COL,
                 "method": request.method,
                 "view": self.__class__.__name__,
                 "given_data": f"El usuario solicitó confirmación para asignar ganadores de una convocatoria."
