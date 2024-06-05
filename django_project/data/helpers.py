@@ -362,4 +362,5 @@ grades_obj = '''
 #base_64_to_pdf(grades_obj, "test_files/grades_carlos.pdf")
 
 def get_col_time():
-    return datetime.now(pytz.timezone('Etc/GMT-0')) - timedelta(hours=5)
+    #return datetime.now(pytz.timezone('Etc/GMT-0')) - timedelta(hours=5)
+    return datetime.now()
