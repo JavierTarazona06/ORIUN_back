@@ -3,6 +3,7 @@ from data.management.commands.populate_data import Command
 
 from student.models import Student
 from django.urls import reverse
+import os
 import requests
 
 
@@ -15,8 +16,8 @@ def sep_test_request_verif_code(id, email):
     }
 
     headers = {}
-    #url = "https://oriun-ryhm23k6lq-uc.a.run.app/person/code/"
-    url = "http://localhost:8000/person/code/"
+    base_url = os.getenv("ORIUN_API_BASE_URL", "http://localhost:8080").rstrip("/")
+    url = f"{base_url}/person/code/"
     response = requests.post(url, json=data, headers=headers)
 
     print(response.json())

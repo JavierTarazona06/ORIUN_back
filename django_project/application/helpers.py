@@ -1,6 +1,7 @@
 import os
 import re
 import pytz
+import shutil
 from math import ceil
 from _io import BytesIO
 from typing import Union
@@ -8,7 +9,10 @@ from docx import Document
 from call.models import Call
 from datetime import datetime
 from datetime import timedelta
+from urllib.parse import quote
 from google.cloud import storage
+from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 from student.models import Student
 from rest_framework.request import Request
 from application.models import Application
@@ -18,8 +22,59 @@ import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-CREDENTIALS = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
-STORAGE_CLIENT = storage.Client.from_service_account_json(CREDENTIALS)
+_STORAGE_CLIENT = None
+
+
+def _storage_backend() -> str:
+    return getattr(settings, "STORAGE_BACKEND", "local")
+
+
+def _get_storage_client():
+    global _STORAGE_CLIENT
+    if _STORAGE_CLIENT is not None:
+        return _STORAGE_CLIENT
+
+    credentials = getattr(settings, "GOOGLE_APPLICATION_CREDENTIALS", "")
+    if not credentials:
+        raise ImproperlyConfigured(
+            "GOOGLE_APPLICATION_CREDENTIALS is required when STORAGE_BACKEND=gcs."
+        )
+    _STORAGE_CLIENT = storage.Client.from_service_account_json(credentials)
+    return _STORAGE_CLIENT
+
+
+def _local_bucket_path(name_bucket: str) -> str:
+    path = os.path.join(settings.LOCAL_STORAGE_ROOT, name_bucket)
+    os.makedirs(path, exist_ok=True)
+    return path
+
+
+def _find_local_file(name_bucket: str, file_name: str) -> str:
+    bucket_path = _local_bucket_path(name_bucket)
+    for name in sorted(os.listdir(bucket_path)):
+        if name.startswith(file_name):
+            return os.path.join(bucket_path, name)
+    raise FileNotFoundError(f"No file was found with the requested name: {file_name}")
+
+
+def _publish_local_original_doc(file_name: str) -> str:
+    source_dirs = [
+        os.path.join(settings.BASE_DIR, "data", "forms", "templates"),
+        os.path.join(settings.BASE_DIR, "data", "docs_applications", "general"),
+    ]
+    destination_dir = _local_bucket_path("original_doc")
+
+    for source_dir in source_dirs:
+        if not os.path.isdir(source_dir):
+            continue
+        for name in sorted(os.listdir(source_dir)):
+            if name.startswith(file_name):
+                source = os.path.join(source_dir, name)
+                destination = os.path.join(destination_dir, name)
+                shutil.copyfile(source, destination)
+                return destination
+
+    raise FileNotFoundError(f"No original document was found with the requested name: {file_name}")
 
 
 def set_variables(request: Request, student: Student) -> dict[str, Union[str, list]]:
@@ -158,16 +213,18 @@ def fill_forms(attributes: dict[str, str], path_original_forms: str, path_save_f
 
 def upload_forms(path_save_forms: str) -> None:
     """
-    Uploads the forms of the student and call to GCP, and them removes those forms and the
-    folder.
+    Uploads generated forms to the configured storage backend, then removes the temporary folder.
     """
-    bucket = STORAGE_CLIENT.bucket('filled_doc')
-
     list_forms = []
     for form in os.listdir(path_save_forms):
-        blob = bucket.blob(form)
         path_form = os.path.join(path_save_forms, form)
-        blob.upload_from_filename(path_form)
+        if _storage_backend() == "local":
+            destination = os.path.join(_local_bucket_path("filled_doc"), form)
+            shutil.copyfile(path_form, destination)
+        else:
+            bucket = _get_storage_client().bucket('filled_doc')
+            blob = bucket.blob(form)
+            blob.upload_from_filename(path_form)
         list_forms.append(path_form)
 
     for form in list_forms:
@@ -181,7 +238,16 @@ def get_link_file(type_file: str, file_name: str) -> str:
     does not exist, a FileNotFoundError is raised. No need to send the extension of the file in
     its name.
     """
-    bucket = STORAGE_CLIENT.bucket(type_file)
+    if _storage_backend() == "local":
+        try:
+            path = _find_local_file(type_file, file_name)
+        except FileNotFoundError:
+            if type_file != "original_doc":
+                raise
+            path = _publish_local_original_doc(file_name)
+        return f"{settings.LOCAL_STORAGE_URL_PREFIX}/{type_file}/{quote(os.path.basename(path))}"
+
+    bucket = _get_storage_client().bucket(type_file)
     blobs = bucket.list_blobs(prefix=file_name)
     try:
         blob = next(blobs)
@@ -197,9 +263,18 @@ def get_link_file(type_file: str, file_name: str) -> str:
 
 def upload_object(name_bucket: str, source_file: BytesIO, destination_blob_name: str) -> None:
     """
-    Uploads a file-like object to a bucket
+    Uploads a file-like object to the configured storage backend.
     """
-    bucket = STORAGE_CLIENT.bucket(name_bucket)
+    if hasattr(source_file, "seek"):
+        source_file.seek(0)
+
+    if _storage_backend() == "local":
+        path = os.path.join(_local_bucket_path(name_bucket), destination_blob_name)
+        with open(path, "wb") as destination:
+            shutil.copyfileobj(source_file, destination)
+        return
+
+    bucket = _get_storage_client().bucket(name_bucket)
     blob = bucket.blob(destination_blob_name)
     blob.upload_from_file(source_file)
 
@@ -208,7 +283,14 @@ def delete_object(name_bucket: str, name_file: str):
     """
     Deletes a document from a bucket.
     """
-    bucket = STORAGE_CLIENT.bucket(name_bucket)
+    if _storage_backend() == "local":
+        try:
+            os.remove(_find_local_file(name_bucket, name_file))
+        except FileNotFoundError:
+            return
+        return
+
+    bucket = _get_storage_client().bucket(name_bucket)
     blobs = bucket.list_blobs(prefix=name_file)
     try:
         blob = next(blobs)
@@ -254,7 +336,14 @@ def exists(file_name: str) -> bool:
     """
     Returns True if the given file exists in the complete_doc bucket, False otherwise.
     """
-    bucket = STORAGE_CLIENT.bucket('complete_doc')
+    if _storage_backend() == "local":
+        try:
+            _find_local_file("complete_doc", file_name)
+            return True
+        except FileNotFoundError:
+            return False
+
+    bucket = _get_storage_client().bucket('complete_doc')
     blobs = bucket.list_blobs(prefix=file_name)
     try:
         _ = next(blobs)

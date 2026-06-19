@@ -230,7 +230,7 @@ data.append('call', '1');
 let config = {
   method: 'post',
   maxBodyLength: Infinity,
-  url: 'http://localhost:8000/application/upload/',
+  url: 'http://localhost:8080/application/upload/',
   headers: { 
     'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzEzOTkxNDExLCJpYXQiOjE3MTM5ODQyMTEsImp0aSI6Ijc2MzIzNGFkNTU5NjQ4Yjc5ZTIxN2M2YzAyNjY0NjMwIiwidXNlcl9pZCI6MX0.6Hs0nCdZuZGLKl8pZ-ZjnrT5mCUUU_UxzJTkJ1K_jyA', 
     ...data.getHeaders()
@@ -264,7 +264,7 @@ const requestOptions = {
   redirect: "follow"
 };
 
-fetch("http://localhost:8000/application/upload/", requestOptions)
+fetch("http://localhost:8080/application/upload/", requestOptions)
   .then((response) => response.text())
   .then((result) => console.log(result))
   .catch((error) => console.error(error));

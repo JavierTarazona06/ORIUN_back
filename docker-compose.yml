@@ -1,0 +1,48 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: "${DATABASE_NAME:-oriun}"
+      POSTGRES_USER: "${DATABASE_USER:-oriun}"
+      POSTGRES_PASSWORD: "${DATABASE_PASSWORD:-oriun}"
+    volumes:
+      - oriun_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER:-oriun} -d ${DATABASE_NAME:-oriun}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  web:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      DEBUG: "${ORIUN_DEBUG:-true}"
+      DJANGO_SECRET_KEY: "${DJANGO_SECRET_KEY:-django-insecure-local-docker-key-change-in-production}"
+      ALLOWED_HOSTS: "${ALLOWED_HOSTS:-localhost,127.0.0.1,0.0.0.0,web}"
+      CORS_ALLOW_ALL_ORIGINS: "${CORS_ALLOW_ALL_ORIGINS:-true}"
+      DATABASE_ENGINE: "${DATABASE_ENGINE:-django.db.backends.postgresql}"
+      DATABASE_NAME: "${DATABASE_NAME:-oriun}"
+      DATABASE_USER: "${DATABASE_USER:-oriun}"
+      DATABASE_PASSWORD: "${DATABASE_PASSWORD:-oriun}"
+      DATABASE_HOST: "${DATABASE_HOST:-db}"
+      DATABASE_PORT: "${DATABASE_PORT:-5432}"
+      STORAGE_BACKEND: "${STORAGE_BACKEND:-local}"
+      LOCAL_STORAGE_ROOT: "${LOCAL_STORAGE_ROOT:-/app/django_project/data/local_storage}"
+      GOOGLE_APPLICATION_CREDENTIALS: "${GOOGLE_APPLICATION_CREDENTIALS:-}"
+      ORIUN_FRONTEND_URL: "${ORIUN_FRONTEND_URL:-http://localhost:8080}"
+      ORIUN_MAIL_BACKEND: "${ORIUN_MAIL_BACKEND:-console}"
+      ORIUN_BOOTSTRAP_DEMO_DATA: "${ORIUN_BOOTSTRAP_DEMO_DATA:-true}"
+      ORIUN_CREATE_DEMO_ADMIN: "${ORIUN_CREATE_DEMO_ADMIN:-true}"
+      MAIL_USERNAME: "${MAIL_USERNAME:-jtarazonaj@unal.edu.co}"
+      MAIL_PASSWORD: "${MAIL_PASSWORD:-}"
+    volumes:
+      - oriun_local_storage:/app/django_project/data/local_storage
+
+volumes:
+  oriun_postgres_data:
+  oriun_local_storage:

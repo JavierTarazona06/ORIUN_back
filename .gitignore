@@ -168,6 +168,7 @@ test.py
 testy.py
 
 django_project/data/test_files
+django_project/data/local_storage/
 
 **/.DS_Store
 

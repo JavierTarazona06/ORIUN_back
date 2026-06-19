@@ -1,67 +1,27 @@
-# Setting up Docker Container for Oriun
+# Docker Setup
 
-In this guide, we'll walk through the steps to set up a Docker container for Oriun using the provided commands.
+The canonical local setup is documented in the root `README.md`.
 
-## Prerequisites
-
-Before proceeding, ensure that you have Docker installed on your system. You can download and install Docker from the 
-[official Docker website](https://www.docker.com/get-started).
-
-## Step 1: Clone Oriun Repository
-
-First, clone the Oriun repository from its source:
+For a clean local run:
 
 ```bash
-git clone https://github.com/JavierTarazona06/ORIUN_back
-cd oriun
+docker compose up --build
 ```
 
-## Step 2: Build Docker Image
+The API will be available at:
 
-Navigate to the root directory of the Oriun project and build the Docker image using the following command:
+```text
+http://localhost:8080
+```
+
+Docker Compose starts PostgreSQL, runs migrations, loads demo data, creates guest users, and uses local filesystem storage. No Google Cloud credentials, SMTP credentials, or external database are required for local evaluation.
+
+Common commands:
 
 ```bash
-sudo docker build -t oriun .
+docker compose exec web python manage.py check
+docker compose exec web python manage.py test --noinput
+docker compose down -v
 ```
 
-This command builds a Docker image named oriun using the Dockerfile located in the current directory.
-
-
-## Step 3: Run Docker Container
-
-Remeber to create the .env file with database credentials and environment variables for the project.
-
-Once the Docker image is built successfully, you can run a Docker container using the following command if
-you will use your local PostgresSQL server and you are in a Linux machine:
-
-```bash
-sudo docker run -d -p 8080:8080 --env-file=.env --name oriun-container --network=host oriun
-```
-
-If you are in another OS and wants to use you local database, run the next code, and use 
-`DATABASE_HOST=host.docker.internal` instead `DATABASE_HOST=localhost`
-
-```bash
-sudo docker run -d -p 8080:8080 --env-file=.env --name oriun-container oriun
-```
-
-If you want to use the database in the server, use this code:
-
-```bash
-sudo docker run -d -p 8080:8080 --env-file=.env --name oriun-container oriun
-```
-
-This command creates and starts a Docker container named oriun-container based on the oriun image. It maps port 8080 of
-the host machine to port 8080 of the container. Additionally, it reads environment variables from the .env file.
-
-
-## Bonus: Open Docker Terminal 
-
-```
-docker exec -it oriun-container /bin/bash
-```
-
-## Conclusion
-
-You've successfully set up a Docker container for Oriun using the provided commands. You can now access Oriun 
-application at http://localhost:8080 in your web browser.
+Guest credentials and environment variables are listed in the root `README.md`.

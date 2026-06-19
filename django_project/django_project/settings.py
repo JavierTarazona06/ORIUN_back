@@ -9,16 +9,36 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+def env_bool(name: str, default: bool = False) -> bool:
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def env_list(name: str, default: list[str]) -> list[str]:
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return [item.strip() for item in value.split(",") if item.strip()]
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-(1fanp3c2)yr=w-b#rm+o-av@@y!o430wjkrlh@7ehmu&gnsx-'
+# SECURITY WARNING: keep the secret key used in production secret.
+SECRET_KEY = os.getenv(
+    "DJANGO_SECRET_KEY",
+    os.getenv("SECRET_KEY", "django-insecure-local-dev-key-change-me"),
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env_bool("DEBUG", True)
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = env_list(
+    "ALLOWED_HOSTS",
+    ["localhost", "127.0.0.1", "0.0.0.0", "web"] if not DEBUG else ["*"],
+)
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -89,16 +109,26 @@ WSGI_APPLICATION = 'django_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': os.getenv('DATABASE_ENGINE'),
-        'NAME': os.getenv('DATABASE_NAME'),
-        'USER': os.getenv('DATABASE_USER'),
-        'PASSWORD': os.getenv('DATABASE_PASSWORD'),
-        'HOST': os.getenv('DATABASE_HOST'),
-        'PORT': os.getenv('DATABASE_PORT'),
+DATABASE_ENGINE = os.getenv("DATABASE_ENGINE", "django.db.backends.sqlite3")
+
+if DATABASE_ENGINE == "django.db.backends.sqlite3":
+    DATABASES = {
+        "default": {
+            "ENGINE": DATABASE_ENGINE,
+            "NAME": os.getenv("DATABASE_NAME", str(BASE_DIR / "db.sqlite3")),
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": DATABASE_ENGINE,
+            "NAME": os.getenv("DATABASE_NAME", "oriun"),
+            "USER": os.getenv("DATABASE_USER", "oriun"),
+            "PASSWORD": os.getenv("DATABASE_PASSWORD", "oriun"),
+            "HOST": os.getenv("DATABASE_HOST", "db"),
+            "PORT": os.getenv("DATABASE_PORT", "5432"),
+        }
+    }
 
 
 # Password validation
@@ -143,12 +173,21 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # CORS settings
-CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_ALL_ORIGINS = env_bool("CORS_ALLOW_ALL_ORIGINS", DEBUG)
+CORS_ALLOW_CREDENTIALS = env_bool("CORS_ALLOW_CREDENTIALS", True)
 
-CSRF_COOKIE_SECURE = False
+if not CORS_ALLOW_ALL_ORIGINS:
+    CORS_ALLOWED_ORIGINS = env_list("CORS_ALLOWED_ORIGINS", [])
 
-CORS_ALLOWED_ORIGINS = [
-    'http://*',
-    'https://*'
-]
+CSRF_COOKIE_SECURE = env_bool("CSRF_COOKIE_SECURE", not DEBUG)
+CSRF_TRUSTED_ORIGINS = env_list("CSRF_TRUSTED_ORIGINS", [])
+
+# Local-first integrations. Production can switch these to real providers via env vars.
+STORAGE_BACKEND = os.getenv("STORAGE_BACKEND", "local").strip().lower()
+LOCAL_STORAGE_ROOT = os.getenv("LOCAL_STORAGE_ROOT", str(BASE_DIR / "data" / "local_storage"))
+LOCAL_STORAGE_URL_PREFIX = "/local-storage"
+GOOGLE_APPLICATION_CREDENTIALS = os.getenv("GOOGLE_APPLICATION_CREDENTIALS", "")
+
+ORIUN_FRONTEND_URL = os.getenv("ORIUN_FRONTEND_URL", "http://localhost:8080")
+ORIUN_MAIL_BACKEND = os.getenv("ORIUN_MAIL_BACKEND", "console").strip().lower()
+ORIUN_CREATE_DEMO_ADMIN = env_bool("ORIUN_CREATE_DEMO_ADMIN", False)

@@ -165,6 +165,16 @@ test.py
 
 **/.DS_Store
 
+.git/
+.github/
+.agents/
+.codex/
+
+django_project/data/big_file.mov
+django_project/data/local_storage/
+django_project/data/test_files/
+django_project/credentials.json
+
 database/
 docs/
 README.md
